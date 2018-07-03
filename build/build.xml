@@ -1,0 +1,42 @@
+<project name="mulinela" default="build">
+
+	<import file="build-utils.xml"/>
+
+	<property name="project.root.path" location=".."/>
+	<property name="local.build.path" value="${project.root.path}/localbuild"/>
+	<property name="site.build.path" value="${local.build.path}/site"/>
+
+	<target name="build">
+		<antcall target="build.server"/>
+		<antcall target="build.client"/>
+		<antcall target="build.static"/>
+	</target>
+
+	<target name="build.server">
+		<mkdir dir="${site.build.path}/remoting"/>
+		<antcall target="haxe">
+            <param name="dir" value="${project.root.path}/server"/>
+			<param name="hxml" value="server.hxml"/>
+		</antcall>
+	</target>
+
+	<target name="build.client">
+		<mkdir dir="${site.build.path}"/>
+		<antcall target="haxe">
+            <param name="dir" value="${project.root.path}/client"/>
+			<param name="hxml" value="client.hxml"/>
+		</antcall>
+		<antcall target="browserify">
+			<param name="dir" value="${project.root.path}/client"/>
+			<param name="src" value="scholae.js"/>
+			<param name="dst" value="../localbuild/site/scholae.js"/>
+		</antcall>
+	</target>
+
+	<target name="build.static">
+		<copy todir="${site.build.path}">
+			<fileset dir="${project.root.path}/static" excludes="*.iml"/>
+		</copy>
+	</target>
+
+</project>

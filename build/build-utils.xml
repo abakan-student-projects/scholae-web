@@ -1,0 +1,39 @@
+<project name="build-utils">
+	<!-- Global System Enviroment -->
+	<property environment="env"/>
+
+	<!-- default haXe compiler flags -->
+	<property name= "haxe.compiler.flags" value="-debug"/> 
+
+	<condition property="platform.os" value="mac" else="linux">
+		<os family="mac"/>
+	</condition>
+	
+	<!-- Execute haXe compiler with tricky options -->
+	<target name="haxe">
+		<condition property="dir" value=".">
+			<not>
+				<isset property="dir"/>
+			</not>
+		</condition>
+		<echo level="info">Executing haXe for "${dir}/${hxml}" with flags ${haxe.compiler.flags}</echo>
+		<exec dir="${dir}" executable="haxe" failonerror="true">
+			<arg line="${hxml} ${haxe.compiler.flags}"/>
+			<!--<env key="HAXEPATH" file="${haxe.home}"/>-->
+			<!--<env key="NEKO_INSTPATH" file="${neko.home}"/>-->
+		</exec>
+	</target>
+
+	<target name="browserify">
+		<condition property="dir" value=".">
+			<not>
+				<isset property="dir"/>
+			</not>
+		</condition>
+		<echo level="info">Executing browserify for "${dir}/${src}" to "${dst}"</echo>
+		<exec dir="${dir}" executable="browserify" failonerror="true">
+			<arg line="${src} -o ${dst}"/>
+		</exec>
+	</target>
+	
+</project>
