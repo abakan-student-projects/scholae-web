@@ -1,1 +1,1 @@
-# scholar-web
+# scholae-web
