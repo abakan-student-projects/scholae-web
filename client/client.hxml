@@ -1,4 +1,7 @@
 -js scholae.js
--main App
+-main Main
 -cp src
+-cp ../shared
 -cp ../lib/react/src/lib
+-cp ../lib/haxe-react-router
+-cp ../lib/haxe-redux

@@ -16,5 +16,8 @@
     <orderEntry type="jdk" jdkName="Haxe 3.4.7" jdkType="Haxe toolkit" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="react" level="project" />
+    <orderEntry type="module" module-name="shared" />
+    <orderEntry type="library" name="haxe-react-router" level="project" />
+    <orderEntry type="library" name="haxe-redux" level="project" />
   </component>
 </module>

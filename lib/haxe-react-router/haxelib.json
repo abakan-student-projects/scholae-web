@@ -1,0 +1,11 @@
+{
+	"name": "react-router",
+	"license": "MIT",
+	"tags": ["js", "react"],
+	"description": "React-router externs for haxe-react",
+	"contributors": ["elsassph"],
+	"releasenote": "See https://github.com/elsassph/haxe-react-router",
+	"version": "0.1.0",
+	"url": "https://github.com/elsassph/haxe-react-router",
+	"dependencies": {"react":""}
+}

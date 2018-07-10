@@ -32,7 +32,7 @@
 		</condition>
 		<echo level="info">Executing browserify for "${dir}/${src}" to "${dst}"</echo>
 		<exec dir="${dir}" executable="browserify" failonerror="true">
-			<arg line="${src} -o ${dst}"/>
+			<arg line="${src} -o ${dst} -d"/>
 		</exec>
 	</target>
 	

@@ -1,4 +1,4 @@
-<project name="mulinela" default="build">
+<project name="scholae" default="build">
 
 	<import file="build-utils.xml"/>
 

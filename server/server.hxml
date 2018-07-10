@@ -1,4 +1,5 @@
 -php ../localbuild/site/remoting
 -main Main
 -cp src
+-cp ../shared
 -lib record-macros
