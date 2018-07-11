@@ -6,6 +6,7 @@ import react.ReactComponent;
 import react.ReactMacro.jsx;
 import react.ReactUtil.copy;
 import router.ReactRouter;
+import router.Link;
 
 typedef LoginViewProps = {
     signIn: String -> String -> Void
@@ -44,6 +45,7 @@ class LoginView extends ReactComponentOfPropsAndRefs<LoginViewProps, LoginViewRe
 
                 </form>
                 <button className="uk-button uk-button-default" onClick=$onClick>Войти</button>
+                <Link to="/registration">Зарегистрироваться</Link>
              </div>
             ');
     }

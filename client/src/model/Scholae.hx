@@ -1,5 +1,6 @@
 package model;
 
+import model.RegistrationState;
 import router.RouterLocation.RouterAction;
 import services.Session;
 import redux.StoreMethods;
@@ -11,7 +12,8 @@ import react.ReactUtil.copy;
 
 typedef ScholaeState = {
     auth: AuthState,
-    loading: Bool
+    loading: Bool,
+    registration: RegistrationState
 }
 
 class Scholae
@@ -24,6 +26,14 @@ class Scholae
             email: null,
             sessionId: null,
             returnPath: null
+        },
+        registration: {
+            codeforcesId: null,
+            email: null,
+            password: null,
+            registered: false,
+            redirectPath: "/",
+            errorMessage: null
         },
         loading: false
     };
@@ -56,6 +66,10 @@ class Scholae
                         returnPath: null
                     })
                 });
+
+            case Register(email, password, codeforcesId): state;
+            case RegisteredAndAuthenticated(sessionId): state;
+            case PreventRegistrationRedirection: state;
         }
     }
 

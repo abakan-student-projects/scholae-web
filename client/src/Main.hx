@@ -1,5 +1,6 @@
 package;
 
+import view.RegistrationScreen;
 import services.AuthServiceClient;
 import services.Session;
 import view.LoginScreen;
@@ -19,6 +20,7 @@ import redux.react.Provider;
 import router.Link;
 import router.ReactRouter;
 import router.RouteComponentProps;
+
 
 class Main {
 
@@ -46,6 +48,7 @@ class Main {
 					<Route path="/" component=$pageWrapper>
 					    <IndexRoute component=$LearnerDashboardScreen onEnter=$requireAuth/>
 					    <Route path="login" component=$LoginScreen />
+					    <Route path="registration" component=$RegistrationScreen />
 					</Route>
 				</Router>
 			</Provider>
@@ -57,7 +60,7 @@ class Main {
         return jsx('
 			<div>
 				<nav>
-					<Link to="/">Scholae</Link> | <Link to="/">About</Link>
+					<Link className="logo-font" to="/">Scholae</Link> | <Link to="/">Learner Dashboard</Link>
 				</nav>
 				${props.children}
 			</div>
