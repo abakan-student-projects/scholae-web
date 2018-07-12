@@ -18,7 +18,8 @@ create table sessions
 
 CREATE TABLE `CodeforcesTags` (
   `id` bigint(20) NOT NULL,
-  `name` varchar(512) NOT NULL
+  `name` varchar(512) NOT NULL,
+  `russianName` VARCHAR(512) NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -44,8 +45,8 @@ CREATE TABLE `CodeforcesTasks` (
 --
 
 CREATE TABLE `CodeforcesTasksTags` (
-  `tag` bigint(11) NOT NULL,
-  `task` bigint(11) NOT NULL
+  `tagId` bigint(11) NOT NULL,
+  `taskId` bigint(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -95,8 +96,8 @@ ALTER TABLE `CodeforcesTasks`
 -- Indexes for table `CodeforcesTasksTags`
 --
 ALTER TABLE `CodeforcesTasksTags`
-  ADD KEY `tag` (`tag`,`task`),
-  ADD KEY `task` (`task`);
+  ADD KEY `tag` (`tagId`,`taskId`),
+  ADD KEY `task` (`taskId`);
 
 --
 -- Indexes for table `ScholaeMissions`
@@ -146,8 +147,8 @@ ALTER TABLE `ScholaeTrainings`
 -- Constraints for table `CodeforcesTasksTags`
 --
 ALTER TABLE `CodeforcesTasksTags`
-  ADD CONSTRAINT `CodeforcesTasksTags_ibfk_1` FOREIGN KEY (`tag`) REFERENCES `CodeforcesTags` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `CodeforcesTasksTags_ibfk_2` FOREIGN KEY (`task`) REFERENCES `CodeforcesTasks` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+  ADD CONSTRAINT `CodeforcesTasksTags_ibfk_1` FOREIGN KEY (`tagId`) REFERENCES `CodeforcesTags` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  ADD CONSTRAINT `CodeforcesTasksTags_ibfk_2` FOREIGN KEY (`taskId`) REFERENCES `CodeforcesTasks` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
 -- Constraints for table `ScholaeMissions`

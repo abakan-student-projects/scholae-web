@@ -19,7 +19,7 @@ class CodeforcesTask extends sys.db.Object {
 
     public static var manager = new Manager<CodeforcesTask>(CodeforcesTask);
 
-    public static function getByCodeforcesProblem(p: codeforces.Problem): CodeforcesTask {
+    public static function getOrCreateByCodeforcesProblem(p: codeforces.Problem): CodeforcesTask {
         var task: CodeforcesTask = manager.select({ contestId: p.contestId, contestIndex: p.index });
         var isNew = false;
 

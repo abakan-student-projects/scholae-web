@@ -8,9 +8,10 @@ class Codeforces {
 
     static var baseUrl = "http://codeforces.com/";
     static var baseApiUrl = baseUrl + "api/";
-    static var postfix = "locale=ru";
+    static var basePostfix = "lang=ru";
 
-    private static function request(url: String): Dynamic {
+    private static function request(url: String, ?postfix: String): Dynamic {
+        if (null == postfix) postfix = basePostfix;
         var response: Response = Json.parse(Http.requestUrl(url + postfix ));
         if (response.status == "OK") {
             return response.result;
@@ -41,7 +42,7 @@ class Codeforces {
         var eregSolvedCount: EReg = new EReg("x([0123456789]+)","igm");
 
         var data = eregTr.replace(
-                                Http.requestUrl(baseUrl + "gym/" + Std.string(contest.id) +  "/?" + postfix),
+                                Http.requestUrl(baseUrl + "gym/" + Std.string(contest.id) +  "/?" + basePostfix),
                                 "</tr><tr>");
         var contestHtml: HtmlDocument =  new HtmlDocument(data, true);
         var rows = contestHtml.find("table.problems>tr");

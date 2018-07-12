@@ -1,5 +1,8 @@
 package ;
 
+import model.CodeforcesTaskTag;
+import model.CodeforcesTag;
+import codeforces.Problem;
 import codeforces.Contest;
 import haxe.ds.IntMap;
 import model.CodeforcesTask;
@@ -14,6 +17,7 @@ enum Action {
     updateCodeforcesTasks;
     updateCodeforcesTasksLevelsAndTypes;
     updateGymTasks;
+    updateTags;
 }
 
 typedef Config = {
@@ -42,7 +46,7 @@ class Main {
 
         var args = Sys.args();
         var argHandler = hxargs.Args.generate([
-            @doc("Action: updateCodeforcesTasks, updateCodeforcesTasksLevelsAndTypes, updateGymTasks")
+            @doc("Action: updateCodeforcesTasks, updateCodeforcesTasksLevelsAndTypes, updateGymTasks, updateTags")
             ["-a", "--action"] => function(action:String) cfg.action = EnumTools.createByName(Action, action),
 
             @doc("Limit number of processing items. Works only for updateGymTasks")
@@ -63,6 +67,7 @@ class Main {
             case Action.updateCodeforcesTasks: updateCodeforcesTasks();
             case Action.updateCodeforcesTasksLevelsAndTypes: updateCodeforcesTasksLevelsAndTypes();
             case Action.updateGymTasks: updateGymTasks(cfg);
+            case Action.updateTags: updateTags();
         }
 
         sys.db.Manager.cleanup();
@@ -73,19 +78,21 @@ class Main {
         updateCodeForcesTasksByResoponse(Codeforces.getAllProblemsResponse());
     }
 
-    private static function updateCodeForcesTasksByResoponse(response: ProblemsResponse) {
-        var getProblemStatisticsId = function(s: Dynamic) { return Std.string(s.contestId) + "::" + s.index; };
+    private static inline function getProblemId(contestId: Int, index: String): String {
+        return Std.string(contestId) + "::" + index;
+    }
 
+    private static function updateCodeForcesTasksByResoponse(response: ProblemsResponse) {
         var statistics: StringMap<ProblemStatistics> =  new StringMap<ProblemStatistics>();
 
         for (s in response.problemStatistics) {
-            statistics.set(getProblemStatisticsId(s), s);
+            statistics.set(getProblemId(s.contestId, s.index), s);
         }
 
         for (p in response.problems) {
             if (p.type != "PROGRAMMING") continue;
-            var t: CodeforcesTask = CodeforcesTask.getByCodeforcesProblem(p);
-            var s = statistics.get(getProblemStatisticsId(p));
+            var t: CodeforcesTask = CodeforcesTask.getOrCreateByCodeforcesProblem(p);
+            var s = statistics.get(getProblemId(p.contestId, p.index));
             t.solvedCount = if (s != null) s.solvedCount else 0;
             t.update();
         }
@@ -123,13 +130,6 @@ class Main {
                 } else {
                     t.level = contest.difficulty;
                 }
-
-                if (t.level <= 0) {
-                    trace(t.level);
-                    trace(contest.difficulty);
-                    trace(contestSum);
-                    trace(contestMiddle);
-                }
             } else {
                 t.level =
                         if (t.solvedCount < 100) 5
@@ -152,6 +152,34 @@ class Main {
                 processed += 1;
                 if (processed >= cfg.batchCount) {
                     break;
+                }
+            }
+        }
+    }
+
+    public static function updateTags() {
+
+        var response = Codeforces.getAllProblemsResponse();
+        var problemFromResponse: StringMap<Problem> = new StringMap<Problem>();
+
+        for (p in response.problems) {
+            problemFromResponse.set(getProblemId(p.contestId, p.index), p);
+        }
+
+        var tasks = CodeforcesTask.manager.all();
+        for (task in tasks) {
+            var p = problemFromResponse.get(getProblemId(task.contestId, task.contestIndex));
+
+            if (p != null && p.tags != null) {
+                for (t in p.tags) {
+                    var tag = CodeforcesTag.getOrCreateByName(t);
+                    var relation = CodeforcesTaskTag.manager.get({ taskId: task.id, tagId: tag.id });
+                    if (relation == null) {
+                        relation = new CodeforcesTaskTag();
+                        relation.task = task;
+                        relation.tag = tag;
+                        relation.insert();
+                    }
                 }
             }
         }

@@ -1,8 +1,9 @@
 package model;
 
-import model.CodeforcesTag;
+import sys.db.Manager;
+
 @:table("CodeforcesTasksTags")
-@:id(tagId,taskId)
+@:id(taskId, tagId)
 class CodeforcesTaskTag extends sys.db.Object {
 
     @:relation(tagId) public var tag : CodeforcesTag;
