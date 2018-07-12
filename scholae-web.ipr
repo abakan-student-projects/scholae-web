@@ -151,8 +151,11 @@
   </component>
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/cli/cli.iml" filepath="$PROJECT_DIR$/cli/cli.iml" />
       <module fileurl="file://$PROJECT_DIR$/client/client.iml" filepath="$PROJECT_DIR$/client/client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/db/db.iml" filepath="$PROJECT_DIR$/db/db.iml" />
       <module fileurl="file://$PROJECT_DIR$/server/server.iml" filepath="$PROJECT_DIR$/server/server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/server-shared/server-shared.iml" filepath="$PROJECT_DIR$/server-shared/server-shared.iml" />
       <module fileurl="file://$PROJECT_DIR$/shared/shared.iml" filepath="$PROJECT_DIR$/shared/shared.iml" />
       <module fileurl="file://$PROJECT_DIR$/static/static.iml" filepath="$PROJECT_DIR$/static/static.iml" />
     </modules>
@@ -163,6 +166,10 @@
   <component name="PropertiesComponent">
     <property name="nodejs_interpreter_path" value="$PATH$/node" />
     <property name="settings.editor.selected.configurable" value="configurable.group.appearance" />
+  </component>
+  <component name="SqlDialectMappings">
+    <file url="file://$PROJECT_DIR$/db/scholae.sql" dialect="MySQL" />
+    <file url="PROJECT" dialect="MySQL" />
   </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
@@ -194,16 +201,23 @@
       <JAVADOC />
       <SOURCES />
     </library>
-    <library name="react" type="Haxe">
+    <library name="htmlparser" type="Haxe">
       <CLASSES>
-        <root url="file://$PROJECT_DIR$/lib/react/src/lib" />
+        <root url="file://$PROJECT_DIR$/lib/haxe-htmlparser/library" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />
     </library>
-    <library name="tink_core" type="Haxe">
+    <library name="hxargs" type="Haxe">
       <CLASSES>
-        <root url="file://$PROJECT_DIR$/lib/tink_core/src" />
+        <root url="file://$PROJECT_DIR$/lib/hxargs" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
+    <library name="react" type="Haxe">
+      <CLASSES>
+        <root url="file://$PROJECT_DIR$/lib/react/src/lib" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />

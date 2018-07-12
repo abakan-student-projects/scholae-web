@@ -1,0 +1,9 @@
+-neko ../localbuild/scholae.n
+-main Main
+-cp src
+-cp ../shared
+-cp ../lib/hxargs
+-cp ../lib/haxe-htmlparser/library
+-cp ../shared
+-cp ../server-shared
+-lib record-macros

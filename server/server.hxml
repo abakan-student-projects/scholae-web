@@ -2,4 +2,5 @@
 -main Main
 -cp src
 -cp ../shared
+-cp ../server-shared
 -lib record-macros

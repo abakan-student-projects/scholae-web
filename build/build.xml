@@ -7,6 +7,7 @@
 	<property name="site.build.path" value="${local.build.path}/site"/>
 
 	<target name="build">
+		<antcall target="build.cli"/>
 		<antcall target="build.server"/>
 		<antcall target="build.client"/>
 		<antcall target="build.static"/>
@@ -17,6 +18,13 @@
 		<antcall target="haxe">
             <param name="dir" value="${project.root.path}/server"/>
 			<param name="hxml" value="server.hxml"/>
+		</antcall>
+	</target>
+
+	<target name="build.cli">
+		<antcall target="haxe">
+			<param name="dir" value="${project.root.path}/cli"/>
+			<param name="hxml" value="cli.hxml"/>
 		</antcall>
 	</target>
 
