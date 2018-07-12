@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html class="uk-height-1-1">
+  <head>
+  
+  	 <meta charset="utf-8"/>
+  	 <link rel="stylesheet" href="css/uikit.min.css"/>
+  	 <link href="https://fonts.googleapis.com/css?family=Marcellus" rel="stylesheet"/>
+  	 <style>
+  	 h1 {
+  	 font-family:Marcellus;
+  	 }
+  	 </style>
+  	 <script src="js/jquery.js"></script>
+  	  <script src="js/uikit.min.js"></script>
+    <title>TEST</title>
+    <style></style>
+  </head>
+    <body class="uk-height-1-1">
+
+        <div class="uk-vertical-align uk-height-1-1 uk-text-center ">
+            <div class="uk-vertical-align-middle " style="width: 550px;">
+
+             	<!--<img class="uk-margin-bottom" width="280" height="120" src=imag/q2.gif alt="">-->
+             	<div class="uk-grid" data-uk-grid-margin>
+                <div class="uk-width-1-1">
+                    <h1><big><big>SCHOLAE</big></big></h1>
+                    <p></p>
+                </div>
+            	</div>
+                <form class="uk-panel uk-panel-box uk-form">
+                    <div class="uk-form-row">
+                        <input class="uk-width-1-1 uk-form-large" type="text" placeholder="E-mail">
+                    </div>
+                    <div class="uk-form-row">
+                        <input class="uk-width-1-1 uk-form-large" type="text" placeholder="Password">
+                    </div>
+                    <div class="uk-form-row">
+                        <a class="uk-width-1-1 uk-button uk-button-success uk-button-large" href="#">Войти</a>
+                    </div>
+                    <div class="uk-form-row">
+                        <a class="uk-width-1-1 uk-button uk-button-primary uk-button-large" href="#">Зарегаться</a>
+                    </div>
+                    <div class="uk-form-row uk-text-small">
+                        <label class="uk-float-left"><input type="checkbox"> Запомнить пароль</label>
+                        <a class="uk-float-right uk-link uk-link-muted" href="#">Забыл пароль?</a>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+  
+  
+  </body>
+</html>
