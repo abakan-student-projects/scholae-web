@@ -46,7 +46,7 @@ class Main {
         var app = ReactDOM.render(jsx('
             <Provider store=$store>
 				<Router history=$history>
-					<Route path="/" component=$pageWrapper>
+					<Route path="/" component=$pageWrapper onEnter=$restoreSession>
 					    <IndexRoute component=$LearnerDashboardScreen onEnter=$requireAuth/>
 					    <Route path="login" component=$LoginScreen />
 					    <Route path="registration" component=$RegistrationScreen />
@@ -67,6 +67,19 @@ class Main {
 				${props.children}
 			</div>
 		');
+    }
+
+    static function restoreSession(nextState: Dynamic, replace: String->Void, completed:Void->Void) {
+        if (store.getState().scholae == null || !store.getState().scholae.auth.loggedIn) {
+            if (Session.isUserLoggedIn()) {
+                AuthServiceClient.instance.checkSession(Session.sessionId)
+                .then(
+                    function(sessionMessage) {
+                        store.dispatch(Authenticated(sessionMessage.email, Session.sessionId));
+                    });
+            }
+        }
+        completed();
     }
 
     static function requireAuth(nextState: Dynamic, replace: String->Void, completed:Void->Void) {

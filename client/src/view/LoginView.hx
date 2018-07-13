@@ -1,5 +1,6 @@
 package view;
 
+import js.Browser;
 import js.html.InputElement;
 import action.ScholaeAction;
 import react.ReactComponent;
@@ -27,27 +28,40 @@ class LoginView extends ReactComponentOfPropsAndRefs<LoginViewProps, LoginViewRe
     override function render() {
         return
             jsx('
-            <div>
-                <form>
-                    <fieldset className="uk-fieldset">
 
-                        <legend className="uk-legend">Login</legend>
 
-                        <div className="uk-margin">
-                            <input name="email" className="uk-input" type="text" placeholder="E-mail" ref="email"/>
-                        </div>
+            <div className="uk-height-1-1 uk-flex uk-flex-middle uk-flex-center" id="login">
+                <div>
+                    <h1 className="uk-text-center"><big><big>SCHOLAE</big></big></h1>
 
-                        <div className="uk-margin">
-                            <input name="password" className="uk-input" type="password" placeholder="Password" ref="password" />
-                        </div>
+                    <div className="uk-margin">
+                        <input className="uk-width-1-1 uk-form-large" type="text" placeholder="Электронная почта" ref="email"/>
+                    </div>
+                    <div className="uk-margin">
+                        <input className="uk-width-1-1 uk-form-large" type="password" placeholder="Пароль" ref="password"/>
+                    </div>
+                    <div className="uk-margin">
+                        <button className="uk-width-1-1 uk-button uk-button-primary uk-button-large" onClick=$onClick>Войти</button>
+                    </div>
+                    <div className="uk-margin">
+                        <Link className="uk-width-1-1 uk-button uk-button-large" to="/registration">Зарегистрироваться</Link>
+                    </div>
+                    <div className="uk-margin">
+                        <Link className="uk-float-right uk-link uk-link-muted" to="/forget-password">Забыли пароль?</Link>
+                    </div>
 
-                    </fieldset>
+                </div>
+            </div>
 
-                </form>
-                <button className="uk-button uk-button-default" onClick=$onClick>Войти</button>
-                <Link to="/registration">Зарегистрироваться</Link>
-             </div>
             ');
+    }
+
+    override function componentDidMount() {
+        Browser.document.body.classList.toggle("uk-height-1-1", true);
+    }
+
+    override function componentWillUnmount() {
+        Browser.document.body.classList.remove("uk-height-1-1");
     }
 
     function onClick(_) {
