@@ -1,5 +1,6 @@
 package model;
 
+import services.TeacherServiceClient;
 import model.RegistrationState;
 import router.RouterLocation.RouterAction;
 import services.Session;
@@ -11,6 +12,7 @@ import redux.IReducer;
 import react.ReactUtil.copy;
 
 typedef ScholaeState = {
+    teacher: TeacherState,
     auth: AuthState,
     loading: Bool,
     registration: RegistrationState
@@ -21,6 +23,7 @@ class Scholae
     implements IMiddleware<ScholaeAction, ApplicationState> {
 
     public var initState: ScholaeState = {
+        teacher: null,
         auth: {
             loggedIn: false,
             email: null,
@@ -70,6 +73,14 @@ class Scholae
             case Register(email, password, codeforcesId): state;
             case RegisteredAndAuthenticated(sessionId): state;
             case PreventRegistrationRedirection: state;
+
+            case LoadGroups: copy(state, { loading: true });
+            case LoadGroupsFinished(groups):
+                var teacher = if (state.teacher != null) state.teacher else { groups: groups };
+                copy(state, {
+                    loading: false,
+                    teacher: teacher
+                });
         }
     }
 
@@ -85,6 +96,15 @@ class Scholae
                         store.dispatch(AuthenticationFailed);
                     }
                 );
+                next();
+
+            case LoadGroups:
+                TeacherServiceClient.instance.getAllGroups()
+                    .then(
+                        function(groups) {
+                            store.dispatch(LoadGroupsFinished(groups));
+                        }
+                    );
                 next();
 
             default: next();

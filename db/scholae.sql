@@ -1,5 +1,13 @@
-create index email
-	on users (email);
+CREATE TABLE users
+(
+  id           BIGINT AUTO_INCREMENT PRIMARY KEY,
+  email        VARCHAR(512) DEFAULT '' NOT NULL,
+  passwordHash VARCHAR(128) DEFAULT '' NOT NULL,
+  roles        INT                     NOT NULL
+);
+CREATE INDEX email
+  ON users (email);
+
 
 create table sessions
 (

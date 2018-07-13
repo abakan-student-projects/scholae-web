@@ -1,5 +1,6 @@
 package action;
 
+import messages.GroupMessage;
 enum ScholaeAction {
 
     //Authentication
@@ -12,4 +13,8 @@ enum ScholaeAction {
     Register(email: String, password: String, codeforcesId: String);
     RegisteredAndAuthenticated(sessionId: String);
     PreventRegistrationRedirection;
+
+    //Teacher
+    LoadGroups;
+    LoadGroupsFinished(groups: Array<GroupMessage>);
 }

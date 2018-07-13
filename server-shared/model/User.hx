@@ -8,9 +8,14 @@ import sys.db.Types;
 class User extends sys.db.Object {
     public var id: SBigId;
     public var email: SString<512>;
+    public var firstName: SString<128>;
+    public var lastName: SString<128>;
     public var passwordHash: SString<128>;
+    public var roles: SFlags<Role>;
+
     public function new() {
         super();
+        roles.set(Role.Learner);
     }
 
     public static var manager = new Manager<User>(User);

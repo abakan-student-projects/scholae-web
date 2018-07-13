@@ -1,5 +1,6 @@
 package;
 
+import view.TeacherDashboardScreen;
 import view.RegistrationScreen;
 import services.AuthServiceClient;
 import services.Session;
@@ -49,6 +50,7 @@ class Main {
 					    <IndexRoute component=$LearnerDashboardScreen onEnter=$requireAuth/>
 					    <Route path="login" component=$LoginScreen />
 					    <Route path="registration" component=$RegistrationScreen />
+					    <Route path="teacher" component=$TeacherDashboardScreen onEnter=$requireAuth />
 					</Route>
 				</Router>
 			</Provider>
