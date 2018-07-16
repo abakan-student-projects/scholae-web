@@ -29,4 +29,15 @@ class TeacherService {
             );
         });
     }
+
+    public function addGroup(name: String, signUpKey: String): ResponseMessage {
+        return ServiceHelper.authorize(Role.Teacher, function() {
+            var g = new Group();
+            g.name = name;
+            g.signUpKey = signUpKey;
+            g.teacher = Authorization.instance.currentUser;
+            g.insert();
+            return ServiceHelper.successResponse(g.toMessage());
+        });
+    }
 }

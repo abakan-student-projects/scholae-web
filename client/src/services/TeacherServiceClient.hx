@@ -18,9 +18,16 @@ class TeacherServiceClient extends BaseServiceClient {
     }
 
     public function getAllGroups(): Promise<Array<GroupMessage>> {
-        prepareUrl();
-        return new Promise(function(success, fail) {
+        return request(function(success, fail) {
             context.TeacherService.getAllGroups.call([], function(e) {
+                processResponse(e, success, fail);
+            });
+        });
+    }
+
+    public function addGroup(name: String, signUpKey: String): Promise<GroupMessage> {
+        return request(function(success, fail) {
+            context.TeacherService.addGroup.call([name, signUpKey], function(e) {
                 processResponse(e, success, fail);
             });
         });

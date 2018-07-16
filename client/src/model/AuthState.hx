@@ -1,10 +1,12 @@
 package model;
 
-import router.RouterLocation;
+import model.Role.Roles;
 
 typedef AuthState = {
     loggedIn: Bool,
     email: String,
     sessionId: String,
-    returnPath: String
+    returnPath: String,
+    name: String,
+    roles: Roles
 }

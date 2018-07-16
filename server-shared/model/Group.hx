@@ -1,5 +1,6 @@
 package model;
 
+import messages.GroupMessage;
 import sys.db.Manager;
 import sys.db.Types;
 
@@ -19,6 +20,14 @@ class Group extends sys.db.Object {
     public static var manager = new Manager<Group>(Group);
 
     public static function getGroupsByTeacher(teacher: User): List<Group> {
-        return manager.search($teacherId == teacher.id);
+        return manager.search($teacherId == teacher.id, false);
+    }
+
+    public function toMessage(): GroupMessage {
+        return {
+            id: id,
+            name: name,
+            signUpKey: signUpKey
+        };
     }
 }

@@ -3,6 +3,8 @@ package services;
 import messages.ResponseStatus;
 import messages.ResponseMessage;
 import haxe.remoting.HttpAsyncConnection;
+import js.Promise;
+
 class BaseServiceClient {
 
     private var url(default, set): String;
@@ -34,5 +36,10 @@ class BaseServiceClient {
             case ResponseStatus.OK: success(response.result);
             case ResponseStatus.Error: fail(response.message);
         }
+    }
+
+    private function request<T>(process: (T -> Void) -> (Dynamic -> Void) -> Void): Promise<T> {
+        url = prepareUrl();
+        return new Promise(process);
     }
 }

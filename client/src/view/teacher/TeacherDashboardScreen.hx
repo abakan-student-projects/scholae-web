@@ -1,14 +1,11 @@
-package view;
+package view.teacher;
 
+import view.teacher.TeacherDashboardView;
 import action.ScholaeAction;
 import redux.react.IConnectedComponent;
 import router.RouteComponentProps;
 import react.ReactComponent;
 import react.ReactMacro.jsx;
-
-typedef TeacherDashboardProps = {
-    groups: Array<String>
-}
 
 class TeacherDashboardScreen
     extends ReactComponentOfPropsAndState<RouteComponentProps, TeacherDashboardProps>
@@ -19,7 +16,7 @@ class TeacherDashboardScreen
     }
 
     public override function render(): ReactElement {
-        return jsx('<h1>Teacher dashboard</h1>');
+        return jsx('<TeacherDashboardView {...state} dispatch=$dispatch/>');
     }
 
     function mapState(state: ApplicationState, props: RouteComponentProps): TeacherDashboardProps {
@@ -30,9 +27,12 @@ class TeacherDashboardScreen
                     dispatch(ScholaeAction.LoadGroups);
                 }, 10);
             }
-            return { groups: [] };
+            return { groups: [], showNewGroupView: false };
         } else {
-            return { groups: Lambda.array(Lambda.map(state.scholae.teacher.groups, function(g) { return g.name; } )) };
+            return {
+                groups: Lambda.array(state.scholae.teacher.groups),
+                showNewGroupView: state.scholae.teacher.showNewGroupView
+            };
         }
     }
 }

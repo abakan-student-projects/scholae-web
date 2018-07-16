@@ -1,5 +1,7 @@
 package model;
 
+import utils.UIkit;
+import model.Role.Roles;
 import services.TeacherServiceClient;
 import model.RegistrationState;
 import router.RouterLocation.RouterAction;
@@ -10,6 +12,7 @@ import redux.IMiddleware;
 import action.ScholaeAction;
 import redux.IReducer;
 import react.ReactUtil.copy;
+import messages.GroupMessage;
 
 typedef ScholaeState = {
     teacher: TeacherState,
@@ -28,7 +31,9 @@ class Scholae
             loggedIn: false,
             email: null,
             sessionId: null,
-            returnPath: null
+            returnPath: null,
+            name: null,
+            roles: new Roles()
         },
         registration: {
             codeforcesId: null,
@@ -76,11 +81,29 @@ class Scholae
 
             case LoadGroups: copy(state, { loading: true });
             case LoadGroupsFinished(groups):
-                var teacher = if (state.teacher != null) state.teacher else { groups: groups };
+                var teacher: TeacherState = if (state.teacher != null) state.teacher else { groups: groups, showNewGroupView: false };
                 copy(state, {
                     loading: false,
                     teacher: teacher
                 });
+            case ShowNewGroupView:
+                copy(state, {
+                    teacher: copy(state.teacher, { showNewGroupView: true })
+                });
+            case HideNewGroupView:
+                copy(state, {
+                    teacher: copy(state.teacher, { showNewGroupView: true })
+                });
+            case AddGroup(name, signUpKey): copy(state, { loading: true });
+            case GroupAdded(group):
+                var teacher = if (state.teacher != null) state.teacher else { groups: new Array<GroupMessage>(), showNewGroupView: false };
+                var nextState: ScholaeState = copy(state, {
+                    loading: false,
+                    teacher: teacher
+                });
+                nextState.teacher.groups.push(group);
+                nextState.teacher.showNewGroupView = false;
+                nextState;
         }
     }
 
@@ -107,6 +130,17 @@ class Scholae
                     );
                 next();
 
+            case AddGroup(name, signUpKey):
+                TeacherServiceClient.instance.addGroup(name, signUpKey)
+                .then(
+                    function(group) {
+                        store.dispatch(GroupAdded(group));
+                    }
+                );
+                next();
+            case GroupAdded(group):
+                UIkit.notification({ message: "Создана новая группа '" + group.name + "'.", timeout: 3000 });
+                next();
             default: next();
         }
     }

@@ -170,3 +170,19 @@ ALTER TABLE `ScholaeMissions`
 --
 ALTER TABLE `ScholaeTrainings`
   ADD CONSTRAINT `ScholaeTrainings_ibfk_1` FOREIGN KEY (`user`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+
+CREATE TABLE Groups
+(
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(512) NOT NULL,
+  signUpKey VARCHAR(512)
+);
+
+ALTER TABLE Groups ADD teacherId BIGINT NULL;
+CREATE INDEX TeacherIndex ON Groups (teacherId);
+
+CREATE TABLE GroupsLearners
+(
+  groupId BIGINT,
+  learnerId BIGINT
+);

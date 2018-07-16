@@ -1,6 +1,6 @@
 package;
 
-import view.TeacherDashboardScreen;
+import view.teacher.TeacherDashboardScreen;
 import view.RegistrationScreen;
 import services.AuthServiceClient;
 import services.Session;
