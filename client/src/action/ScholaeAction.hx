@@ -1,6 +1,8 @@
 package action;
 
+import messages.LearnerMessage;
 import messages.GroupMessage;
+
 enum ScholaeAction {
 
     //Authentication
@@ -13,12 +15,4 @@ enum ScholaeAction {
     Register(email: String, password: String, codeforcesId: String);
     RegisteredAndAuthenticated(sessionId: String);
     PreventRegistrationRedirection;
-
-    //Teacher
-    LoadGroups;
-    LoadGroupsFinished(groups: Array<GroupMessage>);
-    AddGroup(name: String, signUpKey: String);
-    GroupAdded(group: GroupMessage);
-    ShowNewGroupView;
-    HideNewGroupView;
 }

@@ -1,5 +1,6 @@
 package view.teacher;
 
+import action.TeacherAction;
 import view.teacher.TeacherDashboardView;
 import action.ScholaeAction;
 import redux.react.IConnectedComponent;
@@ -21,17 +22,17 @@ class TeacherDashboardScreen
 
     function mapState(state: ApplicationState, props: RouteComponentProps): TeacherDashboardProps {
 
-        if (state.scholae.teacher == null) {
-            if (!state.scholae.loading) {
+        if (state.teacher.groups == null) {
+            if (!state.teacher.loading) {
                 haxe.Timer.delay(function() {
-                    dispatch(ScholaeAction.LoadGroups);
+                    dispatch(TeacherAction.LoadGroups);
                 }, 10);
             }
             return { groups: [], showNewGroupView: false };
         } else {
             return {
-                groups: Lambda.array(state.scholae.teacher.groups),
-                showNewGroupView: state.scholae.teacher.showNewGroupView
+                groups: Lambda.array(state.teacher.groups),
+                showNewGroupView: state.teacher.showNewGroupView
             };
         }
     }

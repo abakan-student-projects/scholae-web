@@ -15,7 +15,6 @@ import react.ReactUtil.copy;
 import messages.GroupMessage;
 
 typedef ScholaeState = {
-    teacher: TeacherState,
     auth: AuthState,
     loading: Bool,
     registration: RegistrationState
@@ -26,7 +25,6 @@ class Scholae
     implements IMiddleware<ScholaeAction, ApplicationState> {
 
     public var initState: ScholaeState = {
-        teacher: null,
         auth: {
             loggedIn: false,
             email: null,
@@ -78,32 +76,6 @@ class Scholae
             case Register(email, password, codeforcesId): state;
             case RegisteredAndAuthenticated(sessionId): state;
             case PreventRegistrationRedirection: state;
-
-            case LoadGroups: copy(state, { loading: true });
-            case LoadGroupsFinished(groups):
-                var teacher: TeacherState = if (state.teacher != null) state.teacher else { groups: groups, showNewGroupView: false };
-                copy(state, {
-                    loading: false,
-                    teacher: teacher
-                });
-            case ShowNewGroupView:
-                copy(state, {
-                    teacher: copy(state.teacher, { showNewGroupView: true })
-                });
-            case HideNewGroupView:
-                copy(state, {
-                    teacher: copy(state.teacher, { showNewGroupView: true })
-                });
-            case AddGroup(name, signUpKey): copy(state, { loading: true });
-            case GroupAdded(group):
-                var teacher = if (state.teacher != null) state.teacher else { groups: new Array<GroupMessage>(), showNewGroupView: false };
-                var nextState: ScholaeState = copy(state, {
-                    loading: false,
-                    teacher: teacher
-                });
-                nextState.teacher.groups.push(group);
-                nextState.teacher.showNewGroupView = false;
-                nextState;
         }
     }
 
@@ -119,27 +91,6 @@ class Scholae
                         store.dispatch(AuthenticationFailed);
                     }
                 );
-                next();
-
-            case LoadGroups:
-                TeacherServiceClient.instance.getAllGroups()
-                    .then(
-                        function(groups) {
-                            store.dispatch(LoadGroupsFinished(groups));
-                        }
-                    );
-                next();
-
-            case AddGroup(name, signUpKey):
-                TeacherServiceClient.instance.addGroup(name, signUpKey)
-                .then(
-                    function(group) {
-                        store.dispatch(GroupAdded(group));
-                    }
-                );
-                next();
-            case GroupAdded(group):
-                UIkit.notification({ message: "Создана новая группа '" + group.name + "'.", timeout: 3000 });
                 next();
             default: next();
         }

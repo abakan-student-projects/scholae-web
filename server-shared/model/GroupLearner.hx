@@ -13,5 +13,5 @@ class GroupLearner extends sys.db.Object {
         super();
     }
 
-    public static var manager = new Manager<ClassLearner>(ClassLearner);
+    public static var manager = new Manager<GroupLearner>(GroupLearner);
 }

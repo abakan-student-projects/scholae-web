@@ -1,7 +1,9 @@
 package ;
 
+import model.TeacherState;
 import model.Scholae;
 
 typedef ApplicationState = {
-    scholae: ScholaeState
+    scholae: ScholaeState,
+    teacher: TeacherState
 }

@@ -4,5 +4,6 @@ import messages.GroupMessage;
 
 typedef TeacherState = {
     groups: Array<GroupMessage>,
-    showNewGroupView: Bool
+    showNewGroupView: Bool,
+    loading: Bool
 }
