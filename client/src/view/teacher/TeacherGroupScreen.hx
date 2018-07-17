@@ -1,5 +1,6 @@
 package view.teacher;
 
+import model.Teacher;
 import action.TeacherAction;
 import view.teacher.TeacherGroupView.TeacherGroupProps;
 import action.ScholaeAction;
@@ -8,6 +9,9 @@ import react.ReactMacro.jsx;
 import redux.react.IConnectedComponent;
 import router.RouteComponentProps;
 import view.teacher.TeacherDashboardView;
+import utils.TimerHelper.defer;
+
+using utils.RemoteDataHelper;
 
 class TeacherGroupScreen
     extends ReactComponentOfPropsAndState<RouteComponentProps, TeacherGroupProps>
@@ -22,17 +26,22 @@ class TeacherGroupScreen
     }
 
     function mapState(state: ApplicationState, props: RouteComponentProps): TeacherGroupProps {
-
-        if (state.teacher.groups == null) {
-            if (!state.teacher.loading) {
-                haxe.Timer.delay(function() {
-                    dispatch(TeacherAction.LoadGroups);
-                    trace("load groups");
-                }, 10);
-            }
-            return { group: null };
-        } else {
-            return { group: Lambda.find(state.teacher.groups, function(g) { return g.id == props.params.id; }) }
+        if (state.teacher.groups.shouldInitiate()) {
+            defer(function() {
+                dispatch(TeacherAction.LoadGroups);
+            });
+        } else if(
+                state.teacher.groups.loaded &&
+                (state.teacher.currentGroup == null || state.teacher.currentGroup.info.id != props.params.id)) {
+                    defer(function() {
+                        dispatch(TeacherAction.SetCurrentGroup(
+                            Lambda.find(
+                                state.teacher.groups.data,
+                                function(g) { return g.id == props.params.id; })));
+                    });
         }
+
+        return { group: if (null != state.teacher.currentGroup) state.teacher.currentGroup.info else null };
     }
+
 }

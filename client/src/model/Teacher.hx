@@ -1,5 +1,10 @@
 package model;
 
+import redux.StoreMethods;
+import utils.RemoteDataHelper;
+import messages.LearnerMessage;
+import messages.GroupMessage;
+import utils.RemoteData;
 import action.TeacherAction;
 import model.RegistrationState;
 import model.Role.Roles;
@@ -16,9 +21,9 @@ class Teacher
     implements IMiddleware<TeacherAction, ApplicationState> {
 
     public var initState: TeacherState = {
-        groups: null,
+        groups: RemoteDataHelper.createEmpty(),
+        currentGroup: null,
         showNewGroupView: false,
-        loading: false
     };
 
     public var store: StoreMethods<ApplicationState>;
@@ -28,11 +33,14 @@ class Teacher
     public function reduce(state: TeacherState, action: TeacherAction): TeacherState {
         trace(action);
         return switch(action) {
-            case LoadGroups: copy(state, { loading: true });
+            case LoadGroups: copy(state, { groups: copy(state.groups, { data: null, loaded: false, loading: true }) });
             case LoadGroupsFinished(groups):
                 copy(state, {
-                    loading: false,
-                    groups: groups,
+                    groups: {
+                        data: groups,
+                        loading: false,
+                        loaded: true
+                    },
                     showNewGroupView: false
                 });
             case ShowNewGroupView:
@@ -48,11 +56,21 @@ class Teacher
                 var nextState: TeacherState = copy(state, {
                     loading: false,
                 });
-                nextState.groups.push(group);
+                nextState.groups.data.push(group);
                 nextState.showNewGroupView = false;
                 nextState;
 
-            default: state;
+            case SetCurrentGroup(group):
+                copy(state, { currentGroup: {
+                    info: group,
+                    learners: { data: null, loaded: false, loading: true }
+                }});
+            case LoadLearnersByGroupFinished(learners):
+                copy(state, {
+                    currentGroup: copy(state.currentGroup, {
+                        learners: { data: learners, loaded: true, loading: false }
+                    })
+                });
         }
     }
 
@@ -61,23 +79,21 @@ class Teacher
         return switch(action) {
             case LoadGroups:
                 TeacherServiceClient.instance.getAllGroups()
-                    .then(
-                        function(groups) {
-                            store.dispatch(LoadGroupsFinished(groups));
-                        }
-                    );
+                    .then(function(groups) { store.dispatch(LoadGroupsFinished(groups)); });
                 next();
 
             case AddGroup(name, signUpKey):
                 TeacherServiceClient.instance.addGroup(name, signUpKey)
-                .then(
-                    function(group) {
-                        store.dispatch(GroupAdded(group));
-                    }
-                );
+                    .then(function(group) { store.dispatch(GroupAdded(group)); });
                 next();
+
             case GroupAdded(group):
                 UIkit.notification({ message: "Создана новая группа '" + group.name + "'.", timeout: 3000 });
+                next();
+
+            case SetCurrentGroup(group):
+                TeacherServiceClient.instance.getAllLearnersByGroup(group.id)
+                    .then(function(learners) { store.dispatch(LoadLearnersByGroupFinished(learners)); });
                 next();
             default: next();
         }

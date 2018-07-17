@@ -8,6 +8,8 @@ import router.RouteComponentProps;
 import react.ReactComponent;
 import react.ReactMacro.jsx;
 
+using utils.RemoteDataHelper;
+
 class TeacherDashboardScreen
     extends ReactComponentOfPropsAndState<RouteComponentProps, TeacherDashboardProps>
     implements IConnectedComponent {
@@ -22,16 +24,14 @@ class TeacherDashboardScreen
 
     function mapState(state: ApplicationState, props: RouteComponentProps): TeacherDashboardProps {
 
-        if (state.teacher.groups == null) {
-            if (!state.teacher.loading) {
-                haxe.Timer.delay(function() {
-                    dispatch(TeacherAction.LoadGroups);
-                }, 10);
-            }
+        if (state.teacher.groups == null || state.teacher.groups.shouldInitiate()) {
+            haxe.Timer.delay(function() {
+                dispatch(TeacherAction.LoadGroups);
+            }, 10);
             return { groups: [], showNewGroupView: false };
         } else {
             return {
-                groups: Lambda.array(state.teacher.groups),
+                groups: if(state.teacher.groups.loaded) Lambda.array(state.teacher.groups.data) else [],
                 showNewGroupView: state.teacher.showNewGroupView
             };
         }

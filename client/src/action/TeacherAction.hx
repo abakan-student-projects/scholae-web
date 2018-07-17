@@ -12,6 +12,6 @@ enum TeacherAction {
     ShowNewGroupView;
     HideNewGroupView;
 
-    LoadLearnersByGroup(groupId: Float);
     LoadLearnersByGroupFinished(learners: Array<LearnerMessage>);
+    SetCurrentGroup(group: GroupMessage);
 }

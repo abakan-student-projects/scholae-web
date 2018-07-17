@@ -5,6 +5,7 @@ import messages.GroupMessage;
 import react.ReactComponent;
 import react.ReactMacro.jsx;
 import redux.react.IConnectedComponent;
+import view.teacher.LoadingView;
 
 typedef TeacherGroupProps = {
     group: GroupMessage
@@ -24,10 +25,7 @@ class TeacherGroupView extends ReactComponentOfProps<TeacherGroupProps> implemen
                     </div>
                 ');
             else
-                jsx('
-                    <div id="teacher-group">
-                    </div>
-                ');
+                jsx('<LoadingView description="Группа"/>');
     }
 
 }
