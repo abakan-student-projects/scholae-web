@@ -39,8 +39,8 @@ class RegistrationScreen
 
         return
             {
-                register: function(email, password, codeforcesId) {
-                    dispatch(ScholaeAction.Register(email, password, codeforcesId));
+                register: function(email, password, codeforcesId, name, lastname) {
+                    dispatch(ScholaeAction.Register(email, password, codeforcesId, name, lastname));
                 },
                 cancel: function() {
                     props.router.goBack();

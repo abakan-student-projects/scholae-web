@@ -12,7 +12,7 @@ enum ScholaeAction {
     AuthenticationFailed;
 
     //Registration
-    Register(email: String, password: String, codeforcesId: String);
+    Register(email: String, password: String, codeforcesId: String, firstName: String, lastName: String);
     RegisteredAndAuthenticated(sessionId: String);
     PreventRegistrationRedirection;
 }
