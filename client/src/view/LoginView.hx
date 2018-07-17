@@ -44,7 +44,7 @@ class LoginView extends ReactComponentOfPropsAndRefs<LoginViewProps, LoginViewRe
                         <button className="uk-width-1-1 uk-button uk-button-primary uk-button-large" onClick=$onClick>Войти</button>
                     </div>
                     <div className="uk-margin">
-                        <Link className="uk-width-1-1 uk-button uk-button-large" to="/registration">Зарегистрироваться</Link>
+                        <Link className="uk-width-1-1 uk-button uk-button-text" to="/registration">Зарегистрироваться</Link>
                     </div>
                     <div className="uk-margin">
                         <Link className="uk-float-right uk-link uk-link-muted" to="/forget-password">Забыли пароль?</Link>

@@ -1,5 +1,6 @@
 package;
 
+import view.ForgetLoginScreen;
 import view.teacher.TeacherDashboardScreen;
 import view.RegistrationScreen;
 import services.AuthServiceClient;
@@ -51,6 +52,7 @@ class Main {
 					    <Route path="login" component=$LoginScreen />
 					    <Route path="registration" component=$RegistrationScreen />
 					    <Route path="teacher" component=$TeacherDashboardScreen onEnter=$requireAuth />
+					    <Route path="forget-password" component=$ForgetLoginScreen />
 					</Route>
 				</Router>
 			</Provider>

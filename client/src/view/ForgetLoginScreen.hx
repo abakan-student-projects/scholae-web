@@ -1,18 +1,18 @@
 package view;
 
-import router.RouterLocation.RouterAction;
+import view.ForgetLoginView.ForgetLoginViewProps;
 import action.ScholaeAction;
-import react.ReactComponent.ReactElement;
-import redux.react.IConnectedComponent;
-import view.LoginView;
-import router.RouteComponentProps;
 import react.ReactComponent.ReactComponentOfPropsAndState;
+import react.ReactComponent.ReactElement;
 import react.ReactMacro.jsx;
-
+import redux.react.IConnectedComponent;
+import router.RouteComponentProps;
+import router.RouterLocation.RouterAction;
 import utils.TimerHelper.defer;
+import view.LoginView;
 
-class LoginScreen
-    extends ReactComponentOfPropsAndState<RouteComponentProps, LoginViewProps>
+class ForgetLoginScreen
+    extends ReactComponentOfPropsAndState<RouteComponentProps, ForgetLoginViewProps>
     implements IConnectedComponent {
 
     public function new(props:RouteComponentProps) {
@@ -20,30 +20,6 @@ class LoginScreen
     }
 
     public override function render(): ReactElement {
-        return jsx('<LoginView {...state} dispatch=$dispatch/>');
-    }
-
-    function mapState(state: ApplicationState, props: RouteComponentProps): LoginViewProps {
-
-            if (state.scholae != null && state.scholae.auth.loggedIn && state.scholae.auth.returnPath != null) {
-                var returnPath = state.scholae.auth.returnPath;
-                defer(function() {
-                    props.router.replace(
-                        {
-                            pathname: returnPath,
-                            search: null,
-                            state: null,
-                            action: RouterAction.REPLACE,
-                        });
-                    dispatch(ScholaeAction.PreventLoginRedirection);
-                 });
-            }
-
-        return
-            {
-                signIn: function(email, password) {
-                    dispatch(ScholaeAction.Authenticate(email, password));
-                }
-            };
+        return jsx('<ForgetLoginView {...state} dispatch=$dispatch/>');
     }
 }
