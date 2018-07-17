@@ -32,16 +32,16 @@ class Scholae
             email: null,
             sessionId: null,
             returnPath: null,
-            name: null,
-            lastname: null,
+            firstName: null,
+            lastName: null,
             roles: new Roles()
         },
         registration: {
             codeforcesId: null,
             email: null,
             password: null,
-            name: null,
-            lastname: null,
+            firstName: null,
+            lastName: null,
             registered: false,
             redirectPath: "/",
             errorMessage: null
@@ -78,7 +78,7 @@ class Scholae
                     })
                 });
 
-            case Register(email, password, codeforcesId,name,lastname): state;
+            case Register(email, password, codeforcesId, firstName, lastName): state;
             case RegisteredAndAuthenticated(sessionId): state;
             case PreventRegistrationRedirection: state;
 

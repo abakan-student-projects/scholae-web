@@ -16,8 +16,8 @@ typedef RegistrationViewRefs = {
     password: InputElement,
     password2: InputElement,
     codeforcesId: InputElement,
-    name: InputElement,
-    lastname: InputElement,
+    firstName: InputElement,
+    lastName: InputElement,
 }
 
 class RegistrationView extends ReactComponentOfPropsAndRefs<RegistrationViewProps, RegistrationViewRefs> {
@@ -48,10 +48,10 @@ class RegistrationView extends ReactComponentOfPropsAndRefs<RegistrationViewProp
                         <input className="uk-width-1-1 uk-form-small" type="text" placeholder="Введите codeforcesId" ref="codeforcesId"/>
                     </div>
                     <div className="uk-margin">
-                        <input className="uk-width-1-1 uk-form-small" type="text" placeholder="Введите имя" ref="name"/>
+                        <input className="uk-width-1-1 uk-form-small" type="text" placeholder="Введите имя" ref="firstName"/>
                     </div>
                     <div className="uk-margin">
-                        <input className="uk-width-1-1 uk-form-small" type="text" placeholder="Введите фамилию" ref="lastname"/>
+                        <input className="uk-width-1-1 uk-form-small" type="text" placeholder="Введите фамилию" ref="lastName"/>
                     </div>
                     <div className="uk-margin ">
                         <button className="uk-width-1-1 uk-button uk-button-primary uk-button-small " onClick=$onRegisterClick>Регистрация</button>
@@ -65,7 +65,7 @@ class RegistrationView extends ReactComponentOfPropsAndRefs<RegistrationViewProp
     }
 
     function onRegisterClick(e) {
-        props.register(refs.email.value, refs.password.value, refs.codeforcesId.value, refs.name.value, refs.lastname.value);
+        props.register(refs.email.value, refs.password.value, refs.codeforcesId.value, refs.firstName.value, refs.lastName.value);
     }
 
     function onCancelClick(e) {

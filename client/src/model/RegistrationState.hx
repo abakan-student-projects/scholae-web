@@ -4,8 +4,8 @@ typedef RegistrationState = {
     codeforcesId: String,
     email: String,
     password: String,
-    name: String,
-    lastname: String,
+    firstName: String,
+    lastName: String,
     registered: Bool,
     redirectPath: String,
     errorMessage: String
