@@ -75,7 +75,7 @@ class Scholae
                     })
                 });
 
-            case Register(email, password, codeforcesId): state;
+            case Register(email, password, codeforcesId,name,lastname): state;
             case RegisteredAndAuthenticated(sessionId): state;
             case PreventRegistrationRedirection: state;
 
