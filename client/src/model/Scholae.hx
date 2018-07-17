@@ -33,12 +33,15 @@ class Scholae
             sessionId: null,
             returnPath: null,
             name: null,
+            lastname: null,
             roles: new Roles()
         },
         registration: {
             codeforcesId: null,
             email: null,
             password: null,
+            name: null,
+            lastname: null,
             registered: false,
             redirectPath: "/",
             errorMessage: null

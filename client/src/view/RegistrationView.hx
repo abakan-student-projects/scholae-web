@@ -36,22 +36,22 @@ class RegistrationView extends ReactComponentOfPropsAndRefs<RegistrationViewProp
                     <p className="uk-text ">Вся жизнь это массив и ты не знаешь свой индекс</p>
 
                     <div className="uk-margin">
-                        <input className="uk-width-1-1 uk-form-small" type="text" placeholder="E-mail" ref="email"/>
+                        <input className="uk-width-1-1 uk-form-small" type="text" placeholder="Введите электронную почту" ref="email"/>
                     </div>
                     <div className="uk-margin">
-                        <input className="uk-width-1-1 uk-form-small" type="text" placeholder="Password" ref="password"/>
+                        <input className="uk-width-1-1 uk-form-small" type="text" placeholder="Введите пароль" ref="password"/>
                     </div>
                     <div className="uk-margin">
-                        <input className="uk-width-1-1 uk-form-small" type="text" placeholder="Password2" ref="password2"/>
+                        <input className="uk-width-1-1 uk-form-small" type="text" placeholder="Повторите пароль" ref="password2"/>
                     </div>
                     <div className="uk-margin">
-                        <input className="uk-width-1-1 uk-form-small" type="text" placeholder="codeforcesId" ref="codeforcesId"/>
+                        <input className="uk-width-1-1 uk-form-small" type="text" placeholder="Введите codeforcesId" ref="codeforcesId"/>
                     </div>
                     <div className="uk-margin">
-                        <input className="uk-width-1-1 uk-form-small" type="text" placeholder="Name" ref="name"/>
+                        <input className="uk-width-1-1 uk-form-small" type="text" placeholder="Введите имя" ref="name"/>
                     </div>
                     <div className="uk-margin">
-                        <input className="uk-width-1-1 uk-form-small" type="text" placeholder="Last-Name" ref="lastname"/>
+                        <input className="uk-width-1-1 uk-form-small" type="text" placeholder="Введите фамилию" ref="lastname"/>
                     </div>
                     <div className="uk-margin ">
                         <button className="uk-width-1-1 uk-button uk-button-primary uk-button-small " onClick=$onRegisterClick>Регистрация</button>
