@@ -1,5 +1,6 @@
 package services;
 
+import messages.LearnerMessage;
 import messages.GroupMessage;
 import js.Promise;
 import messages.SessionMessage;
@@ -20,6 +21,14 @@ class TeacherServiceClient extends BaseServiceClient {
     public function getAllGroups(): Promise<Array<GroupMessage>> {
         return request(function(success, fail) {
             context.TeacherService.getAllGroups.call([], function(e) {
+                processResponse(e, success, fail);
+            });
+        });
+    }
+
+    public function getAllLearnersByGroup(groupId: Float): Promise<Array<LearnerMessage>> {
+        return request(function(success, fail) {
+            context.TeacherService.getAllLearnersByGroup.call([groupId], function(e) {
                 processResponse(e, success, fail);
             });
         });

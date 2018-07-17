@@ -1,5 +1,6 @@
 package service;
 
+import model.GroupLearner;
 import messages.ResponseStatus;
 import messages.ResponseMessage;
 import model.Role;
@@ -27,6 +28,20 @@ class TeacherService {
                             }
                         }))
             );
+        });
+    }
+
+    public function getAllLearnersByGroup(groupId: Float): ResponseMessage {
+        return ServiceHelper.authorize(Role.Teacher, function() {
+            return ServiceHelper.authorizeGroup(Group.manager.get(groupId), Authorization.instance.currentUser, function() {
+                return ServiceHelper.successResponse(
+                    Lambda.array(
+                        Lambda.map(
+                            GroupLearner.manager.search($groupId == groupId),
+                            function(gl) { return gl.learner.toLearnerMessage(); }))
+                );
+            });
+
         });
     }
 

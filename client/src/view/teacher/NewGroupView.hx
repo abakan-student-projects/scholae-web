@@ -1,5 +1,6 @@
 package view.teacher;
 
+import action.TeacherAction;
 import redux.react.IConnectedComponent;
 import action.ScholaeAction;
 import js.html.InputElement;
@@ -27,7 +28,7 @@ class NewGroupView extends ReactComponentOfRefs<NewGroupRefs> implements IConnec
     }
 
     function onClick(e) {
-        dispatch(ScholaeAction.AddGroup(refs.name.value, refs.signUpKey.value));
+        dispatch(TeacherAction.AddGroup(refs.name.value, refs.signUpKey.value));
     }
 
 }

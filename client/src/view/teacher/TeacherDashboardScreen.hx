@@ -1,11 +1,14 @@
 package view.teacher;
 
+import action.TeacherAction;
 import view.teacher.TeacherDashboardView;
 import action.ScholaeAction;
 import redux.react.IConnectedComponent;
 import router.RouteComponentProps;
 import react.ReactComponent;
 import react.ReactMacro.jsx;
+
+using utils.RemoteDataHelper;
 
 class TeacherDashboardScreen
     extends ReactComponentOfPropsAndState<RouteComponentProps, TeacherDashboardProps>
@@ -21,17 +24,15 @@ class TeacherDashboardScreen
 
     function mapState(state: ApplicationState, props: RouteComponentProps): TeacherDashboardProps {
 
-        if (state.scholae.teacher == null) {
-            if (!state.scholae.loading) {
-                haxe.Timer.delay(function() {
-                    dispatch(ScholaeAction.LoadGroups);
-                }, 10);
-            }
+        if (state.teacher.groups == null || state.teacher.groups.shouldInitiate()) {
+            haxe.Timer.delay(function() {
+                dispatch(TeacherAction.LoadGroups);
+            }, 10);
             return { groups: [], showNewGroupView: false };
         } else {
             return {
-                groups: Lambda.array(state.scholae.teacher.groups),
-                showNewGroupView: state.scholae.teacher.showNewGroupView
+                groups: if(state.teacher.groups.loaded) Lambda.array(state.teacher.groups.data) else [],
+                showNewGroupView: state.teacher.showNewGroupView
             };
         }
     }

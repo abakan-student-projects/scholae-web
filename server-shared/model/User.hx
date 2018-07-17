@@ -1,5 +1,6 @@
 package model;
 
+import messages.LearnerMessage;
 import haxe.crypto.Md5;
 import sys.db.Manager;
 import sys.db.Types;
@@ -26,5 +27,15 @@ class User extends sys.db.Object {
             passwordHash: Md5.encode(password)
         });
         return if (users.length > 0) users.first() else null;
+    }
+
+    public function toLearnerMessage(): LearnerMessage {
+        return
+            {
+                id: id,
+                email: email,
+                firstName: firstName,
+                lastName: lastName
+            };
     }
 }
