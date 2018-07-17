@@ -41,7 +41,13 @@ class TeacherGroupScreen
                     });
         }
 
-        return { group: if (null != state.teacher.currentGroup) state.teacher.currentGroup.info else null };
+        return {
+            group: if (null != state.teacher.currentGroup) state.teacher.currentGroup.info else null,
+            learners:
+                if (null != state.teacher.currentGroup && state.teacher.currentGroup.learners.loaded)
+                    state.teacher.currentGroup.learners.data
+                else []
+        };
     }
 
 }
