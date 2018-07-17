@@ -7,6 +7,7 @@ typedef AuthState = {
     email: String,
     sessionId: String,
     returnPath: String,
-    name: String,
+    firstName: String,
+    lastName: String,
     roles: Roles
 }
