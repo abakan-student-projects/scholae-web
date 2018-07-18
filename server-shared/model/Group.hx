@@ -23,6 +23,10 @@ class Group extends sys.db.Object {
         return manager.search($teacherId == teacher.id, false);
     }
 
+    public static function getGroupBySignUpKey(key: String): Group {
+        return manager.select($signUpKey == key, false);
+    }
+
     public function toMessage(): GroupMessage {
         return {
             id: id,

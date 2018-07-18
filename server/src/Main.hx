@@ -1,5 +1,6 @@
 package ;
 
+import service.LearnerService;
 import service.TeacherService;
 import haxe.remoting.HttpConnection;
 import service.AuthService;
@@ -13,6 +14,7 @@ class Main {
         var context = new Context();
         context.addObject("AuthService", new AuthService());
         context.addObject("TeacherService", new TeacherService());
+        context.addObject("LearnerService", new LearnerService());
 
         var cnx = sys.db.Mysql.connect({
             host : "127.0.0.1",

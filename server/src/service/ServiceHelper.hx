@@ -26,4 +26,8 @@ class ServiceHelper {
     public static function successResponse(result: Dynamic): ResponseMessage {
         return { status: ResponseStatus.OK, result: result };
     }
+
+    public static function failResponse(errorMessage: String): ResponseMessage {
+        return { status: ResponseStatus.Error, result: null, message: errorMessage };
+    }
 }
