@@ -3,3 +3,70 @@
 #login h1 { font-family: 'Marcellus', serif; }
 #login h1 { paddiing-bottom: 10em; }
 #login>div { width: 400px; }
+ h1 {
+     font-family: Marcellus;
+     font-size: 20pt;
+     text-indent: 0px;
+      }
+     h2 {
+     font-size: 12pt;
+     text-indent: 0px;
+     padding-bottom: 0px;
+     padding-top: 0px;
+      }
+      h3 {
+          font-size: 10pt;
+     font color: white;
+     text-indent: 0px;
+     padding: 0pt;
+      margin-top: 0pt;
+    margin-bottom: 0pt;
+      }
+       h4 {
+          font-size: 8pt;
+     padding: 0pt;
+     font color: white;
+     text-indent: 0px;
+      margin-top: 0pt;
+    margin-bottom: 0pt;
+      }
+
+     a {
+          font-size: 12pt;
+     }
+     .ph {
+    margin-top: 0pt;
+    margin-bottom: 0pt;
+     }
+     .block:hover {
+     	background:#83D2FA;
+     	opacity: 100;
+     }
+     .show .but {
+     	display: none;
+     }
+     .show:hover .but {
+     	display: table-row;
+     }
+     .accomp {
+     	background: #7EB587;
+     	opacity: 400;
+     }
+     .upper {
+     	background: #83D2FA;
+     	opacity: 400;
+     }
+     .notaccomp {
+     	background: #F75454;
+     	opacity: 400;
+     }
+     progress {
+    border:0;
+    width: 300px;
+    height: 20px;
+    border-radius: 5px;
+    color: #83D2FA;
+    background: #f1f1f1;
+    -webkit-box-shadow: inset 0px 3px 3px 0px rgba(0, 0, 0, 0.2), inset 0px -1px 3px 1px rgba(0, 0, 0, 0.2);
+        box-shadow: inset 0px 3px 3px 0px rgba(0, 0, 0, 0.2), inset 0px -1px 3px 1px rgba(0, 0, 0, 0.2);
+}

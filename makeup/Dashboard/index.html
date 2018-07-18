@@ -97,6 +97,7 @@
 
 </head>
 <body>
+<div>
     <div class="uk-grid uk-margin-left uk-margin-top uk-margin-right">
     	<div class="uk-width-1-2 uk-flex-left"><a href=""><h1>SCHOLAE</h1></a></div>
     	<div class="uk-width-1-2 uk-flex-right uk-text-right"><span class="uk-margin-small-right" uk-icon="icon: user; ratio:1.5"></span><a href="">Войти</a></div>
@@ -107,14 +108,14 @@
     	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 		<script>
 					$(document).ready(function() {
-					var progressbar = $('#progressbar'),
-					max = progressbar.attr('max'),
+					var progressbar = $("#progressbar"),
+					max = progressbar.attr("max"),
 					time = (1000/max)*5,
 					value = progressbar.val();
 					var loading = function() {
 					value += 1;
 					addValue = progressbar.val(value);
-					$('.progress-value').html(value + '%');
+					$(".progress-value").html(value + "%");
 						if (value == max) {
 						clearInterval(animate);
 					}
@@ -219,7 +220,7 @@
     </div> 
    </div>
 
-
+</div>
   </body>
 
 </html>
