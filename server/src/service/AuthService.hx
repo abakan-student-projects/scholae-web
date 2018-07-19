@@ -3,6 +3,7 @@ package service;
 import messages.SessionMessage;
 import model.Session;
 import model.User;
+import php.Lib.mail;
 
 class AuthService {
 
@@ -33,4 +34,19 @@ class AuthService {
             else
                 null;
     }
+
+    public function returnPassword(email: String): Bool {
+        var user = email;
+        var messageEmail = false;
+        var subjectForUser='Смена пароля';
+        var messageForUser = 'Тут скоро мы будем присылать вам пароль';
+        var from = 'test@test.ru';
+        if (null != user) {
+            messageEmail = mail (user, subjectForUser, messageForUser, from);
+            return messageEmail;
+        }
+        else return null;
+    }
+
+
 }

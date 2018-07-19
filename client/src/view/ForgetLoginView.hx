@@ -10,7 +10,7 @@ import router.ReactRouter;
 import router.Link;
 
 typedef ForgetLoginViewProps = {
-    signIn: String -> String -> Void
+    messageIn: String -> Void
 }
 
 typedef ForgetLoginViewRefs = {
@@ -36,7 +36,7 @@ class ForgetLoginView extends ReactComponentOfPropsAndRefs<ForgetLoginViewProps,
                         <input className="uk-width-1-1 uk-form-small" type="text" placeholder="Введите электронную почту" ref="email"/>
                     </div>
                     <div className="uk-margin ">
-                        <button className="uk-width-1-1 uk-button uk-button-primary uk-button-small " >Отправить</button>
+                        <button className="uk-width-1-1 uk-button uk-button-primary uk-button-small " onClick=$onClicker>Отправить</button>
                     </div>
            </div>
        </div>
@@ -50,6 +50,12 @@ class ForgetLoginView extends ReactComponentOfPropsAndRefs<ForgetLoginViewProps,
 
     override function componentWillUnmount() {
         Browser.document.body.classList.remove("uk-height-1-1");
+    }
+
+
+    function onClicker(_) {
+        props.messageIn(refs.email.value);
+
     }
 
 }

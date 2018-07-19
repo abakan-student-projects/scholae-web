@@ -1,18 +1,15 @@
 package view;
 
-import view.ForgetLoginView.ForgetLoginViewProps;
-import action.ScholaeAction;
 import react.ReactComponent.ReactComponentOfPropsAndState;
 import react.ReactComponent.ReactElement;
 import react.ReactMacro.jsx;
 import redux.react.IConnectedComponent;
 import router.RouteComponentProps;
-import router.RouterLocation.RouterAction;
-import utils.TimerHelper.defer;
-import view.LoginView;
+import view.RenewPasswordResponseView;
 
-class ForgetLoginScreen
-    extends ReactComponentOfPropsAndState<RouteComponentProps, ForgetLoginViewProps>
+
+class RenewPasswordResponseScreen
+    extends ReactComponentOfPropsAndState<RouteComponentProps, RenewPasswordResponseViewProps>
     implements IConnectedComponent {
 
     public function new(props:RouteComponentProps) {
@@ -20,8 +17,6 @@ class ForgetLoginScreen
     }
 
     public override function render(): ReactElement {
-        return jsx('<ForgetLoginView {...state} dispatch=$dispatch/>');
+        return jsx('<RenewPasswordResponseView {...state} dispatch=$dispatch/>');
     }
-
-
 }

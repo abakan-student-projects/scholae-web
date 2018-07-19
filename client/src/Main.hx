@@ -1,5 +1,6 @@
 package;
 
+import view.RenewPasswordResponseScreen;
 import view.ForgetLoginScreen;
 import view.teacher.TeacherGroupScreen;
 import view.teacher.TeacherDashboardScreen;
@@ -55,6 +56,7 @@ class Main {
 					    <Route path="teacher/group/:id" component=$TeacherGroupScreen onEnter=$requireAuth />
 					    <Route path="teacher" component=$TeacherDashboardScreen onEnter=$requireAuth />
 					    <Route path="forget-password" component=$ForgetLoginScreen />
+					    <Route path="RenewPasswordResponse" component=$RenewPasswordResponseScreen/>
 					</Route>
 				</Router>
 			</Provider>
