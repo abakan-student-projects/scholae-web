@@ -187,6 +187,20 @@
     </data-source>
   </component>
   <component name="libraryTable">
+    <library name="extern-js" type="Haxe">
+      <CLASSES>
+        <root url="file://$PROJECT_DIR$/lib/extern-js/src" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
+    <library name="extern-js-moment" type="Haxe">
+      <CLASSES>
+        <root url="file://$PROJECT_DIR$/lib/extern-js-moment/src" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
     <library name="haxe-react-router" type="Haxe">
       <CLASSES>
         <root url="file://$PROJECT_DIR$/lib/haxe-react-router" />

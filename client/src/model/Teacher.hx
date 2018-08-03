@@ -1,5 +1,8 @@
 package model;
 
+import utils.IterableUtils;
+import messages.TagMessage;
+import haxe.ds.ArraySort;
 import redux.StoreMethods;
 import utils.RemoteDataHelper;
 import messages.LearnerMessage;
@@ -24,6 +27,9 @@ class Teacher
         groups: RemoteDataHelper.createEmpty(),
         currentGroup: null,
         showNewGroupView: false,
+        tags: RemoteDataHelper.createEmpty(),
+        assignmentCreating: false,
+        trainingsCreating: false
     };
 
     public var store: StoreMethods<ApplicationState>;
@@ -63,7 +69,8 @@ class Teacher
             case SetCurrentGroup(group):
                 copy(state, { currentGroup: {
                     info: group,
-                    learners: { data: null, loaded: false, loading: true }
+                    learners: { data: null, loaded: false, loading: true },
+                    assignments: { data: null, loaded: false, loading: true }
                 }});
             case LoadLearnersByGroupFinished(learners):
                 copy(state, {
@@ -71,6 +78,73 @@ class Teacher
                         learners: { data: learners, loaded: true, loading: false }
                     })
                 });
+            case LoadAllTags: copy(state, { tags: copy(state.tags, { data: null, loaded: false, loading: true }) });
+            case LoadAllTagsFinished(tags):
+                copy(state, {
+                    tags: {
+                        data: tags,
+                        loading: false,
+                        loaded: true
+                    }
+                });
+
+            case CreateAssignment(group, assignment): copy(state, { assignmentCreating: true });
+            case CreateAssignmentFinished(assignment):
+                if (state.currentGroup != null && state.currentGroup.info.id == assignment.groupId) {
+                    copy(state, {
+                        currentGroup: copy(state.currentGroup, {
+                            assignments: {
+                                data: state.currentGroup.assignments.data.concat([assignment]),
+                                loading: false,
+                                loaded: true
+                            }
+                        }),
+                        assignmentCreating: false
+                    });
+                } else
+                    copy(state, { assignmentCreating: false });
+
+            case LoadAssignmentsByGroupFinished(assignments):
+                copy(state, {
+                    currentGroup: copy(state.currentGroup, {
+                        assignments: { data: assignments, loaded: true, loading: false }
+                    })
+                });
+
+            case CreateTrainingsByMetaTrainings(groupId):
+                copy(state, {
+                    trainingsCreating: true
+                });
+
+            case CreateTrainingsByMetaTrainingsFinished(assignments):
+                copy(state, {
+                    trainingsCreating: false
+                });
+
+            case LoadTrainings(groupId):
+                copy(state,
+                {
+                    currentGroup: copy(state.currentGroup,
+                        {
+                            trainings: { data: null, loaded: false, loading: true },
+                            trainingsByAssignments: null
+                        }
+                    )
+                });
+
+            case LoadTrainingsFinished(trainings):
+                copy(state,
+                    {
+                        currentGroup: copy(state.currentGroup,
+                            {
+                                trainings: { data: trainings, loaded: false, loading: true },
+                                trainingsByUsersAndAssignments:
+                                    IterableUtils.createStringMapOfArrays2(trainings,
+                                                        function(t) { return Std.string(t.userId); },
+                                                        function(t) { return Std.string(t.assignmentId); })
+                            }
+                        )
+                    });
         }
     }
 
@@ -94,7 +168,43 @@ class Teacher
             case SetCurrentGroup(group):
                 TeacherServiceClient.instance.getAllLearnersByGroup(group.id)
                     .then(function(learners) { store.dispatch(LoadLearnersByGroupFinished(learners)); });
+                TeacherServiceClient.instance.getAssignmentsByGroup(group.id)
+                    .then(function(assignments) { store.dispatch(LoadAssignmentsByGroupFinished(assignments)); });
+                TeacherServiceClient.instance.getTrainingsByGroup(group.id)
+                    .then(function(trainings) { store.dispatch(LoadTrainingsFinished(trainings)); });
                 next();
+
+            case LoadAllTags:
+                TeacherServiceClient.instance.getAllTags()
+                    .then(function(tags) {
+                        ArraySort.sort(tags, function(x: TagMessage, y: TagMessage) { return if (x.name > y.name) 1 else -1; });
+                        store.dispatch(LoadAllTagsFinished(tags));
+                    });
+                next();
+
+            case CreateAssignment(group, assignment):
+                TeacherServiceClient.instance.createAssignment(group, assignment)
+                    .then(function(a) { store.dispatch(CreateAssignmentFinished(a)); });
+                next();
+
+            case CreateAssignmentFinished(assignment):
+                UIkit.notification({ message: "Создан новый блок заданий '" + assignment.name + "'.", timeout: 3000 });
+                next();
+
+            case CreateTrainingsByMetaTrainings(groupId):
+                TeacherServiceClient.instance.createTrainingsByMetaTrainings(groupId)
+                    .then(function(learners) { store.dispatch(CreateTrainingsByMetaTrainingsFinished(learners)); });
+                next();
+
+            case CreateTrainingsByMetaTrainingsFinished(assignments):
+                UIkit.notification({ message: "Запрос на создание новых тренировок обработан.", timeout: 3000 });
+                next();
+
+            case LoadTrainings(groupId):
+                TeacherServiceClient.instance.getTrainingsByGroup(groupId)
+                    .then(function(trainings) { store.dispatch(LoadTrainingsFinished(trainings)); });
+                next();
+
             default: next();
         }
     }

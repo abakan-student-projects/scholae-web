@@ -3,11 +3,12 @@ CREATE TABLE users
   id           BIGINT AUTO_INCREMENT PRIMARY KEY,
   email        VARCHAR(512) DEFAULT '' NOT NULL,
   passwordHash VARCHAR(128) DEFAULT '' NOT NULL,
-  roles        INT                     NOT NULL
+  roles        INT                     NOT NULL,
+  firstName VARCHAR(128) NULL,
+  lastName VARCHAR(128) NULL
 );
 CREATE INDEX email
   ON users (email);
-
 
 create table sessions
 (
@@ -110,17 +111,17 @@ ALTER TABLE `CodeforcesTasksTags`
 --
 -- Indexes for table `ScholaeMissions`
 --
-ALTER TABLE `ScholaeMissions`
+ALTER TABLE Exercises
   ADD PRIMARY KEY (`id`),
-  ADD KEY `task` (`task`),
-  ADD KEY `training` (`training`);
+  ADD KEY `task` (taskId),
+  ADD KEY `training` (trainingId);
 
 --
 -- Indexes for table `ScholaeTrainings`
 --
-ALTER TABLE `ScholaeTrainings`
+ALTER TABLE Trainings
   ADD PRIMARY KEY (`id`),
-  ADD KEY `user` (`user`);
+  ADD KEY `user` (userId);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -139,12 +140,12 @@ ALTER TABLE `CodeforcesTasks`
 --
 -- AUTO_INCREMENT for table `ScholaeMissions`
 --
-ALTER TABLE `ScholaeMissions`
+ALTER TABLE Exercises
   MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `ScholaeTrainings`
 --
-ALTER TABLE `ScholaeTrainings`
+ALTER TABLE Trainings
   MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
@@ -161,15 +162,15 @@ ALTER TABLE `CodeforcesTasksTags`
 --
 -- Constraints for table `ScholaeMissions`
 --
-ALTER TABLE `ScholaeMissions`
-  ADD CONSTRAINT `ScholaeMissions_ibfk_1` FOREIGN KEY (`task`) REFERENCES `CodeforcesTasks` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `ScholaeMissions_ibfk_2` FOREIGN KEY (`training`) REFERENCES `ScholaeTrainings` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+ALTER TABLE Exercises
+  ADD CONSTRAINT `ScholaeMissions_ibfk_1` FOREIGN KEY (taskId) REFERENCES `CodeforcesTasks` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  ADD CONSTRAINT `ScholaeMissions_ibfk_2` FOREIGN KEY (trainingId) REFERENCES Trainings (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
 -- Constraints for table `ScholaeTrainings`
 --
-ALTER TABLE `ScholaeTrainings`
-  ADD CONSTRAINT `ScholaeTrainings_ibfk_1` FOREIGN KEY (`user`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+ALTER TABLE Trainings
+  ADD CONSTRAINT `ScholaeTrainings_ibfk_1` FOREIGN KEY (userId) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 CREATE TABLE Groups
 (

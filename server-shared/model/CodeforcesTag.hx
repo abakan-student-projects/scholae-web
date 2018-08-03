@@ -1,5 +1,6 @@
 package model;
 
+import messages.TagMessage;
 import sys.db.Types;
 import sys.db.Manager;
 
@@ -25,5 +26,12 @@ class CodeforcesTag extends sys.db.Object {
             tag.insert();
         }
         return tag;
+    }
+
+    public function toMessage(): TagMessage {
+        return {
+            id: id,
+            name: name
+        };
     }
 }

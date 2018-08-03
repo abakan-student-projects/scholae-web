@@ -5,3 +5,7 @@
 -cp ../lib/react/src/lib
 -cp ../lib/haxe-react-router
 -cp ../lib/haxe-redux
+-cp ../lib/extern-js/src
+-cp ../lib/extern-js-moment/src
+
+-D extkit_mode=global

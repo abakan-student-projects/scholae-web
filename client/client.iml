@@ -19,5 +19,7 @@
     <orderEntry type="module" module-name="shared" />
     <orderEntry type="library" name="haxe-react-router" level="project" />
     <orderEntry type="library" name="haxe-redux" level="project" />
+    <orderEntry type="library" name="extern-js-moment" level="project" />
+    <orderEntry type="library" name="extern-js" level="project" />
   </component>
 </module>

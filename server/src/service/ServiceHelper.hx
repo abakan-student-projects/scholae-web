@@ -8,7 +8,7 @@ import messages.ResponseMessage;
 
 class ServiceHelper {
     public static function authorize(role: Role, next: Void -> ResponseMessage): ResponseMessage {
-        if (!Authorization.instance.authorize(Role.Teacher)) {
+        if (!Authorization.instance.authorize(role)) {
             return { status: ResponseStatus.Error, result: null, message: "Not authorized" };
         } else {
             return next();

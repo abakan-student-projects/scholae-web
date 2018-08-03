@@ -1,5 +1,6 @@
 package model;
 
+import messages.TaskMessage;
 import sys.db.Types;
 import sys.db.Manager;
 
@@ -42,4 +43,12 @@ class CodeforcesTask extends sys.db.Object {
         return contestId >= 100000;
     }
 
+    public function toMessage(): TaskMessage {
+        return {
+            id: id,
+            name: name,
+            level: level,
+            tagIds: Lambda.array(Lambda.map(CodeforcesTaskTag.manager.search($taskId == id), function(t) { return t.tag.id; }))
+        };
+    }
 }

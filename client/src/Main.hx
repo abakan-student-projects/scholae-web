@@ -1,5 +1,6 @@
 package;
 
+import view.teacher.TeacherNewAssignmentScreen;
 import view.learner.SignUpToGroupScreen;
 import view.ForgetLoginScreen;
 import view.teacher.TeacherGroupScreen;
@@ -26,6 +27,7 @@ import router.ReactRouter;
 import router.RouteComponentProps;
 
 
+@:jsRequire("moment/locale/ru.js")
 class Main {
 
     /**
@@ -35,7 +37,7 @@ class Main {
 		- send a few test messages
 	**/
 
-    private static var store: Store<ApplicationState>;
+    public static var store: Store<ApplicationState>;
 
     public static function main() {
         store = ApplicationStore.create();
@@ -54,6 +56,7 @@ class Main {
 					    <Route path="login" component=$LoginScreen />
 					    <Route path="registration" component=$RegistrationScreen />
 					    <Route path="teacher/group/:id" component=$TeacherGroupScreen onEnter=$requireAuth />
+					    <Route path="teacher/group/:id/new-assignment" component=$TeacherNewAssignmentScreen onEnter=$requireAuth />
 					    <Route path="teacher" component=$TeacherDashboardScreen onEnter=$requireAuth />
 					    <Route path="forget-password" component=$ForgetLoginScreen />
 					    <Route path="learner/signup" component=$SignUpToGroupScreen onEnter=$requireAuth />

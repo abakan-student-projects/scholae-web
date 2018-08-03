@@ -1,5 +1,9 @@
 package view.teacher;
 
+import haxe.ds.StringMap;
+import messages.TagMessage;
+import utils.IterableUtils;
+import view.teacher.TeacherViewsHelper;
 import model.Teacher;
 import action.TeacherAction;
 import view.teacher.TeacherGroupView.TeacherGroupProps;
@@ -9,9 +13,7 @@ import react.ReactMacro.jsx;
 import redux.react.IConnectedComponent;
 import router.RouteComponentProps;
 import view.teacher.TeacherDashboardView;
-import utils.TimerHelper.defer;
 
-using utils.RemoteDataHelper;
 
 class TeacherGroupScreen
     extends ReactComponentOfPropsAndState<RouteComponentProps, TeacherGroupProps>
@@ -26,27 +28,34 @@ class TeacherGroupScreen
     }
 
     function mapState(state: ApplicationState, props: RouteComponentProps): TeacherGroupProps {
-        if (state.teacher.groups.shouldInitiate()) {
-            defer(function() {
-                dispatch(TeacherAction.LoadGroups);
-            });
-        } else if(
-                state.teacher.groups.loaded &&
-                (state.teacher.currentGroup == null || state.teacher.currentGroup.info.id != props.params.id)) {
-                    defer(function() {
-                        dispatch(TeacherAction.SetCurrentGroup(
-                            Lambda.find(
-                                state.teacher.groups.data,
-                                function(g) { return g.id == props.params.id; })));
-                    });
-        }
+        TeacherViewsHelper.ensureGroupLoaded(props.params.id, state);
+        TeacherViewsHelper.ensureTagsLoaded(state);
 
         return {
             group: if (null != state.teacher.currentGroup) state.teacher.currentGroup.info else null,
             learners:
                 if (null != state.teacher.currentGroup && state.teacher.currentGroup.learners.loaded)
                     state.teacher.currentGroup.learners.data
-                else []
+                else [],
+            assignments:
+                if (null != state.teacher.currentGroup && state.teacher.currentGroup.assignments.loaded)
+                    state.teacher.currentGroup.assignments.data
+                else [],
+            trainingsByUsersAndAssignments:
+                if (null != state.teacher.currentGroup)
+                    state.teacher.currentGroup.trainingsByUsersAndAssignments
+                else null,
+            trainingsCreating: state.teacher.trainingsCreating,
+            createTrainings: function() {
+                if (null != state.teacher.currentGroup) {
+                    dispatch(TeacherAction.CreateTrainingsByMetaTrainings(state.teacher.currentGroup.info.id));
+                }
+            },
+            tags:
+                if (state.teacher.tags != null && state.teacher.tags.loaded)
+                    IterableUtils.createStringMap(state.teacher.tags.data, function(t) { return Std.string(t.id); })
+                else
+                    new StringMap<TagMessage>()
         };
     }
 

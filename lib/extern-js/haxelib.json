@@ -1,0 +1,16 @@
+{
+    "name": "extern-js",
+    "url" : "https://github.com/ExternKit/extern-js/",
+    "license": "MIT",
+    "tags": ["extern", "js"],
+    "description": "Base package for JS externs",
+    "version": "1.0.0",
+    "releasenote": "Initial release",
+    "classPath": "./src",
+    "contributors": [
+        "fantoine"
+    ],
+    "dependencies": {
+        "hxnodejs": ""
+    }
+}

@@ -20,9 +20,6 @@ class Authorization {
     }
 
     public function authorize(role: Role): Bool {
-        trace(currentUser);
-        trace(currentUser.roles.toInt());
-        trace(role);
         return if (currentUser != null) currentUser.roles.has(role) else false;
     }
 }

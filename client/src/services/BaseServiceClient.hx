@@ -3,6 +3,7 @@ package services;
 import messages.ResponseStatus;
 import messages.ResponseMessage;
 import haxe.remoting.HttpAsyncConnection;
+import haxe.remoting.AsyncConnection;
 import js.Promise;
 
 class BaseServiceClient {
@@ -41,5 +42,14 @@ class BaseServiceClient {
     private function request<T>(process: (T -> Void) -> (Dynamic -> Void) -> Void): Promise<T> {
         url = prepareUrl();
         return new Promise(process);
+    }
+
+    private function basicRequest<T>(connection: AsyncConnection, args: Array<Dynamic>): Promise<T> {
+        return
+            request(function(success, fail) {
+                connection.call(args, function(e) {
+                processResponse(e, success, fail);
+            });
+        });
     }
 }

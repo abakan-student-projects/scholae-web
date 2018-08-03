@@ -1,0 +1,16 @@
+{
+    "name": "extern-js-moment",
+    "url" : "https://github.com/ExternKit/extern-js-moment/",
+    "license": "MIT",
+    "tags": ["extern", "js", "moment", "node", "browser"],
+    "description": "moment javascript library extern",
+    "version": "1.0.0",
+    "releasenote": "Initial release",
+    "classPath": "./src",
+    "contributors": [
+        "fantoine"
+    ],
+    "dependencies": {
+        "extern-js": ""
+    }
+}
