@@ -43,12 +43,20 @@ class CodeforcesTask extends sys.db.Object {
         return contestId >= 100000;
     }
 
+    public function isSolved(): Bool {
+        return Attempt.manager.count($taskId == id && $solved == true) > 0;
+    }
+
     public function toMessage(): TaskMessage {
         return {
             id: id,
             name: name,
             level: level,
-            tagIds: Lambda.array(Lambda.map(CodeforcesTaskTag.manager.search($taskId == id), function(t) { return t.tag.id; }))
+            tagIds: Lambda.array(Lambda.map(CodeforcesTaskTag.manager.search($taskId == id), function(t) { return t.tag.id; })),
+            isGymTask: isGymTask(),
+            codeforcesContestId: contestId,
+            codeforcesIndex: contestIndex,
+            isSolved: isSolved()
         };
     }
 }

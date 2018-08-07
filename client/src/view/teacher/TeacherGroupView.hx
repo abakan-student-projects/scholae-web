@@ -1,5 +1,6 @@
 package view.teacher;
 
+import utils.StringUtils;
 import messages.TagMessage;
 import messages.TrainingMessage;
 import haxe.ds.StringMap;
@@ -22,7 +23,9 @@ typedef TeacherGroupProps = {
     trainingsByUsersAndAssignments: StringMap<StringMap<Array<TrainingMessage>>>,
     tags: StringMap<TagMessage>,
     trainingsCreating: Bool,
-    createTrainings: Void -> Void
+    createTrainings: Void -> Void,
+    resultsRefreshing: Bool,
+    refreshResults: Void -> Void
 }
 
 class TeacherGroupView extends ReactComponentOfProps<TeacherGroupProps> implements IConnectedComponent {
@@ -39,17 +42,43 @@ class TeacherGroupView extends ReactComponentOfProps<TeacherGroupProps> implemen
         var rows = [ for (l in props.learners) createLearnerRow(l, props.assignments)];
 
         var createTrainingsButton =
-                if (props.trainingsCreating) jsx('<button className="uk-button uk-button-default" disabled="true">Создать тренировки</button>')
-                else jsx('<button className="uk-button uk-button-default" onClick=${props.createTrainings}>Создать тренировки</button>');
+                if (props.trainingsCreating) jsx('<button className="uk-button uk-button-default uk-margin uk-width-1-1" disabled="true">Создать тренировки</button>')
+                else jsx('<button className="uk-button uk-button-default uk-margin uk-width-1-1" onClick=${props.createTrainings}>Создать тренировки</button>');
+
+        var refreshResultsButton =
+            if (props.resultsRefreshing) jsx('<button className="uk-button uk-button-default uk-margin uk-width-1-1" disabled="true">Обновить результаты</button>')
+            else jsx('<button className="uk-button uk-button-default uk-margin uk-width-1-1" onClick=${props.refreshResults}>Обновить результаты</button>');
 
         return
             if (null != props.group)
                 jsx('
                     <div id="teacher-group">
-                        <h1>${props.group.name}</h1>
-                        <div id="signin-key">${props.group.signUpKey}</div>
-                        <Link className="uk-button uk-button-default" to=${"/teacher/group/" + props.group.id +"/new-assignment"}>Создать новый блок заданий</Link>
-                        $createTrainingsButton
+                        <div className="uk-margin">
+                            <Link to="/teacher/"><span data-uk-icon="chevron-left"></span>Раздел учителя</Link>
+                        </div>
+                        <div className="uk-flex uk-flex-middle uk-margin">
+                            <h2 className="uk-margin-remove">${props.group.name}</h2>
+                            <button className="uk-icon-button uk-button-default uk-margin-left" type="button" data-uk-icon="more"></button>
+                            <div data-uk-dropdown="pos: bottom-left">
+                                <ul className="uk-nav uk-dropdown-nav">
+                                    <li id="signin-key">
+                                        <div className="uk-margin uk-width-1-1">Ключ подписки: <strong>${props.group.signUpKey}</strong></div>
+                                    </li>
+                                    <li>
+                                        <Link className="uk-button uk-button-default uk-margin uk-width-1-1 uk-link-reset"
+                                            to=${"/teacher/group/" + props.group.id +"/new-assignment"}>
+                                            Создать блок заданий
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        $createTrainingsButton
+                                    </li>
+                                    <li>
+                                        $refreshResultsButton
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
                         <table className="uk-table uk-table-divider">
                             $header
                             <tbody>
@@ -78,18 +107,22 @@ class TeacherGroupView extends ReactComponentOfProps<TeacherGroupProps> implemen
             if (t != null && Lambda.count(props.tags) > 0) {
                 var minLevel = Lambda.fold(t.exercises, function(e, r) { return Std.int(Math.min(e.task.level, r)); }, 999);
                 var maxLevel = Lambda.fold(t.exercises, function(e, r) { return Std.int(Math.max(e.task.level, r)); }, 0);
+                var solved = Lambda.count(t.exercises, function(e) { return e.task.isSolved; });
                 var tagIds: StringMap<Bool> = new StringMap<Bool>();
                 for (e in t.exercises) {
                     for (tagId in e.task.tagIds) {
                         tagIds.set(Std.string(tagId), true);
                     }
                 }
-                var tags = [for (tag in tagIds.keys()) jsx('<span key=$tag className="uk-badge">${props.tags.get(tag).name}</span>')];
+                var tags = [for (tag in tagIds.keys()) jsx('<span key=$tag className="uk-margin-small-bottom uk-margin-small-right">${props.tags.get(tag).name} </span> ')];
+                var suffix = if (t.exercises.length == 1) "и" else "";
                 trainings.push(jsx('
                         <td key=${a.id}>
-                            ${t.exercises.length} задач<br/>
-                            $minLevel - $maxLevel уровень<br/>
-                            $tags
+                            <Link className="uk-link-text" to="${'/teacher/group/' + props.group.id + '/training/' + t.id }">
+                                <progress className="uk-progress" value=$solved max=${t.exercises.length}></progress>
+                                <div className="uk-margin-small uk-text-meta">Сложность: $minLevel..$maxLevel</div>
+                                <div className="uk-text-meta">Категории: $tags</div>
+                            </Link>
                         </td>
                     '));
             } else {
@@ -101,11 +134,13 @@ class TeacherGroupView extends ReactComponentOfProps<TeacherGroupProps> implemen
 
     function createAssignmentsHeaderRow(assignments: Array<AssignmentMessage>) {
         var columns = [ for (a in props.assignments)
-                jsx('<th key=${a.id}><p>${a.name}</p><p>${a.finishDate.toString()}</p></th>')];
+                jsx('<th key=${a.id}><strong>${a.name}</strong>
+                <br/>${a.finishDate.toString()}
+                <br/>${a.metaTraining.length} ${StringUtils.getTaskStringFor(a.metaTraining.length)}</th>')];
         return jsx('
                 <thead>
                     <tr>
-                        <th>Обучающиеся</th>
+                        <th>Ученики</th>
                         $columns
                     </tr>
                 </thead>

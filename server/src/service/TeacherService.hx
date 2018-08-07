@@ -1,5 +1,8 @@
 package service;
 
+import messages.ExerciseMessage;
+import model.Attempt;
+import codeforces.Codeforces;
 import messages.TrainingMessage;
 import model.Exercise;
 import model.ModelUtils;
@@ -163,19 +166,22 @@ class TeacherService {
     public function getTrainingsByGroup(groupId: Float): ResponseMessage {
         return ServiceHelper.authorize(Role.Teacher, function() {
             return ServiceHelper.authorizeGroup(Group.manager.get(groupId), Authorization.instance.currentUser, function() {
-                var assignments: List<Assignment> = Assignment.manager.search($groupId == groupId);
-                var trainings: Array<TrainingMessage> = [];
+                return ServiceHelper.successResponse(
+                    Lambda.array(
+                        Lambda.map(
+                            Training.getTrainingsByGroup(groupId),
+                            function(t) { return t.toMessage(); })));
+            });
+        });
+    }
 
-                for (a in assignments) {
-                    trainings = trainings.concat(
-                            Lambda.array(
-                                Lambda.map(
-                                    Training.manager.search($assignmentId == a.id),
-                                    function(a) { return a.toMessage(); }))
-                    );
+    public function refreshResultsForGroup(groupId: Float): ResponseMessage {
+        return ServiceHelper.authorize(Role.Teacher, function() {
+            return ServiceHelper.authorizeGroup(Group.manager.get(groupId), Authorization.instance.currentUser, function() {
+                for (gl in GroupLearner.manager.search($groupId == groupId)) {
+                    Attempt.updateAttemptsForUser(gl.learner);
                 }
-
-                return ServiceHelper.successResponse(trainings);
+                return getTrainingsByGroup(groupId);
             });
         });
     }

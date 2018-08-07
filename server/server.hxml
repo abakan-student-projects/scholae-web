@@ -3,4 +3,5 @@
 -cp src
 -cp ../shared
 -cp ../server-shared
+-cp ../lib/haxe-htmlparser/library
 -lib record-macros

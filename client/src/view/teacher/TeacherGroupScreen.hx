@@ -55,7 +55,13 @@ class TeacherGroupScreen
                 if (state.teacher.tags != null && state.teacher.tags.loaded)
                     IterableUtils.createStringMap(state.teacher.tags.data, function(t) { return Std.string(t.id); })
                 else
-                    new StringMap<TagMessage>()
+                    new StringMap<TagMessage>(),
+            resultsRefreshing: state.teacher.resultsRefreshing,
+            refreshResults: function() {
+                if (null != state.teacher.currentGroup) {
+                    dispatch(TeacherAction.RefreshResults(state.teacher.currentGroup.info.id));
+                }
+            }
         };
     }
 

@@ -27,5 +27,16 @@ class Training extends sys.db.Object {
             exercises: Lambda.array(Lambda.map(Exercise.getExercisesByTraining(id), function(e) { return e.toMessage(); }))
         };
     }
+
+    public static function getTrainingsByGroup(groupId: Float): Array<Training> {
+        var assignments: List<Assignment> = Assignment.manager.search($groupId == groupId);
+        var trainings: Array<Training> = [];
+
+        for (a in assignments) {
+            trainings = trainings.concat(Lambda.array(Training.manager.search($assignmentId == a.id)));
+        }
+
+        return trainings;
+    }
     
 }

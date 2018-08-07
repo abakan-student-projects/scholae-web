@@ -7,5 +7,6 @@
 -cp ../lib/haxe-redux
 -cp ../lib/extern-js/src
 -cp ../lib/extern-js-moment/src
+-cp ../lib/haxe-htmlparser/library
 
 -D extkit_mode=global

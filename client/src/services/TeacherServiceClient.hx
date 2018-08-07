@@ -80,4 +80,12 @@ class TeacherServiceClient extends BaseServiceClient {
             });
         });
     }
+
+    public function refreshResultsForGroup(groupId: Float): Promise<Array<TrainingMessage>> {
+        return request(function(success, fail) {
+            context.TeacherService.refreshResultsForGroup.call([groupId], function(e) {
+                processResponse(e, success, fail);
+            });
+        });
+    }
 }

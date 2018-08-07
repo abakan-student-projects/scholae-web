@@ -1,5 +1,6 @@
 package;
 
+import view.teacher.TeacherTrainingScreen;
 import view.teacher.TeacherNewAssignmentScreen;
 import view.learner.SignUpToGroupScreen;
 import view.ForgetLoginScreen;
@@ -57,6 +58,7 @@ class Main {
 					    <Route path="registration" component=$RegistrationScreen />
 					    <Route path="teacher/group/:id" component=$TeacherGroupScreen onEnter=$requireAuth />
 					    <Route path="teacher/group/:id/new-assignment" component=$TeacherNewAssignmentScreen onEnter=$requireAuth />
+					    <Route path="teacher/group/:groupId/training/:trainingId" component=$TeacherTrainingScreen onEnter=$requireAuth />
 					    <Route path="teacher" component=$TeacherDashboardScreen onEnter=$requireAuth />
 					    <Route path="forget-password" component=$ForgetLoginScreen />
 					    <Route path="learner/signup" component=$SignUpToGroupScreen onEnter=$requireAuth />
@@ -70,11 +72,22 @@ class Main {
     static function pageWrapper(props:RouteComponentProps)
     {
         return jsx('
-			<div>
-				<nav>
-					<Link className="logo-font" to="/">Scholae</Link> | <Link to="/">Learner Dashboard</Link>
+			<div id="scholae">
+				<nav className="uk-navbar-container" data-uk-navbar=${true}>
+				    <div className="uk-navbar-left uk-margin-left">
+				        <Link className="logo-font uk-navbar-item uk-logo" to="/">Scholae</Link>
+                        <ul className="uk-navbar-nav">
+                            <li> <Link to="/">О проекте</Link> </li>
+                            <li> <Link to="/learner/">Ученик</Link> </li>
+                            <li> <Link to="/teacher/">Учитель</Link> </li>
+                        </ul>
+                     </div>
 				</nav>
-				${props.children}
+				<div className="uk-margin-left uk-margin-right uk-margin">
+				    <div id="scholae-content" className="uk-margin-left">
+				    ${props.children}
+				    </div>
+				</div>
 			</div>
 		');
     }

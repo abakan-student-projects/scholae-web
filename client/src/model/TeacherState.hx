@@ -20,5 +20,6 @@ typedef TeacherState = {
     showNewGroupView: Bool,
     tags: RemoteData<Array<TagMessage>>,
     assignmentCreating: Bool,
-    trainingsCreating: Bool
+    trainingsCreating: Bool,
+    resultsRefreshing: Bool
 }

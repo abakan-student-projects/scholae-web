@@ -24,6 +24,10 @@ class Codeforces {
         return request(baseApiUrl + "problemset.problems?");
     }
 
+    public static function getUserSubmissions(userHandle: String, ?from: Int = 1, ?count=1000*1000): Array<Submission> {
+       return request('${baseApiUrl}user.status?handle=$userHandle&from=$from&count=$count&');
+    }
+
     public static function getGymContests(): Array<Contest> {
         return request(baseApiUrl + "contest.list?gym=true&");
     }
@@ -73,5 +77,13 @@ class Codeforces {
         }
 
         return { problems: problems, problemStatistics: problemStatistics};
+    }
+
+    public static function getProblemUrl(contestId: Int, index: String): String {
+        return '${baseUrl}problemset/problem/$contestId/$index';
+    }
+
+    public static function getGymProblemUrl(contestId: Int, index: String): String {
+        return '${baseUrl}gym/$contestId/problem/$index';
     }
 }

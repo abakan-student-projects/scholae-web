@@ -26,5 +26,13 @@ class StringUtils {
 	public static function isStringNullOrEmpty(s: String): Bool {
 		return null == s || "" == s;
 	}
-	
+
+	public static function getTaskStringFor(number: Int): String {
+		var remainder = number % 10;
+		return "задач" + switch(remainder) {
+			case 1: "а";
+			case 2 | 3 | 4: "и";
+			default: "";
+		};
+	}
 }

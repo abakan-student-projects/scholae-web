@@ -29,4 +29,7 @@ enum TeacherAction {
 
     LoadTrainings(groupId: Float);
     LoadTrainingsFinished(trainings: Array<TrainingMessage>);
+
+    RefreshResults(groupId: Float);
+    RefreshResultsFinished(trainings: Array<TrainingMessage>);
 }

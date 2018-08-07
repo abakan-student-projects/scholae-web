@@ -31,7 +31,9 @@ class TeacherDashboardView extends ReactComponentOfProps<TeacherDashboardProps> 
                 jsx('<button onClick=${onAddGroupClick}>Добавить группу</button>');
         return jsx('
                 <div id="teacher">
-                    <h1>Teacher dashboard</h1>
+                    <h2>Последние 10 действий обучающихся</h2>
+                    ...
+                    <h2>Группы</h2>
                     $list
                     $newGroup
                 </div>

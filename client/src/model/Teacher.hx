@@ -29,7 +29,8 @@ class Teacher
         showNewGroupView: false,
         tags: RemoteDataHelper.createEmpty(),
         assignmentCreating: false,
-        trainingsCreating: false
+        trainingsCreating: false,
+        resultsRefreshing: false
     };
 
     public var store: StoreMethods<ApplicationState>;
@@ -137,13 +138,33 @@ class Teacher
                     {
                         currentGroup: copy(state.currentGroup,
                             {
-                                trainings: { data: trainings, loaded: false, loading: true },
+                                trainings: { data: trainings, loaded: true, loading: false },
                                 trainingsByUsersAndAssignments:
                                     IterableUtils.createStringMapOfArrays2(trainings,
                                                         function(t) { return Std.string(t.userId); },
                                                         function(t) { return Std.string(t.assignmentId); })
                             }
                         )
+                    });
+
+            case RefreshResults(groupId):
+                copy(state,
+                    {
+                        resultsRefreshing: true
+                    });
+
+            case RefreshResultsFinished(trainings):
+                copy(state,
+                    {
+                        resultsRefreshing: false,
+                        currentGroup: copy(state.currentGroup,
+                            {
+                                trainings: { data: trainings, loaded: true, loading: false },
+                                trainingsByUsersAndAssignments:
+                                    IterableUtils.createStringMapOfArrays2(trainings,
+                                        function(t) { return Std.string(t.userId); },
+                                        function(t) { return Std.string(t.assignmentId); })
+                            })
                     });
         }
     }
@@ -203,6 +224,15 @@ class Teacher
             case LoadTrainings(groupId):
                 TeacherServiceClient.instance.getTrainingsByGroup(groupId)
                     .then(function(trainings) { store.dispatch(LoadTrainingsFinished(trainings)); });
+                next();
+
+            case RefreshResults(groupId):
+                TeacherServiceClient.instance.refreshResultsForGroup(groupId)
+                    .then(function(trainings) { store.dispatch(RefreshResultsFinished(trainings)); });
+                next();
+
+            case RefreshResultsFinished(trainings):
+                UIkit.notification({ message: "Результаты обновлены.", timeout: 3000 });
                 next();
 
             default: next();
