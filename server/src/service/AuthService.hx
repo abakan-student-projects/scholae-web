@@ -11,12 +11,12 @@ class AuthService {
     /**
     * return Session ID, String
     **/
-    public function authenticate(email: String, password: String): String {
+    public function authenticate(email: String, password: String): SessionMessage {
         var user = User.getUserByEmailAndPassword(email, password);
         if (null != user) {
             var session = Session.getSessionByUser(user);
             if (null != session && null != Session.manager.search({ id: session.id }).first()) session.update() else session.insert();
-            return session.id;
+            return user.toSessionMessage(session.id);
         }
         return null;
     }
@@ -26,10 +26,7 @@ class AuthService {
 
         return
             if (null != session)
-                {
-                    userId: session.user.id,
-                    email: session.user.email
-                }
+                session.user.toSessionMessage(session.id)
             else
                 null;
     }

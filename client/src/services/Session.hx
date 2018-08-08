@@ -1,5 +1,6 @@
 package services;
 
+import messages.SessionMessage;
 import utils.StringUtils;
 import js.Promise;
 /**
@@ -24,11 +25,11 @@ class Session {
 		return !StringUtils.isStringNullOrEmpty(sessionId);
 	}
 	
-	public static function login(email: String, password: String): Promise<String> {
+	public static function login(email: String, password: String): Promise<SessionMessage> {
 		return AuthServiceClient.instance.authenticate(email, password)
-			.then(function(id) {
-				sessionId = id;
-				return id;
+			.then(function(sessionMessage: SessionMessage) {
+				sessionId = sessionMessage.sessionId;
+				return sessionMessage;
 			});
 	}
 	

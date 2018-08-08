@@ -15,7 +15,7 @@ class IndexView extends ReactComponent {
         return
             jsx('
                 <p>
-                Scholae поможет изучить алгоритмы и программирвоания на задачах <a href="http://codeforces.ru">Codeforces</a>.
+                Scholae поможет изучить алгоритмы и программирование на задачах <a href="http://codeforces.ru">Codeforces</a>.
                 </p>
             ');
     }

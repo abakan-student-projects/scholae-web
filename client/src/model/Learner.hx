@@ -26,6 +26,7 @@ class Learner
 
     public function reduce(state: LearnerState, action: LearnerAction): LearnerState {
         return switch(action) {
+            case Clear: initState;
             case SignUpToGroup(key): state;
             case SignUpToGroupFinished(group): copy(state, { currentGroup: group } );
             case SignUpRedirect(to): copy(state, { signup: { redirectTo: to } });
@@ -43,7 +44,7 @@ class Learner
                 next();
 
             case SignUpToGroupFinished(group):
-                UIkit.notification({ message: 'Вы выступили в группу "${group.name}" ', timeout: 10000, status: "success" });
+                UIkit.notification({ message: 'Вы записались на курс "${group.name}" ', timeout: 10000, status: "success" });
                 store.dispatch(SignUpRedirect('/learner/group/${group.id}'));
                 next();
 

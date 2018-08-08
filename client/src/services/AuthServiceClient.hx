@@ -16,7 +16,7 @@ class AuthServiceClient extends BaseServiceClient {
         super();
     }
 
-    public function authenticate(email: String, password: String): Promise<String> {
+    public function authenticate(email: String, password: String): Promise<SessionMessage> {
         return new Promise(function(success, fail) {
             context.AuthService.authenticate.call([email, password], function(e) {
                 return if (null != e) {

@@ -20,9 +20,9 @@ class NewGroupView extends ReactComponentOfRefs<NewGroupRefs> implements IConnec
     override function render() {
         return jsx('
                 <div id="new-group">
-                    <input ref="name" placeholder="Название"/>
-                    <input ref="signUpKey" placeholder="Код для учеников"/>
-                    <button onClick=${onClick}>Создать</button>
+                    <input className="uk-input uk-form-width-large uk-margin-right" ref="name" placeholder="Название курса, семестр, год"/>
+                    <input className="uk-input uk-form-width-large uk-margin-right" ref="signUpKey" placeholder="Код записи для учеников"/>
+                    <button className="uk-button uk-button-primary" onClick=${onClick}>Создать</button>
                 </div>
             ');
     }
@@ -30,5 +30,4 @@ class NewGroupView extends ReactComponentOfRefs<NewGroupRefs> implements IConnec
     function onClick(e) {
         dispatch(TeacherAction.AddGroup(refs.name.value, refs.signUpKey.value));
     }
-
 }

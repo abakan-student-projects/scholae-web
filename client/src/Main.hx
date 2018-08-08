@@ -77,7 +77,7 @@ class Main {
                 AuthServiceClient.instance.checkSession(Session.sessionId)
                 .then(
                     function(sessionMessage) {
-                        store.dispatch(Authenticated(sessionMessage.email, Session.sessionId));
+                        store.dispatch(Authenticated(sessionMessage));
                     });
             }
         }
@@ -90,7 +90,7 @@ class Main {
                 AuthServiceClient.instance.checkSession(Session.sessionId)
                     .then(
                         function(sessionMessage) {
-                            store.dispatch(Authenticated(sessionMessage.email, Session.sessionId));
+                            store.dispatch(Authenticated(sessionMessage));
                         },
                         function(e) {
                             Session.logout();

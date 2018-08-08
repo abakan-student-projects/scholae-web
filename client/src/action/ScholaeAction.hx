@@ -1,14 +1,17 @@
 package action;
 
+import messages.SessionMessage;
 import messages.LearnerMessage;
 import messages.GroupMessage;
 
 enum ScholaeAction {
 
+    Clear;
+
     //Authentication
     PreventLoginRedirection;
     Authenticate(email: String, password: String);
-    Authenticated(email: String, sessionId: String);
+    Authenticated(sessionMessage: SessionMessage);
     AuthenticationFailed;
 
     //Registration

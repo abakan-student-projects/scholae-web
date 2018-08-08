@@ -28,8 +28,8 @@ class SignUpToGroupView
         return jsx('
                 <div id="signup">
                     <h1>Enter sign up key for the group</h1>
-                    <input ref="signUpKey" placeholder="Ключ для вытупления в группу"/>
-                    <button onClick=$onSignUpClick>Вступить в группу</button>
+                    <input ref="signUpKey" placeholder="Ключ для записи на курс"/>
+                    <button onClick=$onSignUpClick>Записаться</button>
                 </div>
             ');
     }

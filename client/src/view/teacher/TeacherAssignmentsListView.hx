@@ -31,9 +31,9 @@ class TeacherAssignmentsListView extends ReactComponentOfProps<TeacherAssignment
         var rows = [ for (l in props.learners) renderLearnerRow(l, a)];
         return jsx('
                 <li key=${a.id} className="assignment">
-                    <div className="uk-accordion-title">
+                    <a className="uk-accordion-title" href="#">
                         ${a.name} <span className="uk-label">${a.metaTraining.length} ${StringUtils.getTaskStringFor(a.metaTraining.length)}</span> ${a.finishDate.toString()}
-                    </div>
+                    </a>
                     <table className="uk-table uk-table-divider uk-accordion-content">
                         <thead>
                             <tr>

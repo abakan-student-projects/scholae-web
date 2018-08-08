@@ -7,6 +7,9 @@ import messages.GroupMessage;
 import messages.LearnerMessage;
 
 enum TeacherAction {
+
+    Clear;
+
     LoadGroups;
     LoadGroupsFinished(groups: Array<GroupMessage>);
     AddGroup(name: String, signUpKey: String);

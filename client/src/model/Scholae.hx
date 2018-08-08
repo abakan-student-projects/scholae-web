@@ -60,12 +60,15 @@ class Scholae
                     auth: copy(state.auth, { returnPath: if (state.auth.returnPath != null) state.auth.returnPath else "/" })
                 });
 
-            case Authenticated(email, sessionId): copy(state,
+            case Authenticated(sessionMessage): copy(state,
                 {
                     auth: copy(state.auth, {
                         loggedIn: true,
-                        email: email,
-                        sessionId: sessionId
+                        email: sessionMessage.email,
+                        sessionId: sessionMessage.sessionId,
+                        firstName: sessionMessage.firstName,
+                        lastName: sessionMessage.lastName,
+                        roles: sessionMessage.roles
                     })
                 });
 
@@ -79,22 +82,29 @@ class Scholae
             case Register(email, password, codeforcesId, firstName, lastName): state;
             case RegisteredAndAuthenticated(sessionId): state;
             case PreventRegistrationRedirection: state;
+            case Clear: initState;
         }
     }
 
     public function middleware(action: ScholaeAction, next:Void -> Dynamic) {
         return switch(action) {
+
             case Authenticate(email, password):
                 Session.login(email, password)
                 .then(
-                    function(id) {
-                        store.dispatch(Authenticated(email, id));
+                    function(sessionMessage) {
+                        store.dispatch(Authenticated(sessionMessage));
                     },
                     function(e) {
                         store.dispatch(AuthenticationFailed);
                     }
                 );
                 next();
+
+            case Clear:
+                Session.logout();
+                next();
+
             default: next();
         }
     }

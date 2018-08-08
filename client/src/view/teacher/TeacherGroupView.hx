@@ -102,7 +102,7 @@ class TeacherGroupView extends ReactComponentOfPropsAndState<TeacherGroupProps, 
                     </div>
                 ');
             else
-                jsx('<LoadingView description="Группа"/>');
+                jsx('<LoadingView description="Курс"/>');
     }
 
     function createLearnerRow(learner: LearnerMessage, assignments: Array<AssignmentMessage>) {

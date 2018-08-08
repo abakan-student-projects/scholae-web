@@ -40,6 +40,7 @@ class Teacher
     public function reduce(state: TeacherState, action: TeacherAction): TeacherState {
         trace(action);
         return switch(action) {
+            case Clear: initState;
             case LoadGroups: copy(state, { groups: copy(state.groups, { data: null, loaded: false, loading: true }) });
             case LoadGroupsFinished(groups):
                 copy(state, {
@@ -183,7 +184,7 @@ class Teacher
                 next();
 
             case GroupAdded(group):
-                UIkit.notification({ message: "Создана новая группа '" + group.name + "'.", timeout: 3000 });
+                UIkit.notification({ message: "Создан новый курс '" + group.name + "'.", timeout: 3000 });
                 next();
 
             case SetCurrentGroup(group):

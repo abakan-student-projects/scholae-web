@@ -23,19 +23,24 @@ class TeacherDashboardView extends ReactComponentOfProps<TeacherDashboardProps> 
     }
 
     override function render() {
-        var list = [ for (g in props.groups) jsx('<div key=${g.id}><Link to=${"/teacher/group/" + g.id}>${g.name}</Link></div>') ];
+        var list = [ for (g in props.groups) jsx('<div className="uk-margin" key=${g.id}><span data-uk-icon="users"></span> <Link className="uk-margin-small-left" to=${"/teacher/group/" + g.id}>${g.name}</Link></div>') ];
         var newGroup =
             if (props.showNewGroupView)
                 jsx('<NewGroupView dispatch=${dispatch}/>')
             else
-                jsx('<button onClick=${onAddGroupClick}>Добавить группу</button>');
+                jsx('<button className="uk-button uk-button-default" onClick=${onAddGroupClick}>Добавить курс</button>');
         return jsx('
                 <div id="teacher">
                     <h2>Последние 10 действий обучающихся</h2>
                     ...
-                    <h2>Группы</h2>
+
+                    <h2>Курсы</h2>
+
                     $list
-                    $newGroup
+
+                    <div className="uk-margin-top">
+                        $newGroup
+                    </div>
                 </div>
             ');
     }
