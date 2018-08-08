@@ -27,29 +27,15 @@ class ForgetLoginView extends ReactComponentOfPropsAndRefs<ForgetLoginViewProps,
     override function render() {
         return
             jsx('
-
-
-           <div className="uk-height-1-1 uk-flex uk-flex-middle uk-flex-center" id="forget">
-            <div>
-            		  <p className="uk-text ">Укажите почту, для которого хотите восстановить пароль.</p>
+                <fieldset className="uk-fieldset">
+                    <legend className="uk-legend">Укажите почту, для которой необходимо восстановить пароль.</legend>
                     <div className="uk-margin">
-                        <input className="uk-width-1-1 uk-form-small" type="text" placeholder="Введите электронную почту" ref="email"/>
+                        <input className="uk-form-width-large uk-input" type="text" placeholder="Электронная почта" ref="email"/>
                     </div>
                     <div className="uk-margin ">
-                        <button className="uk-width-1-1 uk-button uk-button-primary uk-button-small " >Отправить</button>
+                        <button className="uk-form-width-large uk-button uk-button-primary">Восстановить пароль</button>
                     </div>
-           </div>
-       </div>
-
+                </fieldset>
             ');
     }
-
-    override function componentDidMount() {
-        Browser.document.body.classList.toggle("uk-height-1-1", true);
-    }
-
-    override function componentWillUnmount() {
-        Browser.document.body.classList.remove("uk-height-1-1");
-    }
-
 }

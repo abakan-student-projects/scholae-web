@@ -30,37 +30,36 @@ class RegistrationView extends ReactComponentOfPropsAndRefs<RegistrationViewProp
     override function render() {
         return
             jsx('
+                <div>
+                    <fieldset className="uk-fieldset">
+                        <legend className="uk-legend">Регистрация</legend>
 
-            <div className="uk-height-1-1 uk-flex uk-flex-middle uk-flex-center">
-            <div>
-                    <p className="uk-text ">Вся жизнь это массив и ты не знаешь свой индекс</p>
-
-                    <div className="uk-margin">
-                        <input className="uk-width-1-1 uk-form-small" type="text" placeholder="Введите электронную почту" ref="email"/>
-                    </div>
-                    <div className="uk-margin">
-                        <input className="uk-width-1-1 uk-form-small" type="text" placeholder="Введите пароль" ref="password"/>
-                    </div>
-                    <div className="uk-margin">
-                        <input className="uk-width-1-1 uk-form-small" type="text" placeholder="Повторите пароль" ref="password2"/>
-                    </div>
-                    <div className="uk-margin">
-                        <input className="uk-width-1-1 uk-form-small" type="text" placeholder="Введите codeforcesId" ref="codeforcesId"/>
-                    </div>
-                    <div className="uk-margin">
-                        <input className="uk-width-1-1 uk-form-small" type="text" placeholder="Введите имя" ref="firstName"/>
-                    </div>
-                    <div className="uk-margin">
-                        <input className="uk-width-1-1 uk-form-small" type="text" placeholder="Введите фамилию" ref="lastName"/>
-                    </div>
-                    <div className="uk-margin ">
-                        <button className="uk-width-1-1 uk-button uk-button-primary uk-button-small " onClick=$onRegisterClick>Регистрация</button>
-                    </div>
-                     <div className="uk-margin ">
-                        <button className="uk-width-1-1 uk-button uk-button-primary uk-button-small " onClick=$onCancelClick>Отмена</button>
-                    </div>
-            </div>
-        </div>
+                        <div className="uk-margin">
+                            <input className="uk-form-width-large uk-input" type="text" placeholder="Электронная почта" ref="email"/>
+                        </div>
+                        <div className="uk-margin">
+                            <input className="uk-form-width-large uk-input" type="text" placeholder="Пароль" ref="password"/>
+                        </div>
+                        <div className="uk-margin">
+                            <input className="uk-form-width-large uk-input" type="text" placeholder="Повторите пароль" ref="password2"/>
+                        </div>
+                        <div className="uk-margin">
+                            <input className="uk-form-width-large uk-input" type="text" placeholder="Codeforces логин" ref="codeforcesId"/>
+                        </div>
+                        <div className="uk-margin">
+                            <input className="uk-form-width-large uk-input" type="text" placeholder="Имя" ref="firstName"/>
+                        </div>
+                        <div className="uk-margin">
+                            <input className="uk-form-width-large uk-input" type="text" placeholder="Фамилия" ref="lastName"/>
+                        </div>
+                        <div className="uk-margin ">
+                            <button className="uk-form-width-large uk-button uk-button-primary" onClick=$onRegisterClick>Зарегистрироваться</button>
+                        </div>
+                        <div className="uk-margin ">
+                            <button className="uk-form-width-large uk-button uk-button-default" onClick=$onCancelClick>Отмена</button>
+                        </div>
+                    </fieldset>
+                </div>
             ');
     }
 
@@ -70,12 +69,5 @@ class RegistrationView extends ReactComponentOfPropsAndRefs<RegistrationViewProp
 
     function onCancelClick(e) {
         props.cancel();
-    }
-    override function componentDidMount() {
-        Browser.document.body.classList.toggle("uk-height-1-1", true);
-    }
-
-    override function componentWillUnmount() {
-        Browser.document.body.classList.remove("uk-height-1-1");
     }
 }

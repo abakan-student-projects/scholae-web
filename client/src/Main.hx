@@ -1,5 +1,7 @@
 package;
 
+import view.BaseScreen;
+import view.IndexView;
 import view.teacher.TeacherTrainingScreen;
 import view.teacher.TeacherNewAssignmentScreen;
 import view.learner.SignUpToGroupScreen;
@@ -52,8 +54,8 @@ class Main {
         var app = ReactDOM.render(jsx('
             <Provider store=$store>
 				<Router history=$history>
-					<Route path="/" component=$pageWrapper onEnter=$restoreSession>
-					    <IndexRoute component=$LearnerDashboardScreen onEnter=$requireAuth/>
+					<Route path="/" component=$BaseScreen onEnter=$restoreSession>
+					    <IndexRoute component=$IndexView onEnter=$requireAuth/>
 					    <Route path="login" component=$LoginScreen />
 					    <Route path="registration" component=$RegistrationScreen />
 					    <Route path="teacher/group/:id" component=$TeacherGroupScreen onEnter=$requireAuth />
@@ -67,29 +69,6 @@ class Main {
 				</Router>
 			</Provider>
 		'), root);
-    }
-
-    static function pageWrapper(props:RouteComponentProps)
-    {
-        return jsx('
-			<div id="scholae">
-				<nav className="uk-navbar-container" data-uk-navbar=${true}>
-				    <div className="uk-navbar-left uk-margin-left">
-				        <Link className="logo-font uk-navbar-item uk-logo" to="/">Scholae</Link>
-                        <ul className="uk-navbar-nav">
-                            <li> <Link to="/">О проекте</Link> </li>
-                            <li> <Link to="/learner/">Ученик</Link> </li>
-                            <li> <Link to="/teacher/">Учитель</Link> </li>
-                        </ul>
-                     </div>
-				</nav>
-				<div className="uk-margin-left uk-margin-right uk-margin">
-				    <div id="scholae-content" className="uk-margin-left">
-				    ${props.children}
-				    </div>
-				</div>
-			</div>
-		');
     }
 
     static function restoreSession(nextState: Dynamic, replace: String->Void, completed:Void->Void) {
