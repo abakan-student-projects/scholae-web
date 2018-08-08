@@ -15,6 +15,8 @@ import react.ReactMacro.jsx;
 import redux.react.IConnectedComponent;
 import view.teacher.LoadingView;
 import router.Link;
+import view.teacher.TeacherAssignmentsGridView;
+import react.ReactUtil.copy;
 
 typedef TeacherGroupProps = {
     group: GroupMessage,
@@ -28,18 +30,24 @@ typedef TeacherGroupProps = {
     refreshResults: Void -> Void
 }
 
-class TeacherGroupView extends ReactComponentOfProps<TeacherGroupProps> implements IConnectedComponent {
+typedef TeacherGroupState = {
+    isGridMode: Bool
+}
 
-    public function new() { super(); }
+class TeacherGroupView extends ReactComponentOfPropsAndState<TeacherGroupProps, TeacherGroupState> implements IConnectedComponent {
+
+    public function new() {
+        super();
+        state = {
+            isGridMode: false
+        };
+    }
 
     override function render() {
 
         ArraySort.sort(
             props.assignments,
             function(x: AssignmentMessage, y: AssignmentMessage) { return if (x.finishDate.getTime() > y.finishDate.getTime()) 1 else -1; });
-
-        var header = createAssignmentsHeaderRow(props.assignments);
-        var rows = [ for (l in props.learners) createLearnerRow(l, props.assignments)];
 
         var createTrainingsButton =
                 if (props.trainingsCreating) jsx('<button className="uk-button uk-button-default uk-margin uk-width-1-1" disabled="true">Создать тренировки</button>')
@@ -48,6 +56,16 @@ class TeacherGroupView extends ReactComponentOfProps<TeacherGroupProps> implemen
         var refreshResultsButton =
             if (props.resultsRefreshing) jsx('<button className="uk-button uk-button-default uk-margin uk-width-1-1" disabled="true">Обновить результаты</button>')
             else jsx('<button className="uk-button uk-button-default uk-margin uk-width-1-1" onClick=${props.refreshResults}>Обновить результаты</button>');
+
+        var assignmentsView =
+                if (state.isGridMode) jsx('<TeacherAssignmentsGridView {...props} />')
+                else jsx('<TeacherAssignmentsListView {...props} />');
+
+        var gridModeButton = jsx('<button
+                        className="uk-icon-button uk-button-default uk-margin-left"
+                        type="button" data-uk-icon=${if(state.isGridMode) "table" else "grid"}
+                        onClick=$toggleGridMode>
+                        </button>');
 
         return
             if (null != props.group)
@@ -78,13 +96,9 @@ class TeacherGroupView extends ReactComponentOfProps<TeacherGroupProps> implemen
                                     </li>
                                 </ul>
                             </div>
+                            $gridModeButton
                         </div>
-                        <table className="uk-table uk-table-divider">
-                            $header
-                            <tbody>
-                                $rows
-                            </tbody>
-                        </table>
+                        $assignmentsView
                     </div>
                 ');
             else
@@ -145,5 +159,9 @@ class TeacherGroupView extends ReactComponentOfProps<TeacherGroupProps> implemen
                     </tr>
                 </thead>
             ');
+    }
+
+    function toggleGridMode() {
+        setState(copy(state, { isGridMode: !state.isGridMode }));
     }
 }
