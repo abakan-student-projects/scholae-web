@@ -40,7 +40,6 @@ class BaseScreen
 				    <div className="uk-navbar-left uk-margin-left">
 				        <Link className="logo-font uk-navbar-item uk-logo" to="/">SCHOLAE</Link>
                         <ul className="uk-navbar-nav">
-                            <li> <Link to="/">О проекте</Link> </li>
                             $learnerMenuItem
                             $teacherMenuItem
                         </ul>
