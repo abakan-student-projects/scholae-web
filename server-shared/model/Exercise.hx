@@ -27,4 +27,11 @@ class Exercise extends sys.db.Object {
             trainingId: training.id
         };
     }
+
+    public static function getAllExercisesForTeacher(teacher: User): List<Exercise> {
+        var groups = Lambda.map(Group.manager.search($teacherId == teacher.id), function(g) { return g.id; });
+        var assignments = Lambda.map(Assignment.manager.search($groupId in groups), function(a) { return a.id; });
+        var trainings = Lambda.map(Training.manager.search($assignmentId in assignments), function(t) { return t.id; });
+        return Exercise.manager.search($trainingId in trainings);
+    }
 }

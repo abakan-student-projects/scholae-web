@@ -22,10 +22,13 @@ enum Action {
 
 typedef Config = {
     action: Action,
-    batchCount: Int
+    batchCount: Int,
+    verbose: Bool
 }
 
 class Main {
+
+    private static var cfg: Config;
 
     public static function main() {
 
@@ -42,7 +45,7 @@ class Main {
         sys.db.Manager.cnx = cnx;
         sys.db.Manager.initialize();
 
-        var cfg: Config = { action: null, batchCount: 100 };
+        cfg = { action: null, batchCount: 100, verbose: false };
 
         var args = Sys.args();
         var argHandler = hxargs.Args.generate([
@@ -51,6 +54,9 @@ class Main {
 
             @doc("Limit number of processing items. Works only for updateGymTasks")
             ["-c", "--count"] => function(count:String) cfg.batchCount = Std.parseInt(count),
+
+            @doc("Enable the verbose mode")
+            ["-v", "--verbose"] => function() cfg.verbose=true,
 
             _ => function(arg:String) throw "Unknown command: " +arg
         ]);
@@ -115,7 +121,18 @@ class Main {
         }
 
         for (t in tasks) {
+            if (cfg.verbose) neko.Lib.println("Task: " + t.toMessage());
+
             var contest = contests.get(t.contestId);
+
+            if (contest == null) {
+                t.lock();
+                t.active = false;
+                t.update();
+                continue;
+            }
+
+            if (cfg.verbose) neko.Lib.println("Task contest: " + contest);
 
             t.type = contest.type;
 
@@ -124,9 +141,9 @@ class Main {
                 var contestMiddle = contestSum / Lambda.count(tasksByContest.get(t.contestId));
 
                 if (t.solvedCount < contestMiddle - contestSum / 6) {
-                    t.level = Std.int(Math.max(1, contest.difficulty - 1));
+                    t.level = Std.int(Math.max(1, contest.difficulty + 1));
                 } else if (t.solvedCount > contestMiddle + contestSum / 6) {
-                    t.level = Std.int(Math.min(contest.difficulty + 1, 5));
+                    t.level = Std.int(Math.min(contest.difficulty - 1, 5));
                 } else {
                     t.level = contest.difficulty;
                 }

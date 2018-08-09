@@ -1,5 +1,7 @@
 package service;
 
+import messages.AttemptMessage;
+import utils.IterableUtils;
 import messages.ExerciseMessage;
 import model.Attempt;
 import codeforces.Codeforces;
@@ -183,6 +185,34 @@ class TeacherService {
                 }
                 return getTrainingsByGroup(groupId);
             });
+        });
+    }
+
+    public function getLastAttemptsForTeacher(length: Int): ResponseMessage {
+        return ServiceHelper.authorize(Role.Teacher, function() {
+
+            var exercises = Exercise.getAllExercisesForTeacher(Authorization.instance.currentUser);
+            var exercisesMap = IterableUtils.createStringMapOfArrays2(
+                    exercises,
+                    function(e) { return Std.string(e.task.id); },
+                    function(e) { return Std.string(e.training.user.id); });
+            var attempts = Attempt.getLastAttemptsForExercises(exercises, length);
+
+            var res = [];
+            for (a in attempts) {
+                var usersMap = exercisesMap.get(Std.string(a.task.id));
+                if (null != usersMap) {
+                    var userTaskExercises = usersMap.get(Std.string(a.user.id));
+                    if (null != userTaskExercises) for (e in userTaskExercises) {
+                        var message: AttemptMessage = a.toMessage();
+                        message.trainingId = e.training.id;
+                        message.assignmentId = e.training.assignment.id;
+                        message.groupId = e.training.assignment.group.id;
+                        res.push(message);
+                    }
+                }
+            }
+            return ServiceHelper.successResponse(res.slice(0, length));
         });
     }
 }

@@ -1,5 +1,6 @@
 package model;
 
+import messages.AttemptMessage;
 import haxe.ds.StringMap;
 import messages.TrainingMessage;
 import messages.AssignmentMessage;
@@ -19,6 +20,7 @@ typedef TeacherState = {
     },
     showNewGroupView: Bool,
     tags: RemoteData<Array<TagMessage>>,
+    lastLearnerAttempts: RemoteData<Array<AttemptMessage>>,
     assignmentCreating: Bool,
     trainingsCreating: Bool,
     resultsRefreshing: Bool

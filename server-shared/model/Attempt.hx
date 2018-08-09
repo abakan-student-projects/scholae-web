@@ -1,5 +1,6 @@
 package model;
 
+import messages.AttemptMessage;
 import haxe.Json;
 import model.CodeforcesTask;
 import codeforces.Codeforces;
@@ -49,5 +50,27 @@ class Attempt extends sys.db.Object {
         user.lastCodeforcesSubmissionId = lastSubmissionId;
         user.update();
     }
+
+    public function toMessage(): AttemptMessage {
+        return {
+            id: id,
+            task: task.toMessage(),
+            learner: user.toLearnerMessage(),
+            description: description,
+            solved: solved,
+            datetime: datetime,
+            trainingId: null,
+            assignmentId: null,
+            groupId: null
+        };
+    }
+
+    public static function getLastAttemptsForExercises(exercises: Iterable<Exercise>, length: Int): List<Attempt> {
+        var tasks = Lambda.map(exercises, function(e) { return e.task.id; });
+        var learners = Lambda.map(exercises, function(e) { return e.training.user.id; });
+        return Attempt.manager.search(($taskId in tasks) && ($userId in learners), { orderBy: -datetime, limit: length});
+    }
+
+
     
 }

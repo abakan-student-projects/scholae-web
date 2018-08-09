@@ -1,5 +1,6 @@
 package view.teacher;
 
+import utils.RemoteDataHelper;
 import action.TeacherAction;
 import view.teacher.TeacherDashboardView;
 import action.ScholaeAction;
@@ -24,16 +25,13 @@ class TeacherDashboardScreen
 
     function mapState(state: ApplicationState, props: RouteComponentProps): TeacherDashboardProps {
 
-        if (state.teacher.groups == null || state.teacher.groups.shouldInitiate()) {
-            haxe.Timer.delay(function() {
-                dispatch(TeacherAction.LoadGroups);
-            }, 10);
-            return { groups: [], showNewGroupView: false };
-        } else {
-            return {
-                groups: if(state.teacher.groups.loaded) Lambda.array(state.teacher.groups.data) else [],
-                showNewGroupView: state.teacher.showNewGroupView
-            };
+        TeacherViewsHelper.ensureGroupsLoaded(state);
+        RemoteDataHelper.ensureRemoteDataLoaded(state.teacher.lastLearnerAttempts, TeacherAction.LoadLastLearnerAttempts);
+
+        return {
+            groups: if(state.teacher.groups.loaded) Lambda.array(state.teacher.groups.data) else [],
+            showNewGroupView: if(state.teacher.groups.loaded) state.teacher.showNewGroupView else false,
+            lastAttempts: state.teacher.lastLearnerAttempts.data
         }
     }
 }

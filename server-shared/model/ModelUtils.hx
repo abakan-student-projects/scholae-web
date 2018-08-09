@@ -12,7 +12,8 @@ class ModelUtils {
         var res = new StringMap<Bool>();
         var relations = CodeforcesTaskTag.manager.search($tagId in tagIds);
         for (r in relations) {
-            res.set(Std.string(r.task.id), true);
+            if (r.task.active)
+                res.set(Std.string(r.task.id), true);
         }
         return res;
     }
@@ -25,7 +26,7 @@ class ModelUtils {
         var tasks: Array<CodeforcesTask> =
                 Lambda.array(
                     Lambda.filter(
-                        CodeforcesTask.manager.search($level >= minLevel && $level <= maxLevel && !($id in solvedTaskIds)),
+                        CodeforcesTask.manager.search($active == true && $level >= minLevel && $level <= maxLevel && !($id in solvedTaskIds)),
                         function(t) { return taskIdsByTags.exists(Std.string(t.id)); }));
 
         if (tasks.length < length) return null;

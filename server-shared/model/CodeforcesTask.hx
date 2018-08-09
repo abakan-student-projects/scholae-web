@@ -13,6 +13,7 @@ class CodeforcesTask extends sys.db.Object {
     public var contestId: Int;
     public var contestIndex: SString<128>;
     public var type: SString<128>;
+    public var active: Bool;
 
     public function new() {
         super();
@@ -28,6 +29,7 @@ class CodeforcesTask extends sys.db.Object {
             task = new CodeforcesTask();
             task.contestId = p.contestId;
             task.contestIndex = p.index;
+            task.active = true;
             task.insert();
         }
 
@@ -36,7 +38,7 @@ class CodeforcesTask extends sys.db.Object {
     }
 
     public static function doTasksExistForContest(contestId: Int): Bool {
-        return manager.count($contestId == contestId) > 0;
+        return manager.count($contestId == contestId && $active == true) > 0;
     }
 
     public function isGymTask(): Bool {

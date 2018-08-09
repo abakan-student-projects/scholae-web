@@ -1,5 +1,6 @@
 package action;
 
+import messages.AttemptMessage;
 import messages.TrainingMessage;
 import messages.AssignmentMessage;
 import messages.TagMessage;
@@ -23,6 +24,9 @@ enum TeacherAction {
 
     LoadAllTags;
     LoadAllTagsFinished(tags: Array<TagMessage>);
+
+    LoadLastLearnerAttempts;
+    LoadLastLearnerAttemptsFinished(attempts: Array<AttemptMessage>);
 
     CreateAssignment(group: GroupMessage, assignment: AssignmentMessage);
     CreateAssignmentFinished(assignment: AssignmentMessage);

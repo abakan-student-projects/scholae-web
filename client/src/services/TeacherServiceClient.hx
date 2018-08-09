@@ -1,5 +1,6 @@
 package services;
 
+import messages.AttemptMessage;
 import messages.TrainingMessage;
 import messages.AssignmentMessage;
 import messages.TagMessage;
@@ -84,6 +85,14 @@ class TeacherServiceClient extends BaseServiceClient {
     public function refreshResultsForGroup(groupId: Float): Promise<Array<TrainingMessage>> {
         return request(function(success, fail) {
             context.TeacherService.refreshResultsForGroup.call([groupId], function(e) {
+                processResponse(e, success, fail);
+            });
+        });
+    }
+
+    public function getLastAttemptsForTeacher(length: Int): Promise<Array<AttemptMessage>> {
+        return request(function(success, fail) {
+            context.TeacherService.getLastAttemptsForTeacher.call([length], function(e) {
                 processResponse(e, success, fail);
             });
         });

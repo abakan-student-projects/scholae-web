@@ -28,6 +28,7 @@ class Teacher
         currentGroup: null,
         showNewGroupView: false,
         tags: RemoteDataHelper.createEmpty(),
+        lastLearnerAttempts: RemoteDataHelper.createEmpty(),
         assignmentCreating: false,
         trainingsCreating: false,
         resultsRefreshing: false
@@ -80,11 +81,21 @@ class Teacher
                         learners: { data: learners, loaded: true, loading: false }
                     })
                 });
-            case LoadAllTags: copy(state, { tags: copy(state.tags, { data: null, loaded: false, loading: true }) });
+            case LoadAllTags: copy(state, { tags: RemoteDataHelper.createLoading() });
             case LoadAllTagsFinished(tags):
                 copy(state, {
                     tags: {
                         data: tags,
+                        loading: false,
+                        loaded: true
+                    }
+                });
+
+            case LoadLastLearnerAttempts: copy(state, { lastLearnerAttempts : RemoteDataHelper.createLoading() });
+            case LoadLastLearnerAttemptsFinished(attempts):
+                copy(state, {
+                    lastLearnerAttempts: {
+                        data: attempts,
                         loading: false,
                         loaded: true
                     }
@@ -198,9 +209,16 @@ class Teacher
 
             case LoadAllTags:
                 TeacherServiceClient.instance.getAllTags()
-                    .then(function(tags) {
-                        ArraySort.sort(tags, function(x: TagMessage, y: TagMessage) { return if (x.name > y.name) 1 else -1; });
-                        store.dispatch(LoadAllTagsFinished(tags));
+                .then(function(tags) {
+                    ArraySort.sort(tags, function(x: TagMessage, y: TagMessage) { return if (x.name > y.name) 1 else -1; });
+                    store.dispatch(LoadAllTagsFinished(tags));
+                });
+                next();
+
+            case LoadLastLearnerAttempts:
+                TeacherServiceClient.instance.getLastAttemptsForTeacher(10)
+                    .then(function(attempts) {
+                        store.dispatch(LoadLastLearnerAttemptsFinished(attempts));
                     });
                 next();
 
