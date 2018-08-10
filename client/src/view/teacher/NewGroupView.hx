@@ -8,9 +8,13 @@ import messages.GroupMessage;
 import react.ReactComponent;
 import react.ReactMacro.jsx;
 
+typedef NewGroupProps = {
+    close: Void -> Void
+}
+
 typedef NewGroupRefs = {
     name: InputElement,
-    signUpKey: InputElement
+    signUpKey: InputElement,
 }
 
 class NewGroupView extends ReactComponentOfRefs<NewGroupRefs> implements IConnectedComponent {
@@ -22,7 +26,8 @@ class NewGroupView extends ReactComponentOfRefs<NewGroupRefs> implements IConnec
                 <div id="new-group">
                     <input className="uk-input uk-form-width-large uk-margin-right" ref="name" placeholder="Название курса, семестр, год"/>
                     <input className="uk-input uk-form-width-large uk-margin-right" ref="signUpKey" placeholder="Код записи для учеников"/>
-                    <button className="uk-button uk-button-primary" onClick=${onClick}>Создать</button>
+                    <button className="uk-button uk-button-primary uk-margin-right" onClick=${onClick}>Создать</button>
+                    <button className="uk-close-large" type="button" data-uk-close=${true} onClick=${props.close}></button>
                 </div>
             ');
     }

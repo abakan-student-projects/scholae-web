@@ -38,6 +38,7 @@
 			<param name="dir" value="${project.root.path}/client"/>
 			<param name="src" value="scholae.js"/>
 			<param name="dst" value="../localbuild/site/scholae.js"/>
+			<!--<param name="options" value="-t [ babelify &#45;&#45;presets [ es2015 react ] ]"/>-->
 		</antcall>
 	</target>
 

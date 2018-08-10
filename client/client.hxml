@@ -9,4 +9,6 @@
 -cp ../lib/extern-js-moment/src
 -cp ../lib/haxe-htmlparser/library
 
+--macro includeFile("src/imports.js", "top")
+
 -D extkit_mode=global

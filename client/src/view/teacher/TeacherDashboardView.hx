@@ -29,7 +29,7 @@ class TeacherDashboardView extends ReactComponentOfProps<TeacherDashboardProps> 
         var list = [ for (g in props.groups) jsx('<div className="uk-margin" key=${g.id}><span data-uk-icon="users"></span> <Link className="uk-margin-small-left" to=${"/teacher/group/" + g.id}>${g.name}</Link></div>') ];
         var newGroup =
             if (props.showNewGroupView)
-                jsx('<NewGroupView dispatch=${dispatch}/>')
+                jsx('<NewGroupView dispatch=${dispatch} close=$onCloseAddGroupClick/>')
             else
                 jsx('<button className="uk-button uk-button-default" onClick=${onAddGroupClick}>Добавить курс</button>');
 
@@ -65,6 +65,10 @@ class TeacherDashboardView extends ReactComponentOfProps<TeacherDashboardProps> 
 
     function onAddGroupClick(e) {
         dispatch(TeacherAction.ShowNewGroupView);
+    }
+
+    function onCloseAddGroupClick() {
+        dispatch(TeacherAction.HideNewGroupView);
     }
 
 }

@@ -3,4 +3,4 @@
 #login h1 { paddiing-bottom: 10em; }
 #login>div { width: 400px; }
 
-.react-datepicker ul { padding-left: 5px; }
+.DateInput { width: 180px }

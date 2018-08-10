@@ -1,5 +1,7 @@
 package;
 
+import haxe.macro.Compiler;
+import js.moment.Moment;
 import view.BaseScreen;
 import view.IndexView;
 import view.teacher.TeacherTrainingScreen;
@@ -43,6 +45,7 @@ class Main {
     public static var store: Store<ApplicationState>;
 
     public static function main() {
+        Moment.locale("ru");
         store = ApplicationStore.create();
         render(Browser.document.getElementById('app'), store);
     }

@@ -1,5 +1,6 @@
 package view.teacher;
 
+import utils.DateUtils;
 import haxe.ds.StringMap;
 import messages.AssignmentMessage;
 import messages.GroupMessage;
@@ -32,7 +33,8 @@ class TeacherAssignmentsListView extends ReactComponentOfProps<TeacherAssignment
         return jsx('
                 <li key=${a.id} className="assignment">
                     <a className="uk-accordion-title" href="#">
-                        ${a.name} <span className="uk-label">${a.metaTraining.length} ${StringUtils.getTaskStringFor(a.metaTraining.length)}</span> ${a.finishDate.toString()}
+                        ${a.name} <span className="uk-label uk-margin-right">${a.metaTraining.length} ${StringUtils.getTaskStringFor(a.metaTraining.length)}</span>
+                        ${DateUtils.toString(a.startDate)} - ${DateUtils.toString(a.finishDate)}
                     </a>
                     <table className="uk-table uk-table-divider uk-accordion-content">
                         <thead>

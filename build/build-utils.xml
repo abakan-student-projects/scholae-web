@@ -30,9 +30,14 @@
 				<isset property="dir"/>
 			</not>
 		</condition>
+		<condition property="options" value="">
+			<not>
+				<isset property="options"/>
+			</not>
+		</condition>
 		<echo level="info">Executing browserify for "${dir}/${src}" to "${dst}"</echo>
 		<exec dir="${dir}" executable="browserify" failonerror="true">
-			<arg line="${src} -o ${dst} -d"/>
+			<arg line="${src} -o ${dst} -d ${options}"/>
 		</exec>
 	</target>
 	

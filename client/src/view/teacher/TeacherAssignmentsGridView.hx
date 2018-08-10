@@ -1,5 +1,6 @@
 package view.teacher;
 
+import utils.DateUtils;
 import haxe.ds.ArraySort;
 import haxe.ds.StringMap;
 import messages.AssignmentMessage;
@@ -61,7 +62,8 @@ class TeacherAssignmentsGridView extends ReactComponentOfProps<TeacherAssignment
     function createAssignmentsHeaderRow(assignments: Array<AssignmentMessage>) {
         var columns = [ for (a in props.assignments)
                 jsx('<th key=${a.id}><strong>${a.name}</strong>
-                <br/>${a.finishDate.toString()}
+                <br/>${DateUtils.toString(a.startDate)}
+                <br/>${DateUtils.toString(a.finishDate)}
                 <br/>${a.metaTraining.length} ${StringUtils.getTaskStringFor(a.metaTraining.length)}</th>')];
         return jsx('
                 <thead>

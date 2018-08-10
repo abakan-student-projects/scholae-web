@@ -24,13 +24,17 @@ class BaseScreen
 
         var learnerMenuItem =
             if (state.scholae.auth.loggedIn && state.scholae.auth.roles.has(Role.Learner))
-                jsx('<li> <Link to="/learner/">Ученик</Link> </li>')
+                jsx('<li className=${if(props.location.pathname.indexOf("/learner") == 0) "uk-active" else ""}>
+                        <Link to="/learner/">Ученик</Link>
+                     </li>')
             else
                 null;
 
         var teacherMenuItem =
             if (state.scholae.auth.loggedIn && state.scholae.auth.roles.has(Role.Teacher))
-                jsx('<li> <Link to="/teacher/">Учитель</Link> </li>')
+                jsx('<li className=${if(props.location.pathname.indexOf("/teacher") == 0) "uk-active" else ""}>
+                        <Link to="/teacher/">Учитель</Link>
+                    </li>')
             else
                 null;
 

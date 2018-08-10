@@ -9,7 +9,7 @@ import messages.LearnerMessage;
 import react.ReactComponent;
 import react.ReactMacro.jsx;
 import redux.react.IConnectedComponent;
-import utils.DateTimePicker;
+import utils.DateRangePicker;
 
 import react.ReactUtil.copy;
 
@@ -25,7 +25,8 @@ typedef TeacherNewAssignmentRefs = {
 
 typedef TeacherNewAssignmentState = {
     startDate: Moment,
-    finishDate: Moment
+    finishDate: Moment,
+    focusedInput: Dynamic
 }
 
 class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAssignmentProps, TeacherNewAssignmentRefs> implements IConnectedComponent {
@@ -39,7 +40,7 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
         super();
         state = {
             startDate: Moment.moment({}),
-            finishDate: Moment.moment({})
+            finishDate: null
         };
     }
 
@@ -52,31 +53,21 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
                 </div>
 
                 <div className="uk-margin">
-                    <label>Время начала:</label>
-                    <div className="uk-margin">
-                        <DateTimePicker className="uk-input" selected=${state.startDate}
-                            locale="ru"
-                            onChange=$onStartDateChanged
-                            showTimeSelect=${true}
-                            timeFormat="HH:mm"
-                            timeIntervals={60}
-                            dateFormat="LLL"
-                         />
-                     </div>
-                </div>
-
-                <div className="uk-margin">
-                    <label>Время окончания:</label>
-                    <div className="uk-margin">
-                        <DateTimePicker className="uk-input" selected=${state.finishDate}
-                            locale="ru"
-                            onChange=$onFinishDateChanged
-                            showTimeSelect=${true}
-                            timeFormat="HH:mm"
-                            timeIntervals={60}
-                            dateFormat="LLL"
-                         />
-                     </div>
+                    <div className="uk-margin-small">
+                        <label>Сроки выполнения:</label>
+                    </div>
+                    <DateRangePicker
+                        displayFormat="LL"
+                        startDate=${state.startDate}
+                        startDateId="new-assignment-startdate"
+                        startDatePlaceholderText="Дата начала"
+                        endDate=${state.finishDate}
+                        endDateId="new-assignment-enddate"
+                        endDatePlaceholderText="Дата окончания"
+                        onDatesChange=${function(range) { setState(copy(state, { startDate: range.startDate, finishDate: range.endDate })); }}
+                        focusedInput=${state.focusedInput}
+                        onFocusChange=${function(focusedInput) { setState(copy(state, { focusedInput: focusedInput })); }}
+                    />
                 </div>
 
                 <TrainingParametersView tags=${props.tags} onTagsChanged=$onTrainingTagsChanged onChanged=$onTrainingChanged/>
@@ -100,20 +91,14 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
     }
 
     function onCreateClicked() {
+        var startDate: Date = Date.fromTime(state.startDate.utc());
+        var finishDate: Date = Date.fromTime(state.finishDate.utc());
         props.create(refs.name.value, minLevel, maxLevel, tasksCount, tagIds,
-                Date.fromTime(state.startDate.utc()),
-                Date.fromTime(state.finishDate.utc()));
+                new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), 0 , 0, 0),
+                new Date(finishDate.getFullYear(), finishDate.getMonth(), finishDate.getDate(), 23 , 59, 59));
     }
 
     function onCancelClicked() {
         props.cancel();
-    }
-
-    function onStartDateChanged(date) {
-        setState(copy(state, { startDate: date }));
-    }
-
-    function onFinishDateChanged(date) {
-        setState(copy(state, { finishDate: date }));
     }
 }
