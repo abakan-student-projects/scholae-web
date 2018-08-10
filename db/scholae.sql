@@ -11,6 +11,10 @@ create table Assignments
 )
 ;
 
+create index Assignments_groupId_index
+  on Assignments (groupId)
+;
+
 create table Attempts
 (
   id bigint auto_increment
@@ -18,8 +22,22 @@ create table Attempts
   taskId bigint null,
   userId bigint null,
   description text null,
-  solved tinyint null
+  solved tinyint null,
+  datetime datetime null,
+  vendorId bigint null
 )
+;
+
+create index Attempts_solved_index
+  on Attempts (solved)
+;
+
+create index Attempts_taskId_index
+  on Attempts (taskId)
+;
+
+create index Attempts_userId_index
+  on Attempts (userId)
 ;
 
 create table CodeforcesTags
@@ -40,8 +58,13 @@ create table CodeforcesTasks
   solvedCount int not null,
   contestId int not null,
   contestIndex varchar(128) not null,
-  type varchar(128) null
+  type varchar(128) null,
+  active tinyint default '1' null
 )
+;
+
+create index CodeforcesTasks_contestId_index
+  on CodeforcesTasks (contestId, contestIndex)
 ;
 
 create table CodeforcesTasksTags
@@ -68,13 +91,23 @@ create table Exercises
 )
 ;
 
+create index Exercises_taskId_index
+  on Exercises (taskId)
+;
+
+create index Exercises_trainingId_index
+  on Exercises (trainingId)
+;
+
 create table Groups
 (
   id bigint auto_increment
     primary key,
   name varchar(512) not null,
-  signUpKey varchar(512) null,
-  teacherId bigint null
+  signUpKey varchar(128) null,
+  teacherId bigint null,
+  constraint Groups_signUpKey_uindex
+  unique (signUpKey)
 )
 ;
 
@@ -87,6 +120,14 @@ create table GroupsLearners
   groupId bigint null,
   learnerId bigint null
 )
+;
+
+create index GroupsLearners_groupId_index
+  on GroupsLearners (groupId)
+;
+
+create index GroupsLearners_learnerId_index
+  on GroupsLearners (learnerId)
 ;
 
 create table MetaTrainings
@@ -110,6 +151,14 @@ create table Trainings
 )
 ;
 
+create index Trainings_userId_index
+  on Trainings (userId)
+;
+
+create index Trainings_assignmentId_index
+  on Trainings (assignmentId)
+;
+
 create table sessions
 (
   id varchar(255) not null
@@ -130,7 +179,9 @@ create table users
   passwordHash varchar(128) default '' not null,
   roles int not null,
   firstName varchar(128) null,
-  lastName varchar(128) null
+  lastName varchar(128) null,
+  codeforcesHandle varchar(512) null,
+  lastCodeforcesSubmissionId bigint null
 )
 ;
 
