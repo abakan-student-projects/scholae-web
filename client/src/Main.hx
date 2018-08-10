@@ -66,6 +66,7 @@ class Main {
 					    <Route path="teacher/group/:groupId/training/:trainingId" component=$TeacherTrainingScreen onEnter=$requireAuth />
 					    <Route path="teacher" component=$TeacherDashboardScreen onEnter=$requireAuth />
 					    <Route path="forget-password" component=$ForgetLoginScreen />
+					    <Route path="learner" component=$LearnerDashboardScreen onEnter=$requireAuth />
 					    <Route path="learner/signup" component=$SignUpToGroupScreen onEnter=$requireAuth />
 					    <Route path="learner/group/:id" component=$ForgetLoginScreen onEnter=$requireAuth />
 					</Route>

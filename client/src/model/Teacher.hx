@@ -209,10 +209,10 @@ class Teacher
 
             case LoadAllTags:
                 TeacherServiceClient.instance.getAllTags()
-                .then(function(tags) {
-                    ArraySort.sort(tags, function(x: TagMessage, y: TagMessage) { return if (x.name > y.name) 1 else -1; });
-                    store.dispatch(LoadAllTagsFinished(tags));
-                });
+                    .then(function(tags) {
+                        ArraySort.sort(tags, function(x: TagMessage, y: TagMessage) { return if (x.name > y.name) 1 else -1; });
+                        store.dispatch(LoadAllTagsFinished(tags));
+                    });
                 next();
 
             case LoadLastLearnerAttempts:

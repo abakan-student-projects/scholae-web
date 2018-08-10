@@ -1,5 +1,11 @@
 package service;
 
+import model.ModelUtils;
+import model.Assignment;
+import model.ModelUtils;
+import model.Attempt;
+import model.Training;
+import model.User;
 import messages.GroupMessage;
 import messages.ResponseMessage;
 import model.Group;
@@ -21,10 +27,32 @@ class LearnerService {
                     relation.learner = Authorization.instance.currentUser;
                     relation.insert();
                 }
+
+                var assignments: List<Assignment> = Assignment.manager.search($groupId == group.id);
+                ModelUtils.createTrainingsByMetaTrainingsForAssignmentsAndLearner(assignments, Authorization.instance.currentUser);
+
                 return ServiceHelper.successResponse(group.toMessage());
             } else {
                 return ServiceHelper.failResponse("Введенный ключ не найден.");
             }
         });
     }
+
+    public function getMyTrainings(): ResponseMessage {
+        return ServiceHelper.authorize(Role.Learner, function() {
+            return ServiceHelper.successResponse(
+                Lambda.array(
+                    Lambda.map(
+                        Training.manager.search($userId == Authorization.instance.currentUser.id),
+                        function(t) { return t.toMessage(true); })));
+            });
+    }
+
+    public function refreshResults(): ResponseMessage {
+        return ServiceHelper.authorize(Role.Learner, function() {
+            Attempt.updateAttemptsForUser(Authorization.instance.currentUser);
+            return getMyTrainings();
+        });
+    }
+
 }

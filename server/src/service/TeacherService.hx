@@ -69,15 +69,14 @@ class TeacherService {
         });
     }
 
+    // The method's also used by learners
     public function getAllTags(): ResponseMessage {
-        return ServiceHelper.authorize(Role.Teacher, function() {
-            return ServiceHelper.successResponse(
-                Lambda.array(
-                    Lambda.map(
-                        CodeforcesTag.manager.all(),
-                        function(t) { return t.toMessage(); }))
-            );
-        });
+        return ServiceHelper.successResponse(
+            Lambda.array(
+                Lambda.map(
+                    CodeforcesTag.manager.all(),
+                    function(t) { return t.toMessage(); }))
+        );
     }
 
 
@@ -99,6 +98,9 @@ class TeacherService {
                 a.metaTraining = m;
                 a.group = Group.manager.get(group.id);
                 a.insert();
+
+                ModelUtils.createTrainingsByMetaTrainingsForGroup(group.id);
+
                 return ServiceHelper.successResponse(a.toMessage());
             });
         });
@@ -121,45 +123,11 @@ class TeacherService {
     public function createTrainingsByMetaTrainings(groupId: Float): ResponseMessage {
         return ServiceHelper.authorize(Role.Teacher, function() {
             return ServiceHelper.authorizeGroup(Group.manager.get(groupId), Authorization.instance.currentUser, function() {
-
-                var assignments: List<Assignment> = Assignment.manager.search($groupId == groupId);
-                var learners: Array<User> =
-                        Lambda.array(
-                            Lambda.map(
-                            GroupLearner.manager.search($groupId == groupId),
-                            function(gl) { return gl.learner; }));
-
-                for (l in learners) {
-                    for (a in assignments) {
-                        var t: Training = Training.manager.select($userId == l.id && $assignmentId == a.id);
-                        if (t == null) {
-                            t = new Training();
-                            t.assignment = a;
-                            t.user = l;
-                            t.insert();
-
-                            var tasks = ModelUtils.getTasksForUser(
-                                l,
-                                a.metaTraining.minLevel,
-                                a.metaTraining.maxLevel,
-                                a.metaTraining.tagIds,
-                                if (a.metaTraining.length != null) a.metaTraining.length else 5);
-
-                            if (null == tasks) {
-                                return ServiceHelper.failResponse('Для пользователя "${l.firstName} ${l.lastName}" недостаточно задач в базе');
-                            } else {
-                                for (task in tasks) {
-                                    var exercise = new Exercise();
-                                    exercise.task = task;
-                                    exercise.training = t;
-                                    exercise.insert();
-                                }
-                            }
-                        }
-                    }
-                }
-
-                return getAssignmentsByGroup(groupId);
+                return
+                    if (ModelUtils.createTrainingsByMetaTrainingsForGroup(groupId))
+                        getAssignmentsByGroup(groupId)
+                    else
+                        ServiceHelper.failResponse('Недостаточно задач в базе');
             });
 
         });

@@ -18,11 +18,12 @@ class Training extends sys.db.Object {
 
     public static var manager = new Manager<Training>(Training);
 
-    public function toMessage(): TrainingMessage {
+    public function toMessage(includeAssignment: Bool = false): TrainingMessage {
         return {
             id: id,
             name: if (StringUtils.isStringNullOrEmpty(name)) assignment.name else name,
             assignmentId: assignment.id,
+            assignment: if (includeAssignment) assignment.toMessage() else null,
             userId: user.id,
             exercises: Lambda.array(Lambda.map(Exercise.getExercisesByTraining(id), function(e) { return e.toMessage(); }))
         };

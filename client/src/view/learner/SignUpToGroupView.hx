@@ -27,9 +27,11 @@ class SignUpToGroupView
     override function render() {
         return jsx('
                 <div id="signup">
-                    <h1>Enter sign up key for the group</h1>
-                    <input ref="signUpKey" placeholder="Ключ для записи на курс"/>
-                    <button onClick=$onSignUpClick>Записаться</button>
+                    <legend class="uk-legend">Запись на новый курс</legend>
+                    <div className="uk-margin">
+                        <input className="uk-input uk-form-width-large" ref="signUpKey" placeholder="Ключ для записи на курс"/>
+                    </div>
+                    <button className="uk-button uk-button-primary" onClick=$onSignUpClick>Записаться</button>
                 </div>
             ');
     }

@@ -45,4 +45,50 @@ class ModelUtils {
         a.remove(res);
         return res;
     }
+
+    public static function createTrainingsByMetaTrainingsForGroup(groupId: Float): Bool {
+        var assignments: List<Assignment> = Assignment.manager.search($groupId == groupId);
+        var learners: Array<User> =
+        Lambda.array(
+            Lambda.map(
+                GroupLearner.manager.search($groupId == groupId),
+                function(gl) { return gl.learner; }));
+
+        for (l in learners) {
+            if (!createTrainingsByMetaTrainingsForAssignmentsAndLearner(assignments, l)) return false;
+        }
+
+        return true;
+    }
+
+    public static function createTrainingsByMetaTrainingsForAssignmentsAndLearner(assignments: List<Assignment>, learner: User): Bool {
+        for (a in assignments) {
+            var t: Training = Training.manager.select($userId == learner.id && $assignmentId == a.id);
+            if (t == null) {
+                t = new Training();
+                t.assignment = a;
+                t.user = learner;
+                t.insert();
+
+                var tasks = ModelUtils.getTasksForUser(
+                    learner,
+                    a.metaTraining.minLevel,
+                    a.metaTraining.maxLevel,
+                    a.metaTraining.tagIds,
+                    if (a.metaTraining.length != null) a.metaTraining.length else 5);
+
+                if (null == tasks) {
+                    return false;
+                } else {
+                    for (task in tasks) {
+                        var exercise = new Exercise();
+                        exercise.task = task;
+                        exercise.training = t;
+                        exercise.insert();
+                    }
+                }
+            }
+        }
+        return true;
+    }
 }

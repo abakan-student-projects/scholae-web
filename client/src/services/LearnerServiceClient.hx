@@ -1,5 +1,6 @@
 package services;
 
+import messages.TrainingMessage;
 import js.Promise;
 import messages.GroupMessage;
 import messages.LearnerMessage;
@@ -25,4 +26,19 @@ class LearnerServiceClient extends BaseServiceClient {
         });
     }
 
+    public function getMyTrainings(): Promise<Array<TrainingMessage>> {
+        return request(function(success, fail) {
+            context.LearnerService.getMyTrainings.call([], function(e) {
+                processResponse(e, success, fail);
+            });
+        });
+    }
+
+    public function refreshResults(): Promise<Array<TrainingMessage>> {
+        return request(function(success, fail) {
+            context.LearnerService.refreshResults.call([], function(e) {
+                processResponse(e, success, fail);
+            });
+        });
+    }
 }

@@ -1,15 +1,14 @@
 package model;
 
-import messages.GroupMessage;
+import haxe.ds.StringMap;
+import messages.TagMessage;
+import messages.TrainingMessage;
+
 import utils.RemoteData;
 
 typedef LearnerState = {
-    groups: RemoteData<Array<GroupMessage>>,
-
-    currentGroup: {
-        info: GroupMessage,
-    },
-
+    trainings: RemoteData<Array<TrainingMessage>>,
+    resultsRefreshing: Bool,
     signup: {
         redirectTo: String
     }
