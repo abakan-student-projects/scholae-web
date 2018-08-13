@@ -2,5 +2,6 @@ package messages;
 
 typedef TagMessage = {
     id: Float,
-    name: String
+    name: String,
+    russianName: String
 }

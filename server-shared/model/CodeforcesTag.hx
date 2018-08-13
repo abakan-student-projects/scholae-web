@@ -31,7 +31,8 @@ class CodeforcesTag extends sys.db.Object {
     public function toMessage(): TagMessage {
         return {
             id: id,
-            name: name
+            name: name,
+            russianName: russianName
         };
     }
 }
