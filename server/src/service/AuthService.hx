@@ -30,4 +30,17 @@ class AuthService {
             else
                 null;
     }
+
+    public function doesEmailExist(email: String): Bool {
+        //TODO: implement
+    }
+
+    public function doesCodeforcesHandleExist(codeforcesHandle: String): Bool {
+        //TODO: implement
+    }
+
+    public function isCodeforcesHandleValid(codeforcesHandle: String): Bool {
+        //TODO: implement
+        //use https://codeforces.com/api/help/methods#user.info to check if user exists
+    }
 }
