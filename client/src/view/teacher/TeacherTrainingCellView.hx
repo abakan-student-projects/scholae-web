@@ -37,8 +37,13 @@ class TeacherTrainingCellView extends ReactComponentOfProps<TeacherTrainingCellP
             }
             var tags = [for (tag in tagIds.keys()) jsx('<span key=$tag className="uk-margin-small-bottom uk-margin-small-right">${props.tags.get(tag).name} </span> ')];
             var suffix = if (t.exercises.length == 1) "и" else "";
+            var numberOfTasksNotification =
+                if (t.exercises.length < props.assignment.metaTraining.length)
+                    jsx('<span className="uk-label uk-label-danger uk-margin">Недостаточно задач: ${t.exercises.length} из ${props.assignment.metaTraining.length}</span>')
+                else null;
             jsx('
                 <td key=${props.assignment.id}>
+                    $numberOfTasksNotification
                     <Link className="uk-link-text" to="${'/teacher/group/' + props.group.id + '/training/' + t.id }">
                         <progress className="uk-progress" value=$solved max=${t.exercises.length}></progress>
                         <div className="uk-margin-small uk-text-meta">Сложность: $minLevel..$maxLevel</div>
