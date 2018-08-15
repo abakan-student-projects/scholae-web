@@ -1,3 +1,1 @@
-'use strict';
-
-require('react-dates/initialize');
+import 'react-dates/initialize';

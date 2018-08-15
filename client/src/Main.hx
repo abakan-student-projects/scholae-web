@@ -1,5 +1,6 @@
 package;
 
+import view.editor.EditorTagsScreen;
 import haxe.macro.Compiler;
 import js.moment.Moment;
 import view.BaseScreen;
@@ -69,6 +70,10 @@ class Main {
 					    <Route path="learner" component=$LearnerDashboardScreen onEnter=$requireAuth />
 					    <Route path="learner/signup" component=$SignUpToGroupScreen onEnter=$requireAuth />
 					    <Route path="learner/group/:id" component=$ForgetLoginScreen onEnter=$requireAuth />
+					    <Route path="editor" onEnter=$requireAuth>
+    					    <IndexRoute component=$EditorTagsScreen/>
+    					    <Route path="tags" component=$EditorTagsScreen />
+					    </Route>
 					</Route>
 				</Router>
 			</Provider>

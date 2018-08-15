@@ -6,6 +6,7 @@ import js.html.InputElement;
 import react.ReactComponent;
 import react.ReactMacro.jsx;
 import view.CheckboxesView;
+import utils.Select;
 
 typedef TrainingParametersProps = {
     tags: Array<TagMessage>,
@@ -16,7 +17,8 @@ typedef TrainingParametersProps = {
 typedef TrainingParametersRefs = {
     minLevel: InputElement,
     maxLevel: InputElement,
-    tasksCount: InputElement
+    tasksCount: InputElement,
+    tagsSelect: Dynamic
 }
 
 typedef TrainingParametersState = {
@@ -32,27 +34,43 @@ class TrainingParametersView extends ReactComponentOfPropsAndRefs<TrainingParame
         super();
     }
 
+    function getTagsForSelect() {
+        var tags = Lambda.array(Lambda.map(props.tags, function(t) { return { value: t.id, label: if (null != t.russianName) t.russianName else t.name }; }));
+        tags.sort(function(x, y) { return if (x.label < y.label) -1 else 1; });
+        return tags;
+    }
+
     override function render() {
-        var checkboxesData = Lambda.array(Lambda.map(props.tags, function(t) { return { id: t.id, label: t.name }; }));
+        var tags = getTagsForSelect();
         return
             jsx('
-                <div id="params">
+                <div id="params" className="uk-margin">
                 <h2>Параметры тренировки</h2>
-                <div className="uk-margin uk-width-1-4@s">
+                <div className="uk-margin uk-width-1-2@s">
                     <label>Минимальный уровень: ${state.minLevel}</label>
                     <input className="uk-range uk-margin" type="range" min="1" max="5" step="1" value=${state.minLevel} onChange=$onChange ref="minLevel"/>
                 </div>
-                <div className="uk-margin uk-width-1-4@s">
+                <div className="uk-margin uk-width-1-2@s">
                     <label>Максимальный уровень: ${state.maxLevel}</label>
                     <input className="uk-range uk-margin" type="range" min="1" max="5" step="1" value=${state.maxLevel} onChange=$onChange ref="maxLevel"/>
                 </div>
-                <div className="uk-margin uk-width-1-4@s">
+                <div className="uk-margin uk-width-1-2@s">
                     <label>Количество задач: ${state.tasksCount}</label>
                     <input className="uk-range uk-margin" type="range" min="1" max="20" step="1" value=${state.tasksCount} onChange=$onChange ref="tasksCount"/>
                 </div>
                 <div className="uk-margin">
                     <h3>Категории задач</h3>
-                    <CheckboxesView data=$checkboxesData onChanged=$onSelectedTagsChanged/>
+                    <div className="uk-margin">
+                        <button className="uk-button uk-button-default uk-button-small  uk-margin-small-right" onClick=$selectAllTags>Выбрать все</button>
+                        <button className="uk-button uk-button-default uk-button-small" onClick=$deselectAllTags>Исключить все</button>
+                    </div>
+                    <Select
+                        isMulti=${true}
+                        isLoading=${tags == null || tags.length <= 0}
+                        options=$tags
+                        onChange=$onSelectedTagsChanged
+                        placeholder="Выберите категории..."
+                        ref="tagsSelect"/>
                 </div>
                 </div>
             ');
@@ -76,11 +94,25 @@ class TrainingParametersView extends ReactComponentOfPropsAndRefs<TrainingParame
         }, onInputsChanged);
     }
 
-    function onSelectedTagsChanged(tagIds: Array<String>) {
-        props.onTagsChanged(Lambda.array(Lambda.map(tagIds, function(id) { return Std.parseFloat(id); })));
-    }
-
     function onInputsChanged() {
         props.onChanged(state.minLevel, state.maxLevel, state.tasksCount);
     }
-}
+
+    function onSelectedTagsChanged(tags) {
+
+        props.onTagsChanged(if (tags != null) Lambda.array(Lambda.map(tags, function(t) { return Std.parseFloat(t.value); })) else []);
+        trace(tags);
+    }
+
+    function selectAllTags() {
+        trace(refs.tagsSelect);
+        refs.tagsSelect.setState(
+            react.ReactUtil.copy(refs.tagsSelect.state, { value: getTagsForSelect() }),
+            function() { onSelectedTagsChanged(refs.tagsSelect.state.value); });
+    }
+
+    function deselectAllTags() {
+        refs.tagsSelect.setState(
+            react.ReactUtil.copy(refs.tagsSelect.state, { value: null }),
+            function() { onSelectedTagsChanged(refs.tagsSelect.state.value); });
+    }}

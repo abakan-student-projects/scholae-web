@@ -34,6 +34,9 @@
             <param name="dir" value="${project.root.path}/client"/>
 			<param name="hxml" value="client.hxml"/>
 		</antcall>
+		<!--<exec dir="${project.root.path}/client" executable="./node_modules/./bin/babel">-->
+			<!--<arg line="src/imports.js -d dist  &#45;&#45;presets es2015,react"/>-->
+		<!--</exec>-->
 		<antcall target="browserify">
 			<param name="dir" value="${project.root.path}/client"/>
 			<param name="src" value="scholae.js"/>

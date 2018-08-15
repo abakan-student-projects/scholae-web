@@ -35,7 +35,7 @@ class TeacherTrainingCellView extends ReactComponentOfProps<TeacherTrainingCellP
                     tagIds.set(Std.string(tagId), true);
                 }
             }
-            var tags = [for (tag in tagIds.keys()) jsx('<span key=$tag className="uk-margin-small-bottom uk-margin-small-right">${props.tags.get(tag).name} </span> ')];
+            var tags = [for (tag in tagIds.keys()) jsx('<span key=$tag className="uk-margin-small-bottom uk-margin-small-right">${if (null != props.tags.get(tag).russianName) props.tags.get(tag).russianName else props.tags.get(tag).name} </span> ')];
             var suffix = if (t.exercises.length == 1) "и" else "";
             var numberOfTasksNotification =
                 if (t.exercises.length < props.assignment.metaTraining.length)

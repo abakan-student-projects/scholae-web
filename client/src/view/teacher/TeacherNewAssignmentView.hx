@@ -1,5 +1,8 @@
 package view.teacher;
 
+import codeforces.Codeforces;
+import messages.ArrayChunk;
+import messages.TaskMessage;
 import js.moment.Moment;
 import js.html.InputElement;
 import action.TeacherAction;
@@ -15,6 +18,7 @@ import react.ReactUtil.copy;
 
 typedef TeacherNewAssignmentProps = {
     tags: Array<TagMessage>,
+    possibleTasks: ArrayChunk<TaskMessage>,
     create: String -> Int -> Int -> Int -> Array<Float> -> Date -> Date -> Void,
     cancel: Void -> Void
 }
@@ -45,6 +49,17 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
     }
 
     override function render() {
+        var possibleTasks =
+            if (props.possibleTasks != null)
+                [for (t in props.possibleTasks.data) renderTask(t)]
+            else [];
+
+        var possibleTasksTotalOrLoading =
+            if (props.possibleTasks != null)
+                jsx('<span>Общее количество: ${props.possibleTasks.totalLength}</span>')
+            else
+                jsx('<span data-uk-spinner=""/>');
+
         return jsx('
             <div className="uk-margin uk-margin-left">
                 <h1>Создание нового блока заданий</h1>
@@ -70,9 +85,20 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
                     />
                 </div>
 
-                <TrainingParametersView tags=${props.tags} onTagsChanged=$onTrainingTagsChanged onChanged=$onTrainingChanged/>
+                <div className="uk-grid-divider" data-uk-grid=${true}>
+                    <div className="uk-width-expand@m">
+                        <TrainingParametersView tags=${props.tags} onTagsChanged=$onTrainingTagsChanged onChanged=$onTrainingChanged/>
+                    </div>
+                    <div className="uk-width-1-3@m">
+                        <h2>Выбранные задачи</h2>
+                        <div className="uk-margin">
+                            $possibleTasksTotalOrLoading
+                        </div>
+                        $possibleTasks
+                    </div>
+                </div>
 
-                <p className="uk-margin">
+                <p className="uk-margin uk-margin-top">
                     <button className="uk-button uk-button-primary uk-margin-right" onClick=$onCreateClicked>Создать</button>
                     <button className="uk-button uk-button-default" onClick=$onCancelClicked>Отмена</button>
                 </p>
@@ -82,12 +108,26 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
 
     function onTrainingTagsChanged(checkedTagIds: Array<Float>) {
         tagIds = checkedTagIds;
+        dispatch(TeacherAction.LoadPossibleTasks({
+            id: null,
+            minLevel: minLevel,
+            maxLevel: maxLevel,
+            tagIds: tagIds,
+            length: tasksCount
+        }));
     }
 
     function onTrainingChanged(minLevel: Int, maxLevel: Int, tasksCount: Int) {
         this.minLevel = minLevel;
         this.maxLevel = maxLevel;
         this.tasksCount = tasksCount;
+        dispatch(TeacherAction.LoadPossibleTasks({
+            id: null,
+            minLevel: minLevel,
+            maxLevel: maxLevel,
+            tagIds: tagIds,
+            length: tasksCount
+        }));
     }
 
     function onCreateClicked() {
@@ -100,5 +140,29 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
 
     function onCancelClicked() {
         props.cancel();
+    }
+
+    function renderTask(task: TaskMessage) {
+
+        var problemUrl =
+            if (task.isGymTask)
+                Codeforces.getGymProblemUrl(task.codeforcesContestId, task.codeforcesIndex)
+            else
+                Codeforces.getProblemUrl(task.codeforcesContestId, task.codeforcesIndex);
+
+        var labelStyle = switch(task.level) {
+            case 1: " uk-label-success";
+            case 3: " uk-label-warning";
+            case 4 | 5: " uk-label-danger";
+            default : "";
+        };
+
+        return jsx('
+            <div key=${Std.string(task.id)} className="uk-margin-small">
+                <div>
+                    <a href=$problemUrl target="_blank">${task.name}</a> <span className=${"uk-label" + labelStyle}>${Std.string(task.level)}</span>
+                </div>
+            </div>
+        ');
     }
 }

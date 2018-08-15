@@ -1,5 +1,7 @@
 package model;
 
+import messages.ArrayChunk;
+import messages.TaskMessage;
 import messages.AttemptMessage;
 import haxe.ds.StringMap;
 import messages.TrainingMessage;
@@ -23,5 +25,8 @@ typedef TeacherState = {
     lastLearnerAttempts: RemoteData<Array<AttemptMessage>>,
     assignmentCreating: Bool,
     trainingsCreating: Bool,
-    resultsRefreshing: Bool
+    resultsRefreshing: Bool,
+    newAssignment: {
+        possibleTasks: RemoteData<ArrayChunk<TaskMessage>>
+    }
 }

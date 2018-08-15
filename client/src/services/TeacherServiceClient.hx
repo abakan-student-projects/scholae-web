@@ -1,5 +1,8 @@
 package services;
 
+import messages.ArrayChunk;
+import messages.TaskMessage;
+import messages.MetaTrainingMessage;
 import messages.AttemptMessage;
 import messages.TrainingMessage;
 import messages.AssignmentMessage;
@@ -93,6 +96,14 @@ class TeacherServiceClient extends BaseServiceClient {
     public function getLastAttemptsForTeacher(length: Int): Promise<Array<AttemptMessage>> {
         return request(function(success, fail) {
             context.TeacherService.getLastAttemptsForTeacher.call([length], function(e) {
+                processResponse(e, success, fail);
+            });
+        });
+    }
+
+    public function getAllTasksByMetaTraining(metaTraining: MetaTrainingMessage): Promise<ArrayChunk<TaskMessage>> {
+        return request(function(success, fail) {
+            context.TeacherService.getAllTasksByMetaTraining.call([metaTraining], function(e) {
                 processResponse(e, success, fail);
             });
         });

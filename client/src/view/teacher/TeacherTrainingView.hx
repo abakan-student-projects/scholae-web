@@ -53,7 +53,7 @@ class TeacherTrainingView extends ReactComponentOfProps<TeacherTrainingProps> im
             var key = Std.string(tag);
             var t = props.tags.get(key);
             if (t != null) {
-                tags.push(jsx('<span key=$key className="uk-margin-small-bottom uk-margin-small-right">${t.name}</span> '));
+                tags.push(jsx('<span key=$key className="uk-margin-small-bottom uk-margin-small-right">${if (null != t.russianName) t.russianName else t.name}</span> '));
             }
         }
         var problemUrl =

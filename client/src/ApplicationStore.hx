@@ -1,5 +1,7 @@
 package ;
 
+import action.EditorAction;
+import model.Editor;
 import action.LearnerAction;
 import model.Learner;
 import action.TeacherAction;
@@ -17,13 +19,15 @@ class ApplicationStore {
         var scholae = new Scholae();
         var teacher = new Teacher();
         var learner = new Learner();
+        var editor = new Editor();
 
         // create root reducer normally, excepted you must use
         // 'StoreBuilder.mapReducer' to wrap the Enum-based reducer
         var rootReducer = Redux.combineReducers({
             scholae: mapReducer(ScholaeAction, scholae),
             teacher: mapReducer(TeacherAction, teacher),
-            learner: mapReducer(LearnerAction, learner)
+            learner: mapReducer(LearnerAction, learner),
+            editor: mapReducer(EditorAction, editor)
         });
 
         // create middleware normally, excepted you must use
@@ -31,7 +35,8 @@ class ApplicationStore {
         var middleware = Redux.applyMiddleware(
             mapMiddleware(ScholaeAction, scholae),
             mapMiddleware(TeacherAction, teacher),
-            mapMiddleware(LearnerAction, learner)
+            mapMiddleware(LearnerAction, learner),
+            mapMiddleware(EditorAction, editor)
         );
 
         // user 'StoreBuilder.createStore' helper to automatically wire

@@ -31,7 +31,11 @@ class Teacher
         lastLearnerAttempts: RemoteDataHelper.createEmpty(),
         assignmentCreating: false,
         trainingsCreating: false,
-        resultsRefreshing: false
+        resultsRefreshing: false,
+        newAssignment: {
+            possibleTasks: RemoteDataHelper.createEmpty()
+        }
+
     };
 
     public var store: StoreMethods<ApplicationState>;
@@ -178,6 +182,12 @@ class Teacher
                                         function(t) { return Std.string(t.assignmentId); })
                             })
                     });
+
+            case LoadPossibleTasks(metaTraining):
+                copy(state, { newAssignment: { possibleTasks: RemoteDataHelper.createLoading() }});
+
+            case LoadPossibleTasksFinished(tasks):
+                copy(state, { newAssignment: { possibleTasks: RemoteDataHelper.createLoaded(tasks) }});
         }
     }
 
@@ -229,6 +239,7 @@ class Teacher
 
             case CreateAssignmentFinished(assignment):
                 UIkit.notification({ message: "Создан новый блок заданий '" + assignment.name + "'.", timeout: 3000 });
+                store.dispatch(LoadTrainings(assignment.groupId));
                 next();
 
             case CreateTrainingsByMetaTrainings(groupId):
@@ -252,6 +263,11 @@ class Teacher
 
             case RefreshResultsFinished(trainings):
                 UIkit.notification({ message: "Результаты обновлены.", timeout: 3000 });
+                next();
+
+            case LoadPossibleTasks(metaTraining):
+                TeacherServiceClient.instance.getAllTasksByMetaTraining(metaTraining)
+                    .then(function(tasks) { store.dispatch(LoadPossibleTasksFinished(tasks)); });
                 next();
 
             default: next();

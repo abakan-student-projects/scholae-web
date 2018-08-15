@@ -4,3 +4,6 @@
 #login>div { width: 400px; }
 
 .DateInput { width: 180px }
+
+.scholae-list-item .scholae-list-item-menu { display: none; }
+.scholae-list-item:hover .scholae-list-item-menu { display: block; }

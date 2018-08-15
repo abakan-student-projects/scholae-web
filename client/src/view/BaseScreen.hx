@@ -38,14 +38,29 @@ class BaseScreen
             else
                 null;
 
+        var editorMenuItem =
+            if (state.scholae.auth.loggedIn && state.scholae.auth.roles.has(Role.Editor))
+                jsx('<li className=${if(props.location.pathname.indexOf("/editor") == 0) "uk-active" else ""}>
+                        <Link to="/editor/">Редактор</Link>
+                        <div className="uk-navbar-dropdown">
+                        <ul className="uk-nav uk-navbar-dropdown-nav">
+                            <li><Link to="/editor/tags">Теги</Link></li>
+                            <li><Link to="/editor/problems">Задачи</Link></li>
+                        </ul>
+                        </div>
+                    </li>')
+            else
+                null;
+
         return jsx('
 			<div id="scholae">
 				<nav className="uk-navbar-container" data-uk-navbar=${true}>
 				    <div className="uk-navbar-left uk-margin-left">
-				        <Link className="logo-font uk-navbar-item uk-logo" to="/">SCHOLAE</Link>
+				        <Link className="logo-font uk-navbar-item uk-logo" to="/">SCHOLAE<sup>beta</sup></Link>
                         <ul className="uk-navbar-nav">
                             $learnerMenuItem
                             $teacherMenuItem
+                            $editorMenuItem
                         </ul>
                      </div>
 				    <div className="uk-navbar-right">
@@ -58,6 +73,10 @@ class BaseScreen
 				    <div id="scholae-content" className="uk-margin-left">
 				    ${props.children}
 				    </div>
+				</div>
+				<div className="scholae-footer uk-margin uk-margin-top uk-flex uk-flex-right uk-flex-middle uk-margin-left uk-margin-right">
+				    <a data-uk-icon="github" className="uk-icon-button uk-margin-right-small" href="https://github.com/abakan-student-projects/scholae-web/"></a>
+				    <a className="uk-link-text" href="https://github.com/abakan-student-projects/scholae-web/issues/new">Сообщить об ошибке</a>
 				</div>
 			</div>
 		');

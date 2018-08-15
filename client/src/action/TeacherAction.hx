@@ -1,5 +1,8 @@
 package action;
 
+import messages.ArrayChunk;
+import messages.TaskMessage;
+import messages.MetaTrainingMessage;
 import messages.AttemptMessage;
 import messages.TrainingMessage;
 import messages.AssignmentMessage;
@@ -39,4 +42,7 @@ enum TeacherAction {
 
     RefreshResults(groupId: Float);
     RefreshResultsFinished(trainings: Array<TrainingMessage>);
+
+    LoadPossibleTasks(metaTraining: MetaTrainingMessage);
+    LoadPossibleTasksFinished(tasks: ArrayChunk<TaskMessage>);
 }

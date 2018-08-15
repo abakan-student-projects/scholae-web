@@ -1,5 +1,8 @@
 package service;
 
+import model.CodeforcesTask;
+import model.ModelUtils;
+import messages.MetaTrainingMessage;
 import messages.AttemptMessage;
 import utils.IterableUtils;
 import messages.ExerciseMessage;
@@ -182,5 +185,27 @@ class TeacherService {
             }
             return ServiceHelper.successResponse(res.slice(0, length));
         });
+    }
+
+    public function getAllTasksByMetaTraining(metaTraining: MetaTrainingMessage): ResponseMessage {
+        var taskIdsByTags = [];
+        for (t in ModelUtils.getTaskIdsByTags(metaTraining.tagIds).keys()) {
+            taskIdsByTags.push(Std.parseFloat(t));
+        }
+
+        var tasks = Lambda.array(
+            Lambda.map(
+                CodeforcesTask.manager.search($active == true && $level >= metaTraining.minLevel && $level <= metaTraining.maxLevel && ($id in taskIdsByTags)),
+                function(t) { return t.toMessage(); }
+            )
+        );
+
+        return ServiceHelper.successResponse(
+            {
+                offset: 0,
+                totalLength: tasks.length,
+                data: tasks.slice(0, 10)
+            }
+        );
     }
 }
