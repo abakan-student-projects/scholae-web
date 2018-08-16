@@ -7,8 +7,9 @@ import utils.RemoteData;
 
 typedef EditorState = {
     tags: RemoteData<Array<TagMessage>>,
+    showNewTagView: Bool,
     tasks: RemoteData<ArrayChunk<TaskMessage>>,
     tasksFilter: String,
     tasksActiveChunkIndex: Int,
-    tasksChunkSize: Int
+    tasksChunkSize: Int,
 }

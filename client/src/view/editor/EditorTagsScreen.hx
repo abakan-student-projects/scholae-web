@@ -28,7 +28,8 @@ class EditorTagsScreen
         return {
             tags: state.editor.tags.data,
             update: function(tag) { dispatch(EditorAction.UpdateTag(tag)); },
-            insert: function(tag) { dispatch(EditorAction.InsertTag(tag)); }
+            insert: function(tag) { dispatch(EditorAction.InsertTag(tag)); },
+            showNewTagView: state.editor.showNewTagView
         }
     }
 }

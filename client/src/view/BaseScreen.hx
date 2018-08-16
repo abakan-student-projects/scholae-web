@@ -44,7 +44,7 @@ class BaseScreen
                         <Link to="/editor/">Редактор</Link>
                         <div className="uk-navbar-dropdown">
                         <ul className="uk-nav uk-navbar-dropdown-nav">
-                            <li><Link to="/editor/tags">Теги</Link></li>
+                            <li><Link to="/editor/tags">Категории</Link></li>
                             <li><Link to="/editor/problems">Задачи</Link></li>
                         </ul>
                         </div>

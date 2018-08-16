@@ -25,7 +25,8 @@ class Editor
         tasks: RemoteDataHelper.createEmpty(),
         tasksActiveChunkIndex: 0,
         tasksChunkSize: 100,
-        tasksFilter: ""
+        tasksFilter: "",
+        showNewTagView: false
     };
 
     public var store: StoreMethods<ApplicationState>;
@@ -71,6 +72,12 @@ class Editor
 
             case SetTasksFilter(filter):
                 copy(state, { tasksFilter: filter, tasks: RemoteDataHelper.createEmpty() });
+
+            case ShowNewTagView:
+                copy(state, { showNewTagView: true });
+
+            case HideNewTagView:
+                copy(state, { showNewTagView: false });
         }
     }
 
@@ -96,7 +103,7 @@ class Editor
 
             case InsertTag(tag):
                 EditorServiceClient.instance.insertTag(tag)
-                .then(function(tag) { store.dispatch(UpdateTagFinished(tag)); });
+                    .then(function(tag) { store.dispatch(InsertTagFinished(tag)); });
                 next();
 
             case InsertTagFinished(tag):

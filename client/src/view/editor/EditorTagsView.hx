@@ -1,5 +1,6 @@
 package view.editor;
 
+import action.EditorAction;
 import js.html.InputElement;
 import messages.TagMessage;
 import action.TeacherAction;
@@ -11,11 +12,13 @@ import redux.react.IConnectedComponent;
 import utils.DateUtils;
 import view.teacher.LoadingView;
 import react.ReactUtil.copy;
+import view.editor.NewTagView;
 
 typedef EditorTagsProps = {
     tags: Array<TagMessage>,
     update: TagMessage -> Void,
-    insert: TagMessage -> Void
+    insert: TagMessage -> Void,
+    showNewTagView: Bool
 }
 
 typedef EditorTagsRefs = {
@@ -39,6 +42,12 @@ class EditorTagsView extends ReactComponentOfProps<EditorTagsProps> implements I
 
     override function render() {
         if (props.tags != null) {
+            var newTag =
+                if (props.showNewTagView)
+                    jsx('<NewTagView dispatch=${dispatch} close=$onCloseAddTagClick/>')
+                else
+                    jsx('<button className="uk-button uk-button-default" onClick=${onAddTagClick}>Добавить категорию</button>');
+
             var tags =
                 [ for (t in Lambda.filter(
                         props.tags,
@@ -84,6 +93,7 @@ class EditorTagsView extends ReactComponentOfProps<EditorTagsProps> implements I
                                 $tags
                             </tbody>
                         </table>
+                        $newTag
                     </div>
                 ');
         } else {
@@ -110,5 +120,13 @@ class EditorTagsView extends ReactComponentOfProps<EditorTagsProps> implements I
 
     function cancelEditing() {
         setState(copy(state, { editingTagId: null }));
+    }
+
+    function onAddTagClick(e) {
+        dispatch(EditorAction.ShowNewTagView);
+    }
+
+    function onCloseAddTagClick() {
+        dispatch(EditorAction.HideNewTagView);
     }
 }

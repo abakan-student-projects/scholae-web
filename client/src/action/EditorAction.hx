@@ -29,4 +29,7 @@ enum EditorAction {
 
     UpdateTaskTags(taskId: Float, tags: Array<Float>);
     UpdateTaskTagsFinished(task: TaskMessage);
+
+    ShowNewTagView;
+    HideNewTagView;
 }
