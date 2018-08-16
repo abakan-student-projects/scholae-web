@@ -1,5 +1,6 @@
 package model;
 
+import messages.TaskMessage;
 import services.EditorServiceClient;
 import react.ReactUtil;
 import action.EditorAction;
@@ -21,6 +22,10 @@ class Editor
 
     public var initState: EditorState = {
         tags: RemoteDataHelper.createEmpty(),
+        tasks: RemoteDataHelper.createEmpty(),
+        tasksActiveChunkIndex: 0,
+        tasksChunkSize: 100,
+        tasksFilter: ""
     };
 
     public var store: StoreMethods<ApplicationState>;
@@ -47,6 +52,25 @@ class Editor
                     }
                 }
                 state;
+
+            case LoadTasks(filter, offset, limit): copy(state, { tasks: RemoteDataHelper.createLoading(), tasksActiveChunkIndex: 0 });
+            case LoadTasksFinished(tasks): copy(state, { tasks: RemoteDataHelper.createLoaded(tasks) });
+
+            case UpdateTaskTags(taskId, tagIds): state;
+            case UpdateTaskTagsFinished(task):
+                if (state.tasks.loaded) {
+                    var filtered = state.tasks.data.data.filter(function(t) { return t.id == task.id; });
+                    if (filtered.length > 0) {
+                        ReactUtil.assign(filtered[0], [task]);
+                    }
+                }
+                state;
+
+            case SetTasksChunkIndex(index):
+                if (state.tasksActiveChunkIndex != index) copy(state, { tasksActiveChunkIndex: index, tasks: RemoteDataHelper.createEmpty() }) else state;
+
+            case SetTasksFilter(filter):
+                copy(state, { tasksFilter: filter, tasks: RemoteDataHelper.createEmpty() });
         }
     }
 
@@ -77,6 +101,24 @@ class Editor
 
             case InsertTagFinished(tag):
                 UIkit.notification({ message: "Категория " + tag.name + " добавлена.", timeout: 3000 });
+                next();
+
+            case LoadTasks(filter, offset, limit):
+                EditorServiceClient.instance.getTasks(filter, offset, limit)
+                    .then(function(tasks) {
+                        store.dispatch(LoadTasksFinished(tasks));
+                    });
+                next();
+
+            case UpdateTaskTags(taskId, tagIds):
+                EditorServiceClient.instance.updateTaskTags(taskId, tagIds)
+                    .then(function(task) {
+                        store.dispatch(UpdateTaskTagsFinished(task));
+                    });
+                next();
+
+            case UpdateTaskTagsFinished(task):
+                UIkit.notification({ message: "Категории для задачи " + task.name + " изменены.", timeout: 3000 });
                 next();
 
             default: next();

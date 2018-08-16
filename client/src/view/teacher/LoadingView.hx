@@ -18,7 +18,7 @@ class LoadingView extends ReactComponentOfProps<LoadingProps> {
         var text = if (null != props.description) '${props.description} загружается...' else 'Загрузка...';
         return jsx('
                 <div className="uk-flex uk-flex-middle uk-flex-center">
-                    <div><span className="uk-margin-small-right" data-uk-spinner="true"></span> $text</div>
+                    <div><span className="uk-margin-small-right" data-uk-spinner=""></span> $text</div>
                 </div>
             ');
     }

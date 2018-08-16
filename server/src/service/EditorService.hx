@@ -1,5 +1,6 @@
 package service;
 
+import model.CodeforcesTaskTag;
 import model.CodeforcesTag;
 import messages.TagMessage;
 import model.CodeforcesTask;
@@ -11,6 +12,8 @@ import model.GroupLearner;
 import model.ModelUtils;
 import model.Role;
 import model.Training;
+
+using Lambda;
 
 class EditorService {
 
@@ -50,6 +53,43 @@ class EditorService {
                 return ServiceHelper.successResponse(tag.toMessage());
             } else {
                 return ServiceHelper.failResponse("Тег id=" + tagMessage.id + " не существует.");
+            }
+        });
+    }
+
+    public function getTasks(filter: String, offset: Int, limit: Int): ResponseMessage {
+        return authorize(function() {
+            var tasksCount = CodeforcesTask.manager.count($name.like("%"+filter+"%"));
+            var tasks = CodeforcesTask.manager.search($name.like("%"+filter+"%"), {orderBy: name, limit: [offset, limit]});
+            var messages =
+                tasks
+                    .map(function(t) { return t.toMessage(); })
+                    .array();
+            return ServiceHelper.successResponse({
+                data: messages,
+                offset: offset,
+                totalLength: tasksCount
+            });
+        });
+    }
+
+    public function updateTaskTags(taskId: Float, tagIds: Array<Float>): ResponseMessage {
+        return authorize(function() {
+            var task: CodeforcesTask = CodeforcesTask.manager.get(taskId);
+            if (task != null) {
+                CodeforcesTaskTag.manager.delete($taskId == task.id);
+                for (tagId in tagIds) {
+                    var tag = CodeforcesTag.manager.get(tagId);
+                    if (null != tag) {
+                        var relation = new CodeforcesTaskTag();
+                        relation.task = task;
+                        relation.tag = tag;
+                        relation.insert();
+                    }
+                }
+                return ServiceHelper.successResponse(task.toMessage());
+            } else {
+                return ServiceHelper.failResponse("Задача id=" + taskId + " не существует.");
             }
         });
     }

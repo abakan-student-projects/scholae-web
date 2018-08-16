@@ -1,5 +1,6 @@
 package;
 
+import view.editor.EditorTasksScreen;
 import view.editor.EditorTagsScreen;
 import haxe.macro.Compiler;
 import js.moment.Moment;
@@ -73,6 +74,7 @@ class Main {
 					    <Route path="editor" onEnter=$requireAuth>
     					    <IndexRoute component=$EditorTagsScreen/>
     					    <Route path="tags" component=$EditorTagsScreen />
+    					    <Route path="problems" component=$EditorTasksScreen />
 					    </Route>
 					</Route>
 				</Router>

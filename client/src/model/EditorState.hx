@@ -1,14 +1,14 @@
 package model;
 
-import haxe.ds.StringMap;
-import messages.AssignmentMessage;
-import messages.AttemptMessage;
-import messages.GroupMessage;
-import messages.LearnerMessage;
+import messages.ArrayChunk;
+import messages.TaskMessage;
 import messages.TagMessage;
-import messages.TrainingMessage;
 import utils.RemoteData;
 
 typedef EditorState = {
-    tags: RemoteData<Array<TagMessage>>
+    tags: RemoteData<Array<TagMessage>>,
+    tasks: RemoteData<ArrayChunk<TaskMessage>>,
+    tasksFilter: String,
+    tasksActiveChunkIndex: Int,
+    tasksChunkSize: Int
 }
