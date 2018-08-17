@@ -5,16 +5,10 @@ import react.ReactMacro.jsx;
 import js.Browser;
 import js.html.InputElement;
 
-typedef RenewPasswordResponseViewProps = {
-    diclIn: String ->  Void,
-}
-
-typedef RenewPasswordResponseViewRefs = {
-    email: InputElement,
-}
 
 
-class RenewPasswordResponseView extends ReactComponentOfPropsAndRefs<RenewPasswordResponseViewProps, RenewPasswordResponseViewRefs> {
+
+class RenewPasswordResponseView extends ReactComponent {
 
     public function new()
     {
@@ -27,7 +21,7 @@ class RenewPasswordResponseView extends ReactComponentOfPropsAndRefs<RenewPasswo
 
            <div class="uk-height-1-1 uk-flex uk-flex-middle uk-flex-center">
             <div>
-            		  <p class="uk-text "><big>На вашу почту пришло письмо с подтверждением личности</big></p>
+            		  <p class="uk-text "><big>На указанную вами почту мы отправили инструкцию по смене пароля.</big></p>
             </div>
            </div>
 

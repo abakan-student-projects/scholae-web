@@ -13,6 +13,7 @@ import action.ScholaeAction;
 import redux.IReducer;
 import react.ReactUtil.copy;
 import messages.GroupMessage;
+import services.AuthServiceClient;
 
 typedef ScholaeState = {
     auth: AuthState,
@@ -79,6 +80,8 @@ class Scholae
             case Register(email, password, codeforcesId, firstName, lastName): state;
             case RegisteredAndAuthenticated(sessionId): state;
             case PreventRegistrationRedirection: state;
+            case RenewPassword (email):state;
+
         }
     }
 
@@ -94,6 +97,10 @@ class Scholae
                         store.dispatch(AuthenticationFailed);
                     }
                 );
+                next();
+            
+            case RenewPassword(email):
+                AuthServiceClient.instance.RenewalPasswordEmailToUser(email);
                 next();
             default: next();
         }

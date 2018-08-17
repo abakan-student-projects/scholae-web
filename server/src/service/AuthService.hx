@@ -35,12 +35,19 @@ class AuthService {
                 null;
     }
 
-    public function returnPassword(email: String): Bool {
+    public function RenewalPasswordEmailToUser(email: String): Bool {
         var user = email;
         var messageEmail = false;
-        var subjectForUser='Смена пароля';
-        var messageForUser = 'Тут скоро мы будем присылать вам пароль';
-        var from = 'test@test.ru';
+        var subjectForUser='Scholae: измение пароля';
+        var messageForUser = '
+                            Здравствуйте,
+
+                            ваш новый пароль: [password].
+
+                            С уважением,
+                            Scholae
+                            ';
+        var from = 'no-reply@scholae.lambda-calculus.ru';
         if (null != user) {
             messageEmail = mail (user, subjectForUser, messageForUser, from);
             return messageEmail;
