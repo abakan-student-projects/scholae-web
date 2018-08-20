@@ -1,6 +1,7 @@
 package view;
 
 import view.ForgetLoginView.ForgetLoginViewProps;
+import view.ForgetLoginView.ForgetLoginViewProps;
 import action.ScholaeAction;
 import react.ReactComponent.ReactComponentOfPropsAndState;
 import react.ReactComponent.ReactElement;
@@ -22,4 +23,21 @@ class ForgetLoginScreen
     public override function render(): ReactElement {
         return jsx('<ForgetLoginView {...state} dispatch=$dispatch/>');
     }
+
+    function mapState(state: ApplicationState, props: RouteComponentProps): ForgetLoginViewProps {
+
+        return {
+            renewPassword: function (email:String) {
+                props.router.push(
+                    {
+                    pathname: "r/enew-password-response",
+                    search:null,
+                    state:null,
+                    action:RouterAction.PUSH
+                    });
+                dispatch (ScholaeAction.RenewPassword(email));
+            }
+        }
+    }
+
 }

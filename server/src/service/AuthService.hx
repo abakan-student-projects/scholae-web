@@ -1,8 +1,11 @@
 package service;
 
+import haxe.crypto.Md5;
+import utils.StringUtils;
 import messages.SessionMessage;
 import model.Session;
 import model.User;
+import php.Lib.mail;
 
 class AuthService {
 
@@ -45,5 +48,25 @@ class AuthService {
         //TODO: implement
         //use https://codeforces.com/api/help/methods#user.info to check if user exists
         return true;
+    }
+
+    public function renewPassword(email: String): Bool {
+        var user: User = User.manager.select($email == email, true);
+        var messageEmail = false;
+        var subjectForUser ='Scholae: измение пароля';
+        var password = StringUtils.getRandomString(StringUtils.alphaNumeric, 8);
+        var message = 'Здравствуйте,
+
+ваш новый пароль: $password.
+
+С уважением,
+Scholae';
+        var from = 'no-reply@scholae.lambda-calculus.ru';
+        if (null != user) {
+            messageEmail = mail(user.email, subjectForUser, message, from);
+            user.passwordHash = Md5.encode(password);
+            return messageEmail;
+        }
+        else return false;
     }
 }

@@ -18,4 +18,6 @@ enum ScholaeAction {
     Register(email: String, password: String, codeforcesId: String, firstName: String, lastName: String);
     RegisteredAndAuthenticated(sessionId: String);
     PreventRegistrationRedirection;
+
+    RenewPassword(email: String);
 }

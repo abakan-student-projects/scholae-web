@@ -9,6 +9,7 @@ import view.IndexView;
 import view.teacher.TeacherTrainingScreen;
 import view.teacher.TeacherNewAssignmentScreen;
 import view.learner.SignUpToGroupScreen;
+import view.RenewPasswordResponseView;
 import view.ForgetLoginScreen;
 import view.teacher.TeacherGroupScreen;
 import view.teacher.TeacherDashboardScreen;
@@ -76,6 +77,7 @@ class Main {
     					    <Route path="tags" component=$EditorTagsScreen />
     					    <Route path="problems" component=$EditorTasksScreen />
 					    </Route>
+					    <Route path="renew-password-response" component=$RenewPasswordResponseView/>
 					</Route>
 				</Router>
 			</Provider>

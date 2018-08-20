@@ -10,7 +10,7 @@ import router.ReactRouter;
 import router.Link;
 
 typedef ForgetLoginViewProps = {
-    signIn: String -> String -> Void
+    renewPassword: String -> Void
 }
 
 typedef ForgetLoginViewRefs = {
@@ -27,15 +27,20 @@ class ForgetLoginView extends ReactComponentOfPropsAndRefs<ForgetLoginViewProps,
     override function render() {
         return
             jsx('
-                <fieldset className="uk-fieldset">
-                    <legend className="uk-legend">Укажите почту, для которой необходимо восстановить пароль.</legend>
+                <div>
+                    <p className="uk-text ">Укажите почту, пожалуйста, для которого хотите восстановить пароль.</p>
                     <div className="uk-margin">
-                        <input className="uk-form-width-large uk-input" type="text" placeholder="Электронная почта" ref="email"/>
+                        <input className="uk-input uk-form-width-large" type="text" placeholder="Введите электронную почту" ref="email"/>
                     </div>
-                    <div className="uk-margin ">
-                        <button className="uk-form-width-large uk-button uk-button-primary">Восстановить пароль</button>
+                    <div className="uk-margin">
+                        <button className="uk-button uk-button-primary" onClick=$onClick>Восстановить пароль</button>
                     </div>
-                </fieldset>
+                </div>
             ');
     }
+
+    function onClick(_) {
+        props.renewPassword(refs.email.value);
+    }
+
 }
