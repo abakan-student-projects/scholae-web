@@ -30,7 +30,7 @@ class ForgetLoginScreen
             renewPassword: function (email:String) {
                 props.router.push(
                     {
-                    pathname: "r/enew-password-response",
+                    pathname: "/renew-password-response",
                     search:null,
                     state:null,
                     action:RouterAction.PUSH

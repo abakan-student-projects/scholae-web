@@ -94,14 +94,14 @@ class Scholae
 
             case Authenticate(email, password):
                 Session.login(email, password)
-                .then(
-                    function(sessionMessage) {
-                        store.dispatch(Authenticated(sessionMessage));
-                    },
-                    function(e) {
-                        store.dispatch(AuthenticationFailed);
-                    }
-                );
+                    .then(
+                        function(sessionMessage) {
+                            store.dispatch(Authenticated(sessionMessage));
+                        },
+                        function(e) {
+                            store.dispatch(AuthenticationFailed);
+                        }
+                    );
                 next();
 
             case Clear:
@@ -110,7 +110,7 @@ class Scholae
 
 
             case RenewPassword(email):
-                AuthServiceClient.instance.RenewalPasswordEmailToUser(email);
+                AuthServiceClient.instance.renewPassword(email);
                 next();
             default: next();
         }
