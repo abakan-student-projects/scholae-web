@@ -56,7 +56,7 @@ class Main {
 					    <Route path="teacher/group/:id" component=$TeacherGroupScreen onEnter=$requireAuth />
 					    <Route path="teacher" component=$TeacherDashboardScreen onEnter=$requireAuth />
 					    <Route path="forget-password" component=$ForgetLoginScreen />
-					    <Route path="renewpasswordresponse" component=$RenewPasswordResponseView/>
+					    <Route path="renew-password-response" component=$RenewPasswordResponseView/>
 					</Route>
 				</Router>
 			</Provider>

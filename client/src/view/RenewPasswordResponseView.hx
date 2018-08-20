@@ -5,35 +5,13 @@ import react.ReactMacro.jsx;
 import js.Browser;
 import js.html.InputElement;
 
-
-
-
 class RenewPasswordResponseView extends ReactComponent {
 
-    public function new()
-    {
+    public function new() {
         super();
     }
 
     override function render() {
-        return
-            jsx('
-
-           <div class="uk-height-1-1 uk-flex uk-flex-middle uk-flex-center">
-            <div>
-            		  <p class="uk-text "><big>На указанную вами почту мы отправили инструкцию по смене пароля.</big></p>
-            </div>
-           </div>
-
-            ');
+        return jsx('<h2>На указанную вами почту мы отправили инструкцию по смене пароля.</h2>');
     }
-
-    override function componentDidMount() {
-        Browser.document.body.classList.toggle("uk-height-1-1", true);
-    }
-
-    override function componentWillUnmount() {
-        Browser.document.body.classList.remove("uk-height-1-1");
-    }
-
 }

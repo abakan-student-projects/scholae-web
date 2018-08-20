@@ -1,5 +1,7 @@
 package service;
 
+import haxe.crypto.Md5;
+import utils.StringUtils;
 import messages.SessionMessage;
 import model.Session;
 import model.User;
@@ -35,25 +37,23 @@ class AuthService {
                 null;
     }
 
-    public function RenewalPasswordEmailToUser(email: String): Bool {
-        var user = email;
+    public function renewPassword(email: String): Bool {
+        var user: User = User.manager.select($email == email, true);
         var messageEmail = false;
-        var subjectForUser='Scholae: измение пароля';
-        var messageForUser = '
-                            Здравствуйте,
+        var subjectForUser ='Scholae: измение пароля';
+        var password = StringUtils.getRandomString(StringUtils.alphaNumeric, 8);
+        var message = 'Здравствуйте,
 
-                            ваш новый пароль: [password].
+ваш новый пароль: $password.
 
-                            С уважением,
-                            Scholae
-                            ';
+С уважением,
+Scholae';
         var from = 'no-reply@scholae.lambda-calculus.ru';
         if (null != user) {
-            messageEmail = mail (user, subjectForUser, messageForUser, from);
+            messageEmail = mail(user.email, subjectForUser, message, from);
+            user.passwordHash = Md5.encode(password);
             return messageEmail;
         }
-        else return null;
+        else return false;
     }
-
-
 }

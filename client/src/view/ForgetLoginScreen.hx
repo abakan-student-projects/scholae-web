@@ -27,12 +27,10 @@ class ForgetLoginScreen
     function mapState(state: ApplicationState, props: RouteComponentProps): ForgetLoginViewProps {
 
         return {
-
             renewPassword: function (email:String) {
-
                 props.router.push(
                     {
-                    pathname: "renewpasswordresponse",//тут тоже в мэйне поменять название ссылки
+                    pathname: "r/enew-password-response",
                     search:null,
                     state:null,
                     action:RouterAction.PUSH

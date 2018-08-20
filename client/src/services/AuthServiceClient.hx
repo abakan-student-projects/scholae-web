@@ -40,9 +40,9 @@ class AuthServiceClient extends BaseServiceClient {
         });
     }
 
-    public function RenewalPasswordEmailToUser(email: String): Promise<Bool> {
+    public function renewPassword(email: String): Promise<Bool> {
         return new Promise(function(success, fail) {
-            context.AuthService.RenewalPasswordEmailToUser.call([email], function(e) {
+            context.AuthService.renewPassword.call([email], function(e) {
                 return if (null != e) {
                     success(e);
                 } else {
