@@ -1,5 +1,7 @@
 package service;
 
+import messages.ResponseMessage;
+import messages.UserMessage;
 import haxe.crypto.Md5;
 import utils.StringUtils;
 import messages.SessionMessage;
@@ -40,7 +42,7 @@ class AuthService {
     }
 
     public function doesCodeforcesHandleExist(codeforcesHandle: String): Bool {
-        //TODO: implement
+        //TODO: implement checking if the codeforces handle already exists in our DB
         return true;
     }
 
@@ -61,12 +63,15 @@ class AuthService {
 
 С уважением,
 Scholae';
-        var from = 'no-reply@scholae.lambda-calculus.ru';
+        var from = 'From: no-reply@scholae.lambda-calculus.ru';
         if (null != user) {
             messageEmail = mail(user.email, subjectForUser, message, from);
             user.passwordHash = Md5.encode(password);
+            user.update();
             return messageEmail;
         }
         else return false;
     }
+
+    public function registerAndAuthenticateUser(user: UserMessage): ResponseMessage {}
 }

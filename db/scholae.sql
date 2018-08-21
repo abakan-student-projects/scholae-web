@@ -181,7 +181,10 @@ create table users
   firstName varchar(128) null,
   lastName varchar(128) null,
   codeforcesHandle varchar(512) null,
-  lastCodeforcesSubmissionId bigint null
+  lastCodeforcesSubmissionId bigint null,
+  emailActivationCode varchar(128) null,
+  registrationDate datetime null,
+  emailActivated tinyint default '0' not null
 )
 ;
 

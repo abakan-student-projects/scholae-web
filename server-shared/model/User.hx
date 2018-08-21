@@ -16,6 +16,9 @@ class User extends sys.db.Object {
     public var roles: SFlags<Role>;
     public var codeforcesHandle: SString<512>;
     public var lastCodeforcesSubmissionId: Float;
+    public var registrationDate: SDateTime;
+    public var emailActivationCode: SString<128>;
+    public var emailActivated: SBool;
 
     public function new() {
         super();

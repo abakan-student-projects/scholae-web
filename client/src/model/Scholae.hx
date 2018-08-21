@@ -112,6 +112,7 @@ class Scholae
             case RenewPassword(email):
                 AuthServiceClient.instance.renewPassword(email);
                 next();
+
             default: next();
         }
     }
