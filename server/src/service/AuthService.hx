@@ -1,5 +1,7 @@
 package service;
 
+import model.Role;
+import model.Role.Roles;
 import messages.ResponseMessage;
 import messages.UserMessage;
 import haxe.crypto.Md5;
@@ -37,13 +39,11 @@ class AuthService {
     }
 
     public function doesEmailExist(email: String): Bool {
-        //TODO: implement
-        return true;
+        return User.manager.count($email == email) > 0;
     }
 
     public function doesCodeforcesHandleExist(codeforcesHandle: String): Bool {
-        //TODO: implement checking if the codeforces handle already exists in our DB
-        return true;
+        return User.manager.count($codeforcesHandle == codeforcesHandle) > 0;
     }
 
     public function isCodeforcesHandleValid(codeforcesHandle: String): Bool {
@@ -54,7 +54,6 @@ class AuthService {
 
     public function renewPassword(email: String): Bool {
         var user: User = User.manager.select($email == email, true);
-        var messageEmail = false;
         var subjectForUser ='Scholae: измение пароля';
         var password = StringUtils.getRandomString(StringUtils.alphaNumeric, 8);
         var message = 'Здравствуйте,
@@ -65,13 +64,44 @@ class AuthService {
 Scholae';
         var from = 'From: no-reply@scholae.lambda-calculus.ru';
         if (null != user) {
-            messageEmail = mail(user.email, subjectForUser, message, from);
+            var res = mail(user.email, subjectForUser, message, from);
             user.passwordHash = Md5.encode(password);
             user.update();
-            return messageEmail;
+            return res;
         }
         else return false;
     }
 
-    public function registerAndAuthenticateUser(user: UserMessage): ResponseMessage {}
+    private function greetUser(user: User) {
+        var subjectForUser ='Scholae: здравствуйте!';
+        var message = 'Здравствуйте,
+
+мы рады, что вы зарегистрировались в Scholae!
+
+Удачи в тренировках!
+
+С уважением,
+Scholae';
+        var from = 'From: no-reply@scholae.lambda-calculus.ru';
+        mail(user.email, subjectForUser, message, from);
+    }
+
+    public function registerAndAuthenticateUser(user: UserMessage): ResponseMessage {
+        if (doesEmailExist(user.email)) {
+            return ServiceHelper.failResponse("Email already exists.");
+        } else if (doesCodeforcesHandleExist(user.codeforcesHandle)) {
+            return ServiceHelper.failResponse("Codeforces Handle already exists.");
+        } else {
+            var u: User = new User();
+            u.email = user.email;
+            u.firstName = user.firstName;
+            u.lastName = user.lastName;
+            u.passwordHash = Md5.encode(user.password);
+            u.registrationDate = Date.now();
+            u.roles.set(Role.Learner);
+            u.insert();
+            greetUser(u);
+            return ServiceHelper.successResponse(authenticate(user.email, user.password));
+        }
+    }
 }
