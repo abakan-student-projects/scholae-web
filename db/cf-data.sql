@@ -1,9 +1,3 @@
-CREATE TABLE scholae.CodeforcesTags
-(
-    id bigint(20) PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    name varchar(512) NOT NULL,
-    russianName varchar(256)
-);
 INSERT INTO scholae.CodeforcesTags (name, russianName) VALUES ('brute force', 'Полный перебор');
 INSERT INTO scholae.CodeforcesTags (name, russianName) VALUES ('dfs and similar', 'Поиск в глубину и подобное');
 INSERT INTO scholae.CodeforcesTags (name, russianName) VALUES ('shortest paths', 'Кратчайшие пути');
@@ -47,18 +41,6 @@ INSERT INTO scholae.CodeforcesTags (name, russianName) VALUES ('sorted set', 'О
 INSERT INTO scholae.CodeforcesTags (name, russianName) VALUES ('lowest common ancestor (lap)', 'Наименьший общий предок (LCP)');
 INSERT INTO scholae.CodeforcesTags (name, russianName) VALUES ('treap', 'Декартово дерево');
 INSERT INTO scholae.CodeforcesTags (name, russianName) VALUES ('subsequence sum', 'Сумма подпоследовательности');
-CREATE TABLE scholae.CodeforcesTasks
-(
-    id bigint(20) PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    name varchar(512) NOT NULL,
-    level int(11) NOT NULL,
-    solvedCount int(11) NOT NULL,
-    contestId int(11) NOT NULL,
-    contestIndex varchar(128) NOT NULL,
-    type varchar(128),
-    active tinyint(4) DEFAULT '1'
-);
-CREATE INDEX CodeforcesTasks_contestId_index ON scholae.CodeforcesTasks (contestId, contestIndex);
 INSERT INTO scholae.CodeforcesTasks (name, level, solvedCount, contestId, contestIndex, type, active) VALUES ('Берляндия и кратчайшие пути', 4, 500, 1005, 'F', 'ICPC', 1);
 INSERT INTO scholae.CodeforcesTasks (name, level, solvedCount, contestId, contestIndex, type, active) VALUES ('Медиана на подотрезках (редакция для общего случая)', 4, 427, 1005, 'E2', 'ICPC', 1);
 INSERT INTO scholae.CodeforcesTasks (name, level, solvedCount, contestId, contestIndex, type, active) VALUES ('Медиана на подотрезках (редакция для перестановок)', 3, 1551, 1005, 'E1', 'ICPC', 1);
@@ -12012,13 +11994,6 @@ INSERT INTO scholae.CodeforcesTasks (name, level, solvedCount, contestId, contes
 INSERT INTO scholae.CodeforcesTasks (name, level, solvedCount, contestId, contestIndex, type, active) VALUES ('Три части массива', 2, 5572, 1006, 'C', 'ICPC', 1);
 INSERT INTO scholae.CodeforcesTasks (name, level, solvedCount, contestId, contestIndex, type, active) VALUES ('Тренировка Поликарпа', 2, 5675, 1006, 'B', 'ICPC', 1);
 INSERT INTO scholae.CodeforcesTasks (name, level, solvedCount, contestId, contestIndex, type, active) VALUES ('Соседние замены', 2, 8294, 1006, 'A', 'ICPC', 1);
-CREATE TABLE scholae.CodeforcesTasksTags
-(
-    tagId bigint(11) NOT NULL,
-    taskId bigint(11) NOT NULL
-);
-CREATE INDEX tag ON scholae.CodeforcesTasksTags (tagId, taskId);
-CREATE INDEX task ON scholae.CodeforcesTasksTags (taskId);
 INSERT INTO scholae.CodeforcesTasksTags (tagId, taskId) VALUES (1, 1);
 INSERT INTO scholae.CodeforcesTasksTags (tagId, taskId) VALUES (1, 5);
 INSERT INTO scholae.CodeforcesTasksTags (tagId, taskId) VALUES (1, 6);

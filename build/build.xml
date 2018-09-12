@@ -51,4 +51,15 @@
 		</copy>
 	</target>
 
+	<target name="deploy">
+		<!--<antcall target="build"/>-->
+		<tar destfile="${local.build.path}/size.tar" basedir="${site.build.path}" />
+		<bzip2 destfile="${local.build.path}/size.tar.bz2" src="${local.build.path}/size.tar" />
+		<sshexec host="hosting.scholae.lambda-calculus.ru" username="deploy" keyfile="../../keys/deploy-private.openssh" command="mkdir -p /home/deploy/scholae" trust="yes"/>
+		<scp file="${local.build.path}/size.tar.bz2" todir="deploy@hosting.scholae.lambda-calculus.ru:/home/deploy/scholae" keyfile="../../keys/deploy-private.openssh" passphrase="" trust="yes"/>
+		<sshexec host="hosting.scholae.lambda-calculus.ru" username="deploy" keyfile="../../keys/deploy-private.openssh" command="bunzip2 -f /home/deploy/scholae/size.tar.bz2; tar -xf /home/deploy/scholae/size.tar -C /var/www/scholae.lambda-calculus.ru/site" trust="yes" usepty="true"/>
+		<delete file="${local.build.path}/size.tar" />
+		<delete file="${local.build.path}/size.tar.bz2" />
+	</target>
+
 </project>
