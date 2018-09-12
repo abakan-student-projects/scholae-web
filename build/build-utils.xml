@@ -35,12 +35,13 @@
 				<isset property="options"/>
 			</not>
 		</condition>
+
 		<echo level="info">Executing browserify for "${dir}/${src}" to "${dst}"</echo>
-		<exec dir="${dir}" os="unix" executable="browserify" failonerror="true">
+		<exec dir="${dir}" osfamily="unix" executable="browserify" failonerror="true">
 			<arg line="${src} -o ${dst} -d ${options}"/>
 		</exec>
-		<exec dir="${dir}" os="windows" executable="cmd" failonerror="true">
-			<arg line="browserify"/>
+		<exec dir="../client" osfamily="windows" executable="browserify.cmd" failonerror="true">
+			<arg line="scholae.js -o > ../localbuild/site/scholae.js -d ${options}"/>
 		</exec>
 	</target>
 	
