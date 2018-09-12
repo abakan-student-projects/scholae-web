@@ -17,6 +17,7 @@ enum ScholaeAction {
     //Registration
     Register(email: String, password: String, codeforcesId: String, firstName: String, lastName: String);
     RegisteredAndAuthenticated(sessionMessage: SessionMessage);
+    RegistrationFailed(message: String);
     PreventRegistrationRedirection;
 
     RenewPassword(email: String);

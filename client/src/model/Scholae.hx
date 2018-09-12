@@ -81,8 +81,39 @@ class Scholae
                 });
 
             case Register(email, password, codeforcesId, firstName, lastName): state;
-            case RegisteredAndAuthenticated(sessionId): state;
-            case PreventRegistrationRedirection: state;
+            case RegisteredAndAuthenticated(sessionMessage): copy(state,
+                {
+                    auth: copy(state.auth, {
+                        loggedIn: true,
+                        email: sessionMessage.email,
+                        sessionId: sessionMessage.sessionId,
+                        firstName: sessionMessage.firstName,
+                        lastName: sessionMessage.lastName,
+                        roles: sessionMessage.roles
+                    }),
+                    registration: copy(state.registration, {
+                        registered: true
+                    })
+                });
+            case PreventRegistrationRedirection: copy(state,
+                {
+                    registration: copy(state.registration, {
+                        codeforcesId: null,
+                        email: null,
+                        password: null,
+                        firstName: null,
+                        lastName: null,
+                        registered: false,
+                        redirectPath: "/",
+                        errorMessage: null
+                    })
+                });
+            case RegistrationFailed(message): copy(state,
+                {
+                    registration: copy(state.registration, {
+                        errorMessage: message
+                    })
+                });
             case Clear: initState;
             case RenewPassword (email):state;
 
@@ -111,6 +142,29 @@ class Scholae
 
             case RenewPassword(email):
                 AuthServiceClient.instance.renewPassword(email);
+                next();
+
+            case Register(email, password, codeforcesId, firstName, lastName):
+                AuthServiceClient.instance.registerAndAuthenticateUser({
+                    id: null,
+                    email: email,
+                    firstName: firstName,
+                    lastName: lastName,
+                    codeforcesHandle: codeforcesId,
+                    password: password,
+                    roles: null
+                }).then(
+                    function(sessionMessage) {
+                        Session.sessionId = sessionMessage.sessionId;
+                        store.dispatch(RegisteredAndAuthenticated(sessionMessage));
+                    },
+                    function(e) {
+                        store.dispatch(RegistrationFailed(e));
+                    });
+                next();
+
+            case RegistrationFailed(message):
+                UIkit.notification({ message: "Ошибка при регистрации: " + message + ".", timeout: 5000, status: "warning" });
                 next();
 
             default: next();

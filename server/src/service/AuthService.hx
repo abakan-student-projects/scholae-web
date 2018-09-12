@@ -1,5 +1,11 @@
 package service;
 
+import service.ServiceHelper;
+import service.ServiceHelper;
+import service.ServiceHelper;
+import service.ServiceHelper;
+import service.ServiceHelper;
+import service.ServiceHelper;
 import model.Role;
 import model.Role.Roles;
 import messages.ResponseMessage;
@@ -18,24 +24,23 @@ class AuthService {
     /**
     * return Session ID, String
     **/
-    public function authenticate(email: String, password: String): SessionMessage {
+    public function authenticate(email: String, password: String): ResponseMessage {
         var user = User.getUserByEmailAndPassword(email, password);
         if (null != user) {
             var session = Session.getSessionByUser(user);
             if (null != session && null != Session.manager.search({ id: session.id }).first()) session.update() else session.insert();
-            return user.toSessionMessage(session.id);
+            return ServiceHelper.successResponse(user.toSessionMessage(session.id));
         }
-        return null;
+        return ServiceHelper.failResponse("Email or password is wrong.");
     }
 
-    public function checkSession(sessionId: String): SessionMessage {
+    public function checkSession(sessionId: String): ResponseMessage {
         var session: Session = Session.findSession(sessionId);
-
         return
             if (null != session)
-                session.user.toSessionMessage(session.id)
+                ServiceHelper.successResponse(session.user.toSessionMessage(session.id))
             else
-                null;
+                ServiceHelper.failResponse("Session not found.");
     }
 
     public function doesEmailExist(email: String): Bool {
@@ -52,7 +57,7 @@ class AuthService {
         return true;
     }
 
-    public function renewPassword(email: String): Bool {
+    public function renewPassword(email: String): ResponseMessage {
         var user: User = User.manager.select($email == email, true);
         var subjectForUser ='Scholae: измение пароля';
         var password = StringUtils.getRandomString(StringUtils.alphaNumeric, 8);
@@ -67,9 +72,9 @@ Scholae';
             var res = mail(user.email, subjectForUser, message, from);
             user.passwordHash = Md5.encode(password);
             user.update();
-            return res;
+            return ServiceHelper.successResponse(res);
         }
-        else return false;
+        else return ServiceHelper.successResponse(false);
     }
 
     private function greetUser(user: User) {
@@ -101,7 +106,7 @@ Scholae';
             u.roles.set(Role.Learner);
             u.insert();
             greetUser(u);
-            return ServiceHelper.successResponse(authenticate(user.email, user.password));
+            return authenticate(user.email, user.password);
         }
     }
 }

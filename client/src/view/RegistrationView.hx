@@ -38,10 +38,10 @@ class RegistrationView extends ReactComponentOfPropsAndRefs<RegistrationViewProp
                             <input className="uk-form-width-large uk-input" type="text" placeholder="Электронная почта" ref="email"/>
                         </div>
                         <div className="uk-margin">
-                            <input className="uk-form-width-large uk-input" type="text" placeholder="Пароль" ref="password"/>
+                            <input className="uk-form-width-large uk-input" type="password" placeholder="Пароль" ref="password"/>
                         </div>
                         <div className="uk-margin">
-                            <input className="uk-form-width-large uk-input" type="text" placeholder="Повторите пароль" ref="password2"/>
+                            <input className="uk-form-width-large uk-input" type="password" placeholder="Повторите пароль" ref="password2"/>
                         </div>
                         <div className="uk-margin">
                             <input className="uk-form-width-large uk-input" type="text" placeholder="Codeforces логин" ref="codeforcesId"/>
