@@ -13,4 +13,4 @@
 - enable mod_rewrite in the apache configuration
 - put scholae.lambda-calculus.ru to hosts
 - install and configure mysql
-- create DB with name scholae
+- create DB with name scholae and add user scholae with password that in the configuration
