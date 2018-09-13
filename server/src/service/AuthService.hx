@@ -104,6 +104,7 @@ Scholae';
             u.passwordHash = Md5.encode(user.password);
             u.registrationDate = Date.now();
             u.roles.set(Role.Learner);
+            u.codeforcesHandle = user.codeforcesHandle;
             u.insert();
             greetUser(u);
             return authenticate(user.email, user.password);
