@@ -52,7 +52,7 @@
 	</target>
 
 	<target name="deploy">
-		<!--<antcall target="build"/>-->
+		<antcall target="build"/>
 		<tar destfile="${local.build.path}/size.tar" basedir="${site.build.path}" />
 		<bzip2 destfile="${local.build.path}/size.tar.bz2" src="${local.build.path}/size.tar" />
 		<sshexec host="hosting.scholae.lambda-calculus.ru" username="deploy" keyfile="../../keys/deploy-private.openssh" command="mkdir -p /home/deploy/scholae" trust="yes"/>
