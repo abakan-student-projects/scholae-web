@@ -134,6 +134,9 @@ class Scholae
                         }
                     );
                 next();
+            case AuthenticationFailed:
+                UIkit.notification({ message: "Неправильно введён логин или пароль.", timeout: 3000 });
+                next();
 
             case Clear:
                 Session.logout();
