@@ -35,4 +35,24 @@ class StringUtils {
 			default: "";
 		};
 	}
+	public static function unescapeHtmlSpecialCharacters(text){
+		text = StringTools.replace(text, "&laquo;", "«");
+		text = StringTools.replace(text, "&raquo;", "»");
+		text = StringTools.replace(text, "&hellip;", "...");
+		text = StringTools.replace(text, "&ndash;", "-");
+		text = StringTools.replace(text, "&mdash;", "–");
+		text = StringTools.replace(text, "&rsquo;", "’");
+		text = StringTools.replace(text, "&quot;", '"');
+		text = StringTools.replace(text, "&amp;", "&");
+		text = StringTools.replace(text, "&scaron;", "Š");
+		text = StringTools.replace(text, "&aacute;", "Á");
+		text = StringTools.replace(text, "&acute;", "´");
+		text = StringTools.replace(text, "&icirc;", "Î");
+		text = StringTools.replace(text, "&eacute;", "é");
+		text = StringTools.replace(text, "&atilde;", "Ã");
+		text = StringTools.replace(text, "&ldquo;", '“');
+		text = StringTools.replace(text, "&gt;", ">");
+		text = StringTools.replace(text, "&lt;", "<");
+		return text;
+	}
 }

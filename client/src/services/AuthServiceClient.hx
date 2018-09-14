@@ -34,8 +34,8 @@ class AuthServiceClient extends BaseServiceClient {
     }
 
     public function checkSession(sessionId: String): Promise<SessionMessage> {
-        return request(function(sessionId) {
-            context.AuthService.checkSession.call([user], function(e) {
+        return request(function(success, fail) {
+            context.AuthService.checkSession.call([sessionId], function(e) {
                 processResponse(e, success, fail);
             });
         });

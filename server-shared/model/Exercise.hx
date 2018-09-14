@@ -23,7 +23,7 @@ class Exercise extends sys.db.Object {
     public function toMessage(): ExerciseMessage {
         return {
             id: id,
-            task: task.toMessage(),
+            task: task.toMessage(training.user),
             trainingId: training.id
         };
     }

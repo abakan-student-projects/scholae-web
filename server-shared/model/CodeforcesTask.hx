@@ -1,5 +1,6 @@
 package model;
 
+import utils.StringUtils;
 import messages.TaskMessage;
 import sys.db.Types;
 import sys.db.Manager;
@@ -33,7 +34,7 @@ class CodeforcesTask extends sys.db.Object {
             task.insert();
         }
 
-        task.name = p.name;
+        task.name =p.name;
         return task;
     }
 
@@ -45,20 +46,20 @@ class CodeforcesTask extends sys.db.Object {
         return contestId >= 100000;
     }
 
-    public function isSolved(): Bool {
-        return Attempt.manager.count($taskId == id && $solved == true) > 0;
+    public function isSolved(user: User): Bool {
+        return if (user != null) Attempt.manager.count($taskId == id && $solved == true && $userId == user.id) > 0 else false;
     }
 
-    public function toMessage(): TaskMessage {
+    public function toMessage(?user: User): TaskMessage {
         return {
             id: id,
-            name: name,
+            name: StringUtils.unescapeHtmlSpecialCharacters(name),
             level: level,
             tagIds: Lambda.array(Lambda.map(CodeforcesTaskTag.manager.search($taskId == id), function(t) { return t.tag.id; })),
             isGymTask: isGymTask(),
             codeforcesContestId: contestId,
             codeforcesIndex: contestIndex,
-            isSolved: isSolved()
+            isSolved: isSolved(user)
         };
     }
 }

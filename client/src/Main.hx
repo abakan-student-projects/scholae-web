@@ -91,6 +91,9 @@ class Main {
                 .then(
                     function(sessionMessage) {
                         store.dispatch(Authenticated(sessionMessage));
+                    },
+                    function(e) {
+                        // do nothing
                     });
             }
         }
