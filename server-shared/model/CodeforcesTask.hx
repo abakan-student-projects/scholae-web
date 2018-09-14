@@ -1,5 +1,6 @@
 package model;
 
+import utils.StringUtils;
 import messages.TaskMessage;
 import sys.db.Types;
 import sys.db.Manager;
@@ -33,7 +34,7 @@ class CodeforcesTask extends sys.db.Object {
             task.insert();
         }
 
-        task.name = p.name;
+        task.name =p.name;
         return task;
     }
 
@@ -52,7 +53,7 @@ class CodeforcesTask extends sys.db.Object {
     public function toMessage(): TaskMessage {
         return {
             id: id,
-            name: name,
+            name: StringUtils.unescapeHtmlSpecialCharacters(name),
             level: level,
             tagIds: Lambda.array(Lambda.map(CodeforcesTaskTag.manager.search($taskId == id), function(t) { return t.tag.id; })),
             isGymTask: isGymTask(),
