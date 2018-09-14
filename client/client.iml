@@ -1,25 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="HAXE_MODULE" version="4">
-  <component name="HaxeModuleSettingsStorage">
-    <option name="buildConfig" value="1" />
-    <option name="haxeTarget" value="JavaScript" />
-    <option name="hxmlPath" value="$MODULE_DIR$/client.hxml" />
-    <option name="keepSynchronizedWithProjectFile" value="false" />
-    <option name="outputFolder" value="$MODULE_DIR$/../out/production/client" />
-  </component>
-  <component name="NewModuleRootManager">
-    <output url="file://$MODULE_DIR$/../out/production/client" />
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
     </content>
-    <orderEntry type="jdk" jdkName="Haxe 3.4.7" jdkType="Haxe toolkit" />
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="react" level="project" />
-    <orderEntry type="module" module-name="shared" />
-    <orderEntry type="library" name="haxe-react-router" level="project" />
-    <orderEntry type="library" name="haxe-redux" level="project" />
-    <orderEntry type="library" name="extern-js-moment" level="project" />
-    <orderEntry type="library" name="extern-js" level="project" />
   </component>
 </module>
