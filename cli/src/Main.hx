@@ -1,5 +1,6 @@
 package ;
 
+import model.Attempt;
 import model.CodeforcesTaskTag;
 import model.CodeforcesTag;
 import codeforces.Problem;
@@ -12,18 +13,26 @@ import codeforces.ProblemsResponse;
 import codeforces.Codeforces;
 import haxe.EnumTools;
 import haxe.EnumTools.EnumValueTools;
+import haxe.Json;
+
 
 enum Action {
     updateCodeforcesTasks;
     updateCodeforcesTasksLevelsAndTypes;
     updateGymTasks;
     updateTags;
+    insertTaskId;
 }
 
 typedef Config = {
     action: Action,
     batchCount: Int,
     verbose: Bool
+}
+
+typedef Description = {
+    var contestId: Int;
+    var problem: String;
 }
 
 class Main {
@@ -74,6 +83,7 @@ class Main {
             case Action.updateCodeforcesTasksLevelsAndTypes: updateCodeforcesTasksLevelsAndTypes();
             case Action.updateGymTasks: updateGymTasks(cfg);
             case Action.updateTags: updateTags();
+            case Action.insertTaskId: insertTaskId();
         }
 
         sys.db.Manager.cleanup();
@@ -101,6 +111,21 @@ class Main {
             var s = statistics.get(getProblemId(p.contestId, p.index));
             t.solvedCount = if (s != null) s.solvedCount else 0;
             t.update();
+        }
+    }
+
+    public static function insertTaskId() {
+        for (t in Attempt.manager.all()) {
+            if (t.task == null){
+                var a: Description = Json.parse(t.description);
+                var index = Reflect.field(a.problem,"index");
+                var codeforcesTask:CodeforcesTask = CodeforcesTask.manager.select({contestId: a.contestId, contestIndex: index});
+                if (codeforcesTask != null){
+                    var taskId:Attempt = Attempt.manager.select({ id: t.id });
+                    taskId.task = codeforcesTask;
+                    taskId.update();
+                }
+            }
         }
     }
 
