@@ -27,7 +27,7 @@ class SignUpToGroupView
     override function render() {
         return jsx('
                 <div id="signup">
-                    <legend class="uk-legend">Запись на новый курс</legend>
+                    <legend className="uk-legend">Запись на новый курс</legend>
                     <div className="uk-margin">
                         <input className="uk-input uk-form-width-large" ref="signUpKey" placeholder="Ключ для записи на курс"/>
                     </div>

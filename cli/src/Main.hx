@@ -1,5 +1,6 @@
 package ;
 
+import sys.db.Types.SBigInt;
 import model.Attempt;
 import model.CodeforcesTaskTag;
 import model.CodeforcesTag;
@@ -30,10 +31,6 @@ typedef Config = {
     verbose: Bool
 }
 
-typedef Description = {
-    var contestId: Int;
-    var problem: String;
-}
 
 class Main {
 
@@ -92,6 +89,7 @@ class Main {
 
     public static function updateCodeforcesTasks() {
         updateCodeForcesTasksByResoponse(Codeforces.getAllProblemsResponse());
+
     }
 
     private static inline function getProblemId(contestId: Int, index: String): String {
@@ -115,17 +113,18 @@ class Main {
     }
 
     public static function insertTaskId() {
-        for (t in Attempt.manager.all()) {
-            if (t.task == null){
-                var a: Description = Json.parse(t.description);
-                var index = Reflect.field(a.problem,"index");
-                var codeforcesTask:CodeforcesTask = CodeforcesTask.manager.select({contestId: a.contestId, contestIndex: index});
-                if (codeforcesTask != null){
-                    var taskId:Attempt = Attempt.manager.select({ id: t.id });
-                    taskId.task = codeforcesTask;
-                    taskId.update();
-                }
-            }
+        var isNull:Null<SBigInt> = null;
+        var a = Attempt.manager.count($taskId == isNull);
+        var i = 1;
+        while (i <= a) {
+            var attempt = Attempt.manager.select($taskId == isNull);
+            var d = Json.parse(attempt.description);
+            var contestId = Reflect.field(d,"contestId");
+            var index = Reflect.field(d.problem,"index");
+            var codeforcesTask = CodeforcesTask.manager.select({contestId: contestId, contestIndex: index});
+            attempt.task = codeforcesTask;
+            attempt.update();
+            i++;
         }
     }
 
