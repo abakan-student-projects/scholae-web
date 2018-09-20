@@ -1,5 +1,7 @@
 package ;
 
+import sys.db.Types.SBigInt;
+import model.Attempt;
 import model.CodeforcesTaskTag;
 import model.CodeforcesTag;
 import codeforces.Problem;
@@ -12,12 +14,15 @@ import codeforces.ProblemsResponse;
 import codeforces.Codeforces;
 import haxe.EnumTools;
 import haxe.EnumTools.EnumValueTools;
+import haxe.Json;
+
 
 enum Action {
     updateCodeforcesTasks;
     updateCodeforcesTasksLevelsAndTypes;
     updateGymTasks;
     updateTags;
+    updateTaskIdsOnAttempts;
 }
 
 typedef Config = {
@@ -25,6 +30,7 @@ typedef Config = {
     batchCount: Int,
     verbose: Bool
 }
+
 
 class Main {
 
@@ -49,7 +55,7 @@ class Main {
 
         var args = Sys.args();
         var argHandler = hxargs.Args.generate([
-            @doc("Action: updateCodeforcesTasks, updateCodeforcesTasksLevelsAndTypes, updateGymTasks, updateTags")
+            @doc("Action: updateCodeforcesTasks, updateCodeforcesTasksLevelsAndTypes, updateGymTasks, updateTags, updateTaskIdsOnAttempts")
             ["-a", "--action"] => function(action:String) cfg.action = EnumTools.createByName(Action, action),
 
             @doc("Limit number of processing items. Works only for updateGymTasks")
@@ -74,6 +80,7 @@ class Main {
             case Action.updateCodeforcesTasksLevelsAndTypes: updateCodeforcesTasksLevelsAndTypes();
             case Action.updateGymTasks: updateGymTasks(cfg);
             case Action.updateTags: updateTags();
+            case Action.updateTaskIdsOnAttempts: updateTaskIdsOnAttempts();
         }
 
         sys.db.Manager.cleanup();
@@ -82,6 +89,7 @@ class Main {
 
     public static function updateCodeforcesTasks() {
         updateCodeForcesTasksByResoponse(Codeforces.getAllProblemsResponse());
+
     }
 
     private static inline function getProblemId(contestId: Int, index: String): String {
@@ -101,6 +109,19 @@ class Main {
             var s = statistics.get(getProblemId(p.contestId, p.index));
             t.solvedCount = if (s != null) s.solvedCount else 0;
             t.update();
+        }
+    }
+
+    public static function updateTaskIdsOnAttempts() {
+        var isNull:Null<SBigInt> = null;
+        var attempts = Attempt.manager.search($taskId == isNull);
+        for (attempt in attempts) {
+            var d = Json.parse(attempt.description);
+            var contestId = Reflect.field(d,"contestId");
+            var index = Reflect.field(d.problem,"index");
+            var codeforcesTask = CodeforcesTask.manager.select({contestId: contestId, contestIndex: index});
+            attempt.task = codeforcesTask;
+            attempt.update();
         }
     }
 

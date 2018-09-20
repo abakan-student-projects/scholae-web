@@ -30,7 +30,7 @@ class Session {
 			.then(function(sessionMessage: SessionMessage) {
 				sessionId = sessionMessage.sessionId;
 				return sessionMessage;
-			});
+		});
 	}
 	
 	public static function logout() {
