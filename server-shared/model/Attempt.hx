@@ -54,7 +54,7 @@ class Attempt extends sys.db.Object {
     public function toMessage(): AttemptMessage {
         return {
             id: id,
-            task: task.toMessage(),
+            task: task.toMessage(user),
             learner: user.toLearnerMessage(),
             description: description,
             solved: solved,

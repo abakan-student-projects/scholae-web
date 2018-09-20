@@ -46,11 +46,11 @@ class CodeforcesTask extends sys.db.Object {
         return contestId >= 100000;
     }
 
-    public function isSolved(): Bool {
-        return Attempt.manager.count($taskId == id && $solved == true) > 0;
+    public function isSolved(user: User): Bool {
+        return if (user != null) Attempt.manager.count($taskId == id && $solved == true && $userId == user.id) > 0 else false;
     }
 
-    public function toMessage(): TaskMessage {
+    public function toMessage(?user: User): TaskMessage {
         return {
             id: id,
             name: StringUtils.unescapeHtmlSpecialCharacters(name),
@@ -59,7 +59,7 @@ class CodeforcesTask extends sys.db.Object {
             isGymTask: isGymTask(),
             codeforcesContestId: contestId,
             codeforcesIndex: contestIndex,
-            isSolved: isSolved()
+            isSolved: isSolved(user)
         };
     }
 }

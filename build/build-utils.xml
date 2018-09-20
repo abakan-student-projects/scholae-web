@@ -36,8 +36,12 @@
 			</not>
 		</condition>
 		<echo level="info">Executing browserify for "${dir}/${src}" to "${dst}"</echo>
-		<exec dir="${dir}" executable="browserify" failonerror="true">
+		<exec dir="${dir}" osfamily="unix" executable="browserify" failonerror="true">
 			<arg line="${src} -o ${dst} -d ${options}"/>
+		</exec>
+		<exec dir="${dir}" osfamily="windows" executable="cmd" failonerror="true">
+			<arg value="/C"/>
+			<arg value="browserify ${src} -o > ${dst} -d ${options}"/>
 		</exec>
 	</target>
 	

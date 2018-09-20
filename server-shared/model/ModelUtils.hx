@@ -5,7 +5,11 @@ import haxe.ds.StringMap;
 class ModelUtils {
 
     public static function getTasksSolvedByUser(user: User): List<CodeforcesTask> {
-        return Lambda.map(Attempt.manager.search($userId == user.id && $solved == true), function(a) { return a.task; });
+        return Lambda.filter(
+            Lambda.map(
+                Attempt.manager.search($userId == user.id && $solved == true),
+                function(a) { return a.task; }),
+            function(t) { return t != null; });
     }
 
     public static function getTaskIdsByTags(tagIds: Array<Float>): StringMap<Bool> {

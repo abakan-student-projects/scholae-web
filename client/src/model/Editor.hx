@@ -54,7 +54,7 @@ class Editor
                 }
                 state;
 
-            case LoadTasks(filter, offset, limit): copy(state, { tasks: RemoteDataHelper.createLoading(), tasksActiveChunkIndex: 0 });
+            case LoadTasks(filter, offset, limit): copy(state, { tasks: RemoteDataHelper.createLoading() });
             case LoadTasksFinished(tasks): copy(state, { tasks: RemoteDataHelper.createLoaded(tasks) });
 
             case UpdateTaskTags(taskId, tagIds): state;
@@ -71,7 +71,7 @@ class Editor
                 if (state.tasksActiveChunkIndex != index) copy(state, { tasksActiveChunkIndex: index, tasks: RemoteDataHelper.createEmpty() }) else state;
 
             case SetTasksFilter(filter):
-                copy(state, { tasksFilter: filter, tasks: RemoteDataHelper.createEmpty() });
+                copy(state, { tasksFilter: filter, tasks: RemoteDataHelper.createEmpty(), tasksActiveChunkIndex: 0 });
 
             case ShowNewTagView:
                 copy(state, { showNewTagView: true });

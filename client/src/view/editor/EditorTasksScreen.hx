@@ -43,8 +43,7 @@ class EditorTasksScreen
             filter: state.editor.tasksFilter,
             updateTags: function(taskId, tagIds) { dispatch(EditorAction.UpdateTaskTags(taskId, tagIds)); },
             chunkIndex: state.editor.tasksActiveChunkIndex,
-            chunkSize: state.editor.tasksChunkSize,
-
+            chunkSize: state.editor.tasksChunkSize
         }
     }
 }
