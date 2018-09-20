@@ -22,7 +22,7 @@ enum Action {
     updateCodeforcesTasksLevelsAndTypes;
     updateGymTasks;
     updateTags;
-    insertTaskId;
+    updateTaskIdsOnAttempts;
 }
 
 typedef Config = {
@@ -55,7 +55,7 @@ class Main {
 
         var args = Sys.args();
         var argHandler = hxargs.Args.generate([
-            @doc("Action: updateCodeforcesTasks, updateCodeforcesTasksLevelsAndTypes, updateGymTasks, updateTags")
+            @doc("Action: updateCodeforcesTasks, updateCodeforcesTasksLevelsAndTypes, updateGymTasks, updateTags, updateTaskIdsOnAttempts")
             ["-a", "--action"] => function(action:String) cfg.action = EnumTools.createByName(Action, action),
 
             @doc("Limit number of processing items. Works only for updateGymTasks")
@@ -80,7 +80,7 @@ class Main {
             case Action.updateCodeforcesTasksLevelsAndTypes: updateCodeforcesTasksLevelsAndTypes();
             case Action.updateGymTasks: updateGymTasks(cfg);
             case Action.updateTags: updateTags();
-            case Action.insertTaskId: insertTaskId();
+            case Action.updateTaskIdsOnAttempts: updateTaskIdsOnAttempts();
         }
 
         sys.db.Manager.cleanup();
@@ -112,19 +112,16 @@ class Main {
         }
     }
 
-    public static function insertTaskId() {
+    public static function updateTaskIdsOnAttempts() {
         var isNull:Null<SBigInt> = null;
-        var a = Attempt.manager.count($taskId == isNull);
-        var i = 1;
-        while (i <= a) {
-            var attempt = Attempt.manager.select($taskId == isNull);
+        var attempts = Attempt.manager.search($taskId == isNull);
+        for (attempt in attempts) {
             var d = Json.parse(attempt.description);
             var contestId = Reflect.field(d,"contestId");
             var index = Reflect.field(d.problem,"index");
             var codeforcesTask = CodeforcesTask.manager.select({contestId: contestId, contestIndex: index});
             attempt.task = codeforcesTask;
             attempt.update();
-            i++;
         }
     }
 
