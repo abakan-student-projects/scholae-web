@@ -29,9 +29,6 @@ enum TeacherAction {
     LoadAllTags;
     LoadAllTagsFinished(tags: Array<TagMessage>);
 
-    LoadAllLearners;
-    LoadAllLearnersFinished(learners: Array<LearnerMessage>);
-
     LoadLastLearnerAttempts;
     LoadLastLearnerAttemptsFinished(attempts: Array<AttemptMessage>);
 

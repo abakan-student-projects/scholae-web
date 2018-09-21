@@ -37,7 +37,6 @@ class TeacherNewAssignmentScreen
 
         TeacherViewsHelper.ensureGroupLoaded(props.params.id, state);
         TeacherViewsHelper.ensureTagsLoaded(state);
-        TeacherViewsHelper.ensureLearnersLoaded(state);
 
         return {
             tags: state.teacher.tags.dataOrEmptyArray(),

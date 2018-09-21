@@ -94,15 +94,7 @@ class Teacher
                         loaded: true
                     }
                 });
-            case LoadAllLearners: copy(state, { learners: RemoteDataHelper.createLoading() });
-            case LoadAllLearnersFinished(learners):
-                copy(state, {
-                    learners: {
-                        data: learners,
-                        loading: false,
-                        loaded: true
-                    }
-                });
+
             case LoadLastLearnerAttempts: copy(state, { lastLearnerAttempts : RemoteDataHelper.createLoading() });
             case LoadLastLearnerAttemptsFinished(attempts):
                 copy(state, {
@@ -231,14 +223,6 @@ class Teacher
                         ArraySort.sort(tags, function(x: TagMessage, y: TagMessage) { return if (x.name > y.name) 1 else -1; });
                         store.dispatch(LoadAllTagsFinished(tags));
                     });
-                next();
-
-            case LoadAllLearners:
-                TeacherServiceClient.instance.getAllLearners()
-                .then(function(learners) {
-                    ArraySort.sort(learners, function(x: LearnerMessage, y: LearnerMessage) { return if (x.firstName > y.firstName) 1 else -1; });
-                    store.dispatch(LoadAllLearnersFinished(learners));
-                });
                 next();
 
             case LoadLastLearnerAttempts:

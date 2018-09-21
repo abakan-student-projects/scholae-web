@@ -38,10 +38,6 @@ class TeacherServiceClient extends BaseServiceClient {
         return basicRequest(context.TeacherService.getAllTags, []);
     }
 
-    public function getAllLearners(): Promise<Array<LearnerMessage>> {
-        return basicRequest(context.TeacherService.getAllLearners, []);
-    }
-
     public function getAllLearnersByGroup(groupId: Float): Promise<Array<LearnerMessage>> {
         return request(function(success, fail) {
             context.TeacherService.getAllLearnersByGroup.call([groupId], function(e) {
