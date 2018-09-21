@@ -153,6 +153,7 @@ class TeacherService {
             return ServiceHelper.authorizeGroup(Group.manager.get(groupId), Authorization.instance.currentUser, function() {
                 for (gl in GroupLearner.manager.search($groupId == groupId)) {
                     Attempt.updateAttemptsForUser(gl.learner);
+                    Sys.sleep(0.3);
                 }
                 return getTrainingsByGroup(groupId);
             });
