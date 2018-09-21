@@ -1,5 +1,6 @@
 package view.teacher;
 
+import model.TeacherState;
 import codeforces.Codeforces;
 import messages.ArrayChunk;
 import messages.TaskMessage;
@@ -18,8 +19,9 @@ import react.ReactUtil.copy;
 
 typedef TeacherNewAssignmentProps = {
     tags: Array<TagMessage>,
+    learners: Array<LearnerMessage>,
     possibleTasks: ArrayChunk<TaskMessage>,
-    create: String -> Int -> Int -> Int -> Array<Float> -> Date -> Date -> Void,
+    create: Array<Float> -> String -> Int -> Int -> Int -> Array<Float> -> Date -> Date -> Void,
     cancel: Void -> Void
 }
 
@@ -39,6 +41,7 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
     var maxLevel: Int;
     var tasksCount: Int;
     var tagIds: Array<Float>;
+    var learnerIds: Array<Float>;
 
     public function new() {
         super();
@@ -87,7 +90,7 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
 
                 <div className="uk-grid-divider" data-uk-grid=${true}>
                     <div className="uk-width-expand@m">
-                        <TrainingParametersView tags=${props.tags} onTagsChanged=$onTrainingTagsChanged onChanged=$onTrainingChanged/>
+                        <TrainingParametersView tags=${props.tags} learners=${props.learners} onTagsChanged=$onTrainingTagsChanged onChanged=$onTrainingChanged/>
                     </div>
                     <div className="uk-width-1-3@m">
                         <h2>Выбранные задачи</h2>
@@ -133,7 +136,7 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
     function onCreateClicked() {
         var startDate: Date = Date.fromTime(state.startDate.utc());
         var finishDate: Date = Date.fromTime(state.finishDate.utc());
-        props.create(refs.name.value, minLevel, maxLevel, tasksCount, tagIds,
+        props.create(learnerIds, refs.name.value, minLevel, maxLevel, tasksCount, tagIds,
                 new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), 0 , 0, 0),
                 new Date(finishDate.getFullYear(), finishDate.getMonth(), finishDate.getDate(), 23 , 59, 59));
     }

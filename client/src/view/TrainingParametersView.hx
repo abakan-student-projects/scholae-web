@@ -1,6 +1,8 @@
 package view;
 
+import model.TeacherState;
 import messages.TagMessage;
+import messages.LearnerMessage;
 import js.Browser;
 import js.html.InputElement;
 import react.ReactComponent;
@@ -12,13 +14,16 @@ typedef TrainingParametersProps = {
     tags: Array<TagMessage>,
     onTagsChanged: Array<Float> -> Void,
     onChanged: Int -> Int -> Int -> Void,
+    learners: Array<LearnerMessage>,
+    onLearnersChanged: Array<Float> -> Void,
 }
 
 typedef TrainingParametersRefs = {
     minLevel: InputElement,
     maxLevel: InputElement,
     tasksCount: InputElement,
-    tagsSelect: Dynamic
+    tagsSelect: Dynamic,
+    learnersSelect: Dynamic
 }
 
 typedef TrainingParametersState = {
@@ -39,39 +44,57 @@ class TrainingParametersView extends ReactComponentOfPropsAndRefs<TrainingParame
         tags.sort(function(x, y) { return if (x.label < y.label) -1 else 1; });
         return tags;
     }
+    function getLearnersForSelect(){
+        var learners = Lambda.array(Lambda.map(props.learners, function(t){ return { value: t.id, label: t.firstName+" "+t.lastName}; }));
+        learners.sort(function(x, y) { return if (x.label < y.label) -1 else 1; });
+        return learners;
+    }
 
     override function render() {
         var tags = getTagsForSelect();
+        var learners = getLearnersForSelect();
         return
             jsx('
                 <div id="params" className="uk-margin">
-                <h2>Параметры тренировки</h2>
-                <div className="uk-margin uk-width-1-2@s">
-                    <label>Минимальный уровень: ${state.minLevel}</label>
-                    <input className="uk-range uk-margin" type="range" min="1" max="5" step="1" value=${state.minLevel} onChange=$onChange ref="minLevel"/>
-                </div>
-                <div className="uk-margin uk-width-1-2@s">
-                    <label>Максимальный уровень: ${state.maxLevel}</label>
-                    <input className="uk-range uk-margin" type="range" min="1" max="5" step="1" value=${state.maxLevel} onChange=$onChange ref="maxLevel"/>
-                </div>
-                <div className="uk-margin uk-width-1-2@s">
-                    <label>Количество задач: ${state.tasksCount}</label>
-                    <input className="uk-range uk-margin" type="range" min="1" max="20" step="1" value=${state.tasksCount} onChange=$onChange ref="tasksCount"/>
-                </div>
-                <div className="uk-margin">
-                    <h3>Категории задач</h3>
-                    <div className="uk-margin">
-                        <button className="uk-button uk-button-default uk-button-small  uk-margin-small-right" onClick=$selectAllTags>Выбрать все</button>
-                        <button className="uk-button uk-button-default uk-button-small" onClick=$deselectAllTags>Исключить все</button>
+                    <h2>Параметры тренировки</h2>
+                    <div className="uk-margin uk-width-1-2@s">
+                        <label>Минимальный уровень: ${state.minLevel}</label>
+                        <input className="uk-range uk-margin" type="range" min="1" max="5" step="1" value=${state.minLevel} onChange=$onChange ref="minLevel"/>
                     </div>
-                    <Select
-                        isMulti=${true}
-                        isLoading=${tags == null || tags.length <= 0}
-                        options=$tags
-                        onChange=$onSelectedTagsChanged
-                        placeholder="Выберите категории..."
-                        ref="tagsSelect"/>
-                </div>
+                    <div className="uk-margin uk-width-1-2@s">
+                        <label>Максимальный уровень: ${state.maxLevel}</label>
+                        <input className="uk-range uk-margin" type="range" min="1" max="5" step="1" value=${state.maxLevel} onChange=$onChange ref="maxLevel"/>
+                    </div>
+                    <div className="uk-margin uk-width-1-2@s">
+                        <label>Количество задач: ${state.tasksCount}</label>
+                        <input className="uk-range uk-margin" type="range" min="1" max="20" step="1" value=${state.tasksCount} onChange=$onChange ref="tasksCount"/>
+                    </div>
+                    <div className="uk-margin">
+                        <h3>Категории задач</h3>
+                        <div className="uk-margin">
+                            <button className="uk-button uk-button-default uk-button-small  uk-margin-small-right" onClick=$selectAllTags>Выбрать все</button>
+                            <button className="uk-button uk-button-default uk-button-small" onClick=$deselectAllTags>Исключить все</button>
+                        </div>
+                        <Select
+                            isMulti=${true}
+                            isLoading=${tags == null || tags.length <= 0}
+                            options=$tags
+                            onChange=$onSelectedTagsChanged
+                            placeholder="Выберите категории..."
+                            ref="tagsSelect"/>
+                        <h3>Ученики</h3>
+                        <div className="uk-margin">
+                            <button className="uk-button uk-button-default uk-button-small  uk-margin-small-right" onClick=$selectAllLearners>Выбрать все</button>
+                            <button className="uk-button uk-button-default uk-button-small" onClick=$deselectAllLearners>Исключить все</button>
+                        </div>
+                        <Select
+                            isMulti=${true}
+                            isLoading=${learners == null || learners.length <= 0}
+                            options=$learners
+                            onChange=$onSelectedLearnersChanged
+                            placeholder="Выберите учеников..."
+                            ref="learnersSelect"/>
+                    </div>
                 </div>
             ');
     }
@@ -115,4 +138,23 @@ class TrainingParametersView extends ReactComponentOfPropsAndRefs<TrainingParame
         refs.tagsSelect.setState(
             react.ReactUtil.copy(refs.tagsSelect.state, { value: null }),
             function() { onSelectedTagsChanged(refs.tagsSelect.state.value); });
-    }}
+    }
+
+    function onSelectedLearnersChanged(learners) {
+        props.onLearnersChanged(if (learners != null) Lambda.array(Lambda.map(learners, function(t) { return Std.parseFloat(t.value); })) else []);
+        trace(learners);
+    }
+
+    function selectAllLearners() {
+        trace(refs.learnersSelect);
+        refs.learnersSelect.setState(
+            react.ReactUtil.copy(refs.learnersSelect.state, { value: getLearnersForSelect() }),
+            function() { onSelectedLearnersChanged(refs.learnersSelect.state.value); });
+    }
+
+    function deselectAllLearners() {
+        refs.learnersSelect.setState(
+            react.ReactUtil.copy(refs.learnersSelect.state, { value: null }),
+            function() { onSelectedLearnersChanged(refs.learnersSelect.state.value); });
+    }
+}

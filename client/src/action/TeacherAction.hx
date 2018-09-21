@@ -1,5 +1,6 @@
 package action;
 
+import model.TeacherState;
 import messages.ArrayChunk;
 import messages.TaskMessage;
 import messages.MetaTrainingMessage;
@@ -27,6 +28,9 @@ enum TeacherAction {
 
     LoadAllTags;
     LoadAllTagsFinished(tags: Array<TagMessage>);
+
+    LoadAllLearners;
+    LoadAllLearnersFinished(learners: Array<LearnerMessage>);
 
     LoadLastLearnerAttempts;
     LoadLastLearnerAttemptsFinished(attempts: Array<AttemptMessage>);

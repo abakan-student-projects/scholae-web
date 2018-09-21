@@ -18,6 +18,10 @@ class TeacherViewsHelper {
         RemoteDataHelper.ensureRemoteDataLoaded(state.teacher.tags, TeacherAction.LoadAllTags, next);
     }
 
+    public static function ensureLearnersLoaded(state: ApplicationState, ?next: Void -> Void) {
+        RemoteDataHelper.ensureRemoteDataLoaded(state.teacher.currentGroup.learners, TeacherAction.LoadAllLearners, next);
+    }
+
     public static function ensureGroupLoaded(groupId: Float, state: ApplicationState, ?next: Void -> Void) {
         ensureGroupsLoaded(state, function() {
             trace("groups are loaded");

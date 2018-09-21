@@ -1,5 +1,6 @@
 package services;
 
+import model.TeacherState;
 import messages.ArrayChunk;
 import messages.TaskMessage;
 import messages.MetaTrainingMessage;
@@ -35,6 +36,10 @@ class TeacherServiceClient extends BaseServiceClient {
 
     public function getAllTags(): Promise<Array<TagMessage>> {
         return basicRequest(context.TeacherService.getAllTags, []);
+    }
+
+    public function getAllLearners(): Promise<Array<LearnerMessage>> {
+        return basicRequest(context.TeacherService.getAllLearners, []);
     }
 
     public function getAllLearnersByGroup(groupId: Float): Promise<Array<LearnerMessage>> {
