@@ -141,7 +141,7 @@ class TrainingParametersView extends ReactComponentOfPropsAndRefs<TrainingParame
     }
 
     function onSelectedLearnersChanged(learners) {
-        props.onLearnersChanged(if (learners != null) Lambda.array(Lambda.map(learners, function(t) { return Std.parseFloat(t.value); })) else []);
+        props.onLearnersChanged(if (learners != null) Lambda.array(Lambda.map(learners, function(t) { return t.value; })) else []);
         trace(learners);
     }
 

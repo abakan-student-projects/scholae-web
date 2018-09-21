@@ -40,7 +40,7 @@ class TeacherNewAssignmentScreen
 
         return {
             tags: state.teacher.tags.dataOrEmptyArray(),
-            learners: state.teacher.currentGroup.learners.data,
+            learners: if (null != state.teacher.currentGroup) state.teacher.currentGroup.learners.data else [],
             possibleTasks: state.teacher.newAssignment.possibleTasks.data,
             cancel: function() {
                 props.router.replace(

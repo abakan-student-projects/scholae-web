@@ -90,7 +90,7 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
 
                 <div className="uk-grid-divider" data-uk-grid=${true}>
                     <div className="uk-width-expand@m">
-                        <TrainingParametersView tags=${props.tags} learners=${props.learners} onTagsChanged=$onTrainingTagsChanged onChanged=$onTrainingChanged/>
+                        <TrainingParametersView tags=${props.tags} learners=${props.learners} onTagsChanged=$onTrainingTagsChanged onLearnersChanged=$onTrainingLearnersChanged onChanged=$onTrainingChanged/>
                     </div>
                     <div className="uk-width-1-3@m">
                         <h2>Выбранные задачи</h2>
@@ -118,6 +118,10 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
             tagIds: tagIds,
             length: tasksCount
         }));
+    }
+
+    function onTrainingLearnersChanged(checkedLearnerIds: Array<Float>) {
+        learnerIds = checkedLearnerIds;
     }
 
     function onTrainingChanged(minLevel: Int, maxLevel: Int, tasksCount: Int) {
