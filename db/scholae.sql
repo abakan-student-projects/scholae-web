@@ -145,7 +145,7 @@ create table Trainings
 (
   id bigint auto_increment
     primary key,
-  name varchar(512) not null,
+  name varchar(512) null,
   userId bigint not null,
   assignmentId bigint null
 )
