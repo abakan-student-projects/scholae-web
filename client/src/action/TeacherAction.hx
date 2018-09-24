@@ -1,5 +1,6 @@
 package action;
 
+import model.TeacherState;
 import messages.ArrayChunk;
 import messages.TaskMessage;
 import messages.MetaTrainingMessage;
