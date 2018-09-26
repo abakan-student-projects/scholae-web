@@ -83,6 +83,8 @@ class TeacherService {
     }
 
 
+
+
     public function createAssignment(group: GroupMessage, assignment: AssignmentMessage): ResponseMessage {
         return ServiceHelper.authorize(Role.Teacher, function() {
             return ServiceHelper.authorizeGroup(Group.manager.get(group.id), Authorization.instance.currentUser, function() {
