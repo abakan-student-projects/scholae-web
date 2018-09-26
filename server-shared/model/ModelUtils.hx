@@ -1,5 +1,16 @@
 package model;
 
+import Lambda;
+import Lambda;
+import Lambda;
+import Lambda;
+import Lambda;
+import Lambda;
+import Lambda;
+import haxe.io.Float64Array;
+import haxe.macro.ExprTools.ExprArrayTools;
+import Array;
+import Lambda;
 import haxe.ds.StringMap;
 
 class ModelUtils {
@@ -10,6 +21,15 @@ class ModelUtils {
                 Attempt.manager.search($userId == user.id && $solved == true),
                 function(a) { return a.task; }),
             function(t) { return t != null; });
+    }
+
+    public static function getExercisesTasksByUser(user: User): List<CodeforcesTask> {
+        var training = Lambda.array(Lambda.map(Training.manager.search($userId == user.id), function(t) { return t.id; }));
+        var exercise = Lambda.map(Exercise.manager.search($trainingId in training), function(t){ return t.task; });
+        for (t in training){
+            exercise = Lambda.concat(exercise,Lambda.map(Exercise.manager.search($trainingId == t), function(t){ return t.task; }));
+        }
+        return Lambda.list(exercise);
     }
 
     public static function getTaskIdsByTags(tagIds: Array<Float>): StringMap<Bool> {
@@ -24,13 +44,13 @@ class ModelUtils {
 
     public static function getTasksForUser(user: User, minLevel: Int, maxLevel: Int, tagIds: Array<Float>, length: Int): Array<CodeforcesTask> {
         var solvedTaskIds: List<Float> = Lambda.map(getTasksSolvedByUser(user), function(t) { return t.id; });
-
+        var exercisesTaskIds: List<Float> = Lambda.map(getExercisesTasksByUser(user), function(t) { return t.id; });
         var taskIdsByTags = getTaskIdsByTags(tagIds);
 
         var tasks: Array<CodeforcesTask> =
                 Lambda.array(
                     Lambda.filter(
-                        CodeforcesTask.manager.search($active == true && $level >= minLevel && $level <= maxLevel && !($id in solvedTaskIds)),
+                        CodeforcesTask.manager.search($active == true && $level >= minLevel && $level <= maxLevel && !($id in solvedTaskIds) && !($id in exercisesTaskIds)),
                         function(t) { return taskIdsByTags.exists(Std.string(t.id)); }));
 
         if (tasks.length < length) return null;
