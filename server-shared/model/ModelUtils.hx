@@ -1,12 +1,5 @@
 package model;
 
-import Lambda;
-import Lambda;
-import Lambda;
-import Lambda;
-import Lambda;
-import Lambda;
-import Lambda;
 import haxe.io.Float64Array;
 import haxe.macro.ExprTools.ExprArrayTools;
 import Array;
@@ -25,11 +18,8 @@ class ModelUtils {
 
     public static function getExercisesTasksByUser(user: User): List<CodeforcesTask> {
         var training = Lambda.array(Lambda.map(Training.manager.search($userId == user.id), function(t) { return t.id; }));
-        var exercise = Lambda.map(Exercise.manager.search($trainingId in training), function(t){ return t.task; });
-        for (t in training){
-            exercise = Lambda.concat(exercise,Lambda.map(Exercise.manager.search($trainingId == t), function(t){ return t.task; }));
-        }
-        return Lambda.list(exercise);
+        var taskIds = Lambda.map(Exercise.manager.search($trainingId in training), function(t){ return t.task; });
+        return Lambda.list(taskIds);
     }
 
     public static function getTaskIdsByTags(tagIds: Array<Float>): StringMap<Bool> {
