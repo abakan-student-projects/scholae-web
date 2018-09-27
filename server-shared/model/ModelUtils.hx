@@ -17,8 +17,8 @@ class ModelUtils {
     }
 
     public static function getExercisesTasksByUser(user: User): List<CodeforcesTask> {
-        var training = Lambda.array(Lambda.map(Training.manager.search($userId == user.id), function(t) { return t.id; }));
-        var taskIds = Lambda.map(Exercise.manager.search($trainingId in training), function(t){ return t.task; });
+        var trainingIds = Lambda.array(Lambda.map(Training.manager.search($userId == user.id), function(t) { return t.id; }));
+        var taskIds = Lambda.map(Exercise.manager.search($trainingId in trainingIds), function(t){ return t.task; });
         return Lambda.list(taskIds);
     }
 
