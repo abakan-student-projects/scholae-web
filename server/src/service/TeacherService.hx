@@ -89,6 +89,7 @@ class TeacherService {
                 m.minLevel = assignment.metaTraining.minLevel;
                 m.maxLevel = assignment.metaTraining.maxLevel;
                 m.tagIds = assignment.metaTraining.tagIds;
+
                 m.taskIds = assignment.metaTraining.taskIds;
                 m.length = assignment.metaTraining.length;
                 m.insert();

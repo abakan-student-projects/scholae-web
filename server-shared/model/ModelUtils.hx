@@ -32,7 +32,7 @@ class ModelUtils {
         return res;
     }
 
-    public static function getTasksForUser(user: User, minLevel: Int, maxLevel: Int, tagIds: Array<Float>, length: Int): Array<CodeforcesTask> {
+    public static function getTasksForUser(user: User, minLevel: Int, maxLevel: Int, tagIds: Array<Float>, taskIds: Array<Float>, length: Int): Array<CodeforcesTask> {
         var solvedTaskIds: List<Float> = Lambda.map(getTasksSolvedByUser(user), function(t) { return t.id; });
         var exercisesTaskIds: List<Float> = Lambda.map(getExercisesTasksByUser(user), function(t) { return t.id; });
         var taskIdsByTags = getTaskIdsByTags(tagIds);
@@ -40,17 +40,10 @@ class ModelUtils {
         var tasks: Array<CodeforcesTask> =
                 Lambda.array(
                     Lambda.filter(
-                        CodeforcesTask.manager.search($active == true && $level >= minLevel && $level <= maxLevel && !($id in solvedTaskIds) && !($id in exercisesTaskIds)),
-                        function(t) { return taskIdsByTags.exists(Std.string(t.id)); }));
+                        CodeforcesTask.manager.search($active == true && $level >= minLevel && $level <= maxLevel && !($id in solvedTaskIds) && !($id in exercisesTaskIds) && ($id in taskIds)),
+                        function(t) { return  taskIdsByTags.exists(Std.string(t.id)); }));
 
-        if (tasks.length < length) return null;
-
-        var res = [];
-        for (i in 0...length) {
-            res.push(getRandomItemAndRemoveItFromList(tasks));
-        }
-
-        return res;
+        return tasks;
     }
 
     private static function getRandomItemAndRemoveItFromList<T>(a: Array<T>): T {
@@ -90,6 +83,7 @@ class ModelUtils {
                         a.metaTraining.minLevel,
                         a.metaTraining.maxLevel,
                         a.metaTraining.tagIds,
+                        a.metaTraining.taskIds,
                         if (a.metaTraining.length != null) a.metaTraining.length else 5);
 
                     if (null == tasks) {

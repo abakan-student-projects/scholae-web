@@ -13,6 +13,7 @@ import react.ReactComponent;
 import react.ReactMacro.jsx;
 import redux.react.IConnectedComponent;
 import utils.DateRangePicker;
+import view.CheckboxesView;
 
 import react.ReactUtil.copy;
 
@@ -20,7 +21,7 @@ typedef TeacherNewAssignmentProps = {
     tags: Array<TagMessage>,
     learners: Array<LearnerMessage>,
     possibleTasks: ArrayChunk<TaskMessage>,
-    create: Array<Float> -> String -> Int -> Int -> Int -> Array<Float> -> Date -> Date -> Void,
+    create: Array<Float> -> String -> Int -> Int -> Int -> Array<Float> -> Array<Float> -> Date -> Date -> Void,
     cancel: Void -> Void
 }
 
@@ -41,6 +42,8 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
     var tasksCount: Int;
     var tagIds: Array<Float>;
     var learnerIds: Array<Float>;
+    var taskIds: Array<Float>;
+    var checkbox: Array<CheckboxData>;
 
     public function new() {
         super();
@@ -51,10 +54,11 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
     }
 
     override function render() {
-        var possibleTasks =
-            if (props.possibleTasks != null)
-                [for (t in props.possibleTasks.data) renderTask(t)]
-            else [];
+        var checkbox =
+        if (props.possibleTasks != null)
+            [for (t in props.possibleTasks.data) {label:t.name,id:Std.string(t.id),checked:false}];
+        else [];
+        var possibleTasks = jsx('<CheckboxesView data=${checkbox} onChanged=$onTrainingTasksChanged />');
 
         var possibleTasksTotalOrLoading =
             if (props.possibleTasks != null)
@@ -108,6 +112,10 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
         ');
     }
 
+    function onTrainingTasksChanged(changedTaskIds: Array<String>){
+        taskIds = [for (t in changedTaskIds) Std.parseFloat(t)];
+    }
+
     function onTrainingTagsChanged(checkedTagIds: Array<Float>) {
         tagIds = checkedTagIds;
         dispatch(TeacherAction.LoadPossibleTasks({
@@ -115,6 +123,7 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
             minLevel: minLevel,
             maxLevel: maxLevel,
             tagIds: tagIds,
+            taskIds: null,
             length: tasksCount
         }));
     }
@@ -132,6 +141,7 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
             minLevel: minLevel,
             maxLevel: maxLevel,
             tagIds: tagIds,
+            taskIds: taskIds,
             length: tasksCount
         }));
     }
@@ -139,7 +149,7 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
     function onCreateClicked() {
         var startDate: Date = Date.fromTime(state.startDate.utc());
         var finishDate: Date = Date.fromTime(state.finishDate.utc());
-        props.create(learnerIds, refs.name.value, minLevel, maxLevel, tasksCount, tagIds,
+        props.create(learnerIds, refs.name.value, minLevel, maxLevel, tasksCount, tagIds, taskIds,
                 new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), 0 , 0, 0),
                 new Date(finishDate.getFullYear(), finishDate.getMonth(), finishDate.getDate(), 23 , 59, 59));
     }
