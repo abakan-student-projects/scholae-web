@@ -42,8 +42,13 @@ class ModelUtils {
                     Lambda.filter(
                         CodeforcesTask.manager.search($active == true && $level >= minLevel && $level <= maxLevel && !($id in solvedTaskIds) && !($id in exercisesTaskIds) && ($id in taskIds)),
                         function(t) { return  taskIdsByTags.exists(Std.string(t.id)); }));
-
-        return tasks;
+        var res = [];
+        if (tasks.length > length){
+            for (i in 0...length) {
+                res.push(getRandomItemAndRemoveItFromList(tasks));
+            }
+            return res;
+        }else return tasks;
     }
 
     private static function getRandomItemAndRemoveItFromList<T>(a: Array<T>): T {
