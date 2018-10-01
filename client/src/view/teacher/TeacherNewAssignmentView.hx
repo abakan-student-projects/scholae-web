@@ -1,6 +1,5 @@
 package view.teacher;
 
-import model.TeacherState;
 import codeforces.Codeforces;
 import messages.ArrayChunk;
 import messages.TaskMessage;
