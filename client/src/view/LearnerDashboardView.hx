@@ -31,6 +31,10 @@ class LearnerDashboardView extends ReactComponentOfProps<LearnerDashboardViewPro
             if (props.resultsRefreshing) jsx('<button className="uk-button uk-button-default uk-margin uk-width-1-1" disabled="true">Обновить результаты</button>')
             else jsx('<button className="uk-button uk-button-default uk-margin uk-width-1-1" onClick=${props.refreshResults}>Обновить результаты</button>');
 
+        var showSpinner =
+            if (props.resultsRefreshing) jsx('<span className="uk-margin-left" data-uk-spinner=""></span> ')
+            else null;
+
         if (null != props.trainings && null != props.tags) {
             var trainings = [ for (t in props.trainings) renderTraining(t)];
             return jsx('
@@ -48,6 +52,7 @@ class LearnerDashboardView extends ReactComponentOfProps<LearnerDashboardViewPro
                                 </li>
                             </ul>
                         </div>
+                        $showSpinner
                     </div>
                     <ul data-uk-accordion=${true} className="trainings">$trainings</ul>
                 </div>
