@@ -1,5 +1,7 @@
 package service;
 
+import haxe.ds.ArraySort;
+import messages.TaskMessage;
 import model.CodeforcesTask;
 import model.ModelUtils;
 import messages.MetaTrainingMessage;
@@ -193,12 +195,15 @@ class TeacherService {
             taskIdsByTags.push(Std.parseFloat(t));
         }
 
-        var tasks = Lambda.array(
+
+        var tasks: Array<TaskMessage> = Lambda.array(
             Lambda.map(
                 CodeforcesTask.manager.search($active == true && $level >= metaTraining.minLevel && $level <= metaTraining.maxLevel && ($id in taskIdsByTags)),
                 function(t) { return t.toMessage(); }
             )
         );
+
+        ArraySort.sort(tasks, function(a: TaskMessage, b: TaskMessage) { return a.tagIds.length - b.tagIds.length; });
 
         return ServiceHelper.successResponse(
             {
