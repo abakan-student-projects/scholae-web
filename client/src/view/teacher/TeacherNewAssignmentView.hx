@@ -43,7 +43,7 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
     var tagIds: Array<Float>;
     var learnerIds: Array<Float>;
     var taskIds: Array<Float>;
-    var checkbox: Array<CheckboxData>;
+    var checkboxData: Array<CheckboxData>;
 
     public function new() {
         super();
@@ -54,11 +54,11 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
     }
 
     override function render() {
-        var checkbox =
+        var checkboxData =
         if (props.possibleTasks != null)
             [for (t in props.possibleTasks.data) {label:t.name,id:Std.string(t.id),checked:false}];
         else [];
-        var possibleTasks = jsx('<CheckboxesView data=${checkbox} onChanged=$onTrainingTasksChanged />');
+        var possibleTasks = jsx('<CheckboxesView data=${checkboxData} onChanged=$onTrainingTasksChanged />');
 
         var possibleTasksTotalOrLoading =
             if (props.possibleTasks != null)

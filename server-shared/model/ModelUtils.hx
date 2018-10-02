@@ -48,7 +48,8 @@ class ModelUtils {
                 res.push(getRandomItemAndRemoveItFromList(tasks));
             }
             return res;
-        }else return tasks;
+        }else if(tasks.length == 0) return null;
+        else return tasks;
     }
 
     private static function getRandomItemAndRemoveItFromList<T>(a: Array<T>): T {
