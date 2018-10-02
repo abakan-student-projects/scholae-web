@@ -58,7 +58,7 @@ class TeacherGroupView extends ReactComponentOfPropsAndState<TeacherGroupProps, 
             else jsx('<button className="uk-button uk-button-default uk-margin uk-width-1-1" onClick=${props.refreshResults}>Обновить результаты</button>');
 
         var showSpinner =
-            if (props.resultsRefreshing) jsx('<span className="uk-margin-left" data-uk-spinner=""></span> ')
+            if (props.resultsRefreshing) jsx('<span className="uk-margin-left" data-uk-spinner=""></span>')
             else null;
 
         var assignmentsView =
