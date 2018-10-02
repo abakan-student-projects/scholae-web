@@ -56,7 +56,7 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
     override function render() {
         var checkboxData =
         if (props.possibleTasks != null)
-            [for (t in props.possibleTasks.data) {label:t.name,id:Std.string(t.id),checked:false}];
+            [for (t in props.possibleTasks.data) {id:Std.string(t.id),label:renderTask(t),checked:false}];
         else [];
         var possibleTasks = jsx('<CheckboxesView data=${checkboxData} onChanged=$onTrainingTasksChanged />');
 
@@ -174,11 +174,9 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
         };
 
         return jsx('
-            <div key=${Std.string(task.id)} className="uk-margin-small">
-                <div>
+                <span>
                     <a href=$problemUrl target="_blank">${task.name}</a> <span className=${"uk-label" + labelStyle}>${Std.string(task.level)}</span>
-                </div>
-            </div>
+                </span>
         ');
     }
 }
