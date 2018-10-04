@@ -192,3 +192,48 @@ create index email
   on users (email)
 ;
 
+create table NeercContests
+(
+  id bigint auto_increment
+    primary key,
+  name varchar(128) not null,
+  year int not null
+)
+;
+
+create table NeercTeams
+(
+  id bigint auto_increment
+    primary key,
+  name varchar(255) not null,
+  rank int not null,
+  contestId bigint not null,
+  solvedProblemsCount int not null,
+  time int not null
+)
+;
+
+create table NeercTeamUsers
+(
+  userId bigint not null,
+  teamId bigint not null
+)
+;
+
+create table NeercUniversities
+(
+  id bigint auto_increment
+    primary key,
+  name varchar(512) not null
+)
+;
+
+create table NeercUsers
+(
+  id bigint auto_increment
+    primary key,
+  lastName varchar(512) null,
+  codeforcesHandle varchar(512) null,
+  universityId bigint null
+)
+;
