@@ -12,6 +12,7 @@ import codeforces.ProblemStatistics;
 import haxe.ds.StringMap;
 import codeforces.ProblemsResponse;
 import codeforces.Codeforces;
+import parser.Neerc;
 import haxe.EnumTools;
 import haxe.EnumTools.EnumValueTools;
 import haxe.Json;
@@ -23,6 +24,7 @@ enum Action {
     updateGymTasks;
     updateTags;
     updateTaskIdsOnAttempts;
+    updateNeercData;
 }
 
 typedef Config = {
@@ -55,7 +57,7 @@ class Main {
 
         var args = Sys.args();
         var argHandler = hxargs.Args.generate([
-            @doc("Action: updateCodeforcesTasks, updateCodeforcesTasksLevelsAndTypes, updateGymTasks, updateTags, updateTaskIdsOnAttempts")
+            @doc("Action: updateCodeforcesTasks, updateCodeforcesTasksLevelsAndTypes, updateGymTasks, updateTags, updateTaskIdsOnAttempts, updateNeercData")
             ["-a", "--action"] => function(action:String) cfg.action = EnumTools.createByName(Action, action),
 
             @doc("Limit number of processing items. Works only for updateGymTasks")
@@ -81,6 +83,7 @@ class Main {
             case Action.updateGymTasks: updateGymTasks(cfg);
             case Action.updateTags: updateTags();
             case Action.updateTaskIdsOnAttempts: updateTaskIdsOnAttempts();
+            case Action.updateNeercData: updateNeercData();
         }
 
         sys.db.Manager.cleanup();
@@ -220,6 +223,17 @@ class Main {
                     }
                 }
             }
+        }
+    }
+
+    public static function updateNeercData() {
+
+        var firstYear = 2015;
+        var lastYear = 2017;
+
+        // add cycle
+        for (year in firstYear...lastYear+1) {
+            Neerc.startParsing("http://neerc.ifmo.ru/archive/" + year + "/standings.html", year);
         }
     }
 }
