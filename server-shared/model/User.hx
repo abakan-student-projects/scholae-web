@@ -58,14 +58,13 @@ class User extends sys.db.Object {
             };
     }
 
-   public function calculateLearnerReating(user:User): Float {
-       var Rcategory:Int=0;
+   public function calculateLearnerRating(user:User): Float {
+       var rating:Int=0;
        var l:List<Attempt>;
        l = Attempt.manager.search(($userId ==user.id) && ($solved==true));
-       for (i in l){
-
-               Rcategory+=i.task.level;
+       for (i in l) {
+               rating += i.task.level;
        }
-       return Rcategory;
+       return rating;
    }
 }
