@@ -3,6 +3,6 @@ package messages;
 typedef NeercUserMessage = {
     id: Float,
     lastName: String,
-    codeforcesHandle: String,
+    codeforcesUsersId: Float,
     universityId: Float
 }

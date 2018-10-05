@@ -115,7 +115,6 @@ class Neerc {
                     for (j in 0...teamMembers.length) {
                         var neercUser = new NeercUser();
                         neercUser.lastName = teamMembers[j];
-                        neercUser.codeforcesHandle = "";
                         neercUser.universityId = univerityId;
                         neercUser.insert();
 

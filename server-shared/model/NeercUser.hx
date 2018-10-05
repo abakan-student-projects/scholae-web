@@ -8,7 +8,7 @@ import sys.db.Types;
 class NeercUser extends sys.db.Object {
     public var id: SBigId;
     public var lastName: SString<512>;
-    public var codeforcesHandle: SString<512>;
+    public var codeforcesUsersId: SBigInt;
     public var universityId: SBigInt;
 
     public function new() {
@@ -21,7 +21,7 @@ class NeercUser extends sys.db.Object {
         return {
             id: id,
             lastName: lastName,
-            codeforcesHandle: codeforcesHandle,
+            codeforcesUsersId: codeforcesUsersId,
             universityId: universityId
         };
     }
