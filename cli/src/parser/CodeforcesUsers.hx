@@ -95,7 +95,7 @@ class CodeforcesUsers {
 
     private static function getHandlesUrl(handles: Array<String>): String {
         var url = "";
-        for (i in 0...((handles.length < 5000) ? handles.length : 5000)) url += handles[i] + ";";
+        for (i in 0...handles.length) url += handles[i] + ";";
         return url;
     }
 
