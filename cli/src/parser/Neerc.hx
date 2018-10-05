@@ -5,7 +5,6 @@ import model.NeercTeamUser;
 import model.NeercTeam;
 import model.NeercUser;
 import model.NeercUniversity;
-import parser.Team;
 import sys.io.File;
 import htmlparser.HtmlDocument;
 import haxe.Json;
