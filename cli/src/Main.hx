@@ -4,6 +4,8 @@ import sys.db.Types.SBigInt;
 import model.Attempt;
 import model.CodeforcesTaskTag;
 import model.CodeforcesTag;
+import model.CodeforcesUser;
+import model.NeercUser;
 import codeforces.Problem;
 import codeforces.Contest;
 import haxe.ds.IntMap;
@@ -13,6 +15,7 @@ import haxe.ds.StringMap;
 import codeforces.ProblemsResponse;
 import codeforces.Codeforces;
 import parser.Neerc;
+import parser.CodeforcesUsers;
 import haxe.EnumTools;
 import haxe.EnumTools.EnumValueTools;
 import haxe.Json;
@@ -25,6 +28,9 @@ enum Action {
     updateTags;
     updateTaskIdsOnAttempts;
     updateNeercData;
+    updateCodeforcesUsersHandles;
+    updateCodeforcesUsersNames;
+    updateNeercUsersRelationWithCodeforces;
 }
 
 typedef Config = {
@@ -57,7 +63,7 @@ class Main {
 
         var args = Sys.args();
         var argHandler = hxargs.Args.generate([
-            @doc("Action: updateCodeforcesTasks, updateCodeforcesTasksLevelsAndTypes, updateGymTasks, updateTags, updateTaskIdsOnAttempts, updateNeercData")
+            @doc("Action: updateCodeforcesTasks, updateCodeforcesTasksLevelsAndTypes, updateGymTasks, updateTags, updateTaskIdsOnAttempts, updateNeercData, updateCodeforcesUsersHandles, updateCodeforcesUsersNames, updateNeercUsersRelationWithCodeforces")
             ["-a", "--action"] => function(action:String) cfg.action = EnumTools.createByName(Action, action),
 
             @doc("Limit number of processing items. Works only for updateGymTasks")
@@ -84,6 +90,9 @@ class Main {
             case Action.updateTags: updateTags();
             case Action.updateTaskIdsOnAttempts: updateTaskIdsOnAttempts();
             case Action.updateNeercData: updateNeercData();
+            case Action.updateCodeforcesUsersHandles: updateCodeforcesUsersHandles();
+            case Action.updateCodeforcesUsersNames: updateCodeforcesUsersNames();
+            case Action.updateNeercUsersRelationWithCodeforces: updateNeercUsersRelationWithCodeforces();
         }
 
         sys.db.Manager.cleanup();
@@ -227,13 +236,48 @@ class Main {
     }
 
     public static function updateNeercData() {
-
-        var firstYear = 2015;
+        var firstYear = 2010;
         var lastYear = 2017;
 
-        // add cycle
         for (year in firstYear...lastYear+1) {
-            Neerc.startParsing("http://neerc.ifmo.ru/archive/" + year + "/standings.html", year);
+            Neerc.startParsing("http://neerc.ifmo.ru/archive/" + (firstYear+(lastYear-year)) + "/standings.html", (firstYear+(lastYear-year)));
         }
+    }
+
+    public static function updateCodeforcesUsersHandles() {
+        CodeforcesUsers.ParseUsersFromRussia();
+    }
+
+    public static function updateCodeforcesUsersNames() {
+        CodeforcesUsers.updateCodeforcesUsersNames();
+    }
+
+    public static function updateNeercUsersRelationWithCodeforces() {
+        var codeforcesUsersList = Lambda.array(CodeforcesUser.manager.all());
+        var neercUsersList = Lambda.array(NeercUser.manager.all());
+        var codeforcesUsers: Array<String> = Lambda.array(Lambda.map(codeforcesUsersList, function(user) {
+            return user.lastName;
+        }));
+        var neercUsers: Array<String> = Lambda.array(Lambda.map(neercUsersList, function(user) {
+            return user.lastName;
+        }));
+        var indexes: Array<Int> = [];
+        var updated = 0;
+
+        for (i in 0...neercUsers.length) {
+            if (neercUsers[i] != "null") {
+                var index = codeforcesUsers.indexOf(neercUsers[i]);
+
+                if (index != -1 && indexes.indexOf(index) == -1) {
+                    var neerc = NeercUser.manager.select({id: neercUsersList[i].id});
+                    neerc.codeforcesUsersId = index;
+                    neerc.update();
+
+                    indexes.push(index);
+                    updated++;
+                }
+            }
+        }
+        trace("Updated " + updated + " records");
     }
 }
