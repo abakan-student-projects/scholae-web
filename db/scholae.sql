@@ -233,7 +233,22 @@ create table NeercUsers
   id bigint auto_increment
     primary key,
   lastName varchar(512) null,
-  codeforcesHandle varchar(512) null,
+  codeforcesUsersId bigint null,
   universityId bigint null
+)
+;
+
+create table CodeforcesUsers (
+  id bigint auto_increment
+    primary key,
+  handle varchar(64) null,
+  firstName varchar(64) null,
+  lastName varchar(64) null,
+  russianFirstName varchar(64) null,
+  russianLastName varchar(64) null,
+  rankWorld int NOT NULL,
+  rankRussia int NOT NULL,
+  countContests int NOT NULL,
+  rating int NOT NULL
 )
 ;
