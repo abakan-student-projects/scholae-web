@@ -26,13 +26,15 @@ typedef TeacherNewAssignmentProps = {
 }
 
 typedef TeacherNewAssignmentRefs = {
-    name: InputElement
+    name: InputElement,
+    filterInput: InputElement
 }
 
 typedef TeacherNewAssignmentState = {
     startDate: Moment,
     finishDate: Moment,
-    focusedInput: Dynamic
+    focusedInput: Dynamic,
+    filter: String
 }
 
 class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAssignmentProps, TeacherNewAssignmentRefs> implements IConnectedComponent {
@@ -49,7 +51,8 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
         super();
         state = {
             startDate: Moment.moment({}),
-            finishDate: null
+            finishDate: null,
+            filter: ""
         };
     }
 
@@ -100,6 +103,8 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
                         <div className="uk-margin">
                             $possibleTasksTotalOrLoading
                         </div>
+                        <h2>Поиск задач</h2>
+                            <input type="text" placeholder="Поиск" className="uk-input uk-form-width-large uk-margin" ref="filterInput" onChange=$onFilterInputChanged />
                         $possibleTasks
                     </div>
                 </div>
@@ -110,6 +115,19 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
                 </p>
             </div>
         ');
+    }
+
+    function onFilterInputChanged(){
+        setState(copy(state, { filter: refs.filterInput.value }));
+        dispatch(TeacherAction.LoadPossibleTasks({
+            id: null,
+            minLevel: minLevel,
+            maxLevel: maxLevel,
+            tagIds: tagIds,
+            taskIds: null,
+            length: tasksCount
+        }, refs.filterInput.value));
+
     }
 
     function onTrainingTasksChanged(changedTaskIds: Array<String>){
