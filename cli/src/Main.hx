@@ -90,8 +90,8 @@ class Main {
             case Action.updateTags: updateTags();
             case Action.updateTaskIdsOnAttempts: updateTaskIdsOnAttempts();
             case Action.updateNeercData: updateNeercData();
-            case Action.updateCodeforcesUsersHandles: updateCodeforcesUsersHandles();
-            case Action.updateCodeforcesUsersNames: updateCodeforcesUsersNames();
+            case Action.updateCodeforcesUsersHandles: CodeforcesUsers.ParseUsersFromRussia();
+            case Action.updateCodeforcesUsersNames: CodeforcesUsers.updateCodeforcesUsersNames();
             case Action.updateNeercUsersRelationWithCodeforces: updateNeercUsersRelationWithCodeforces();
         }
 
@@ -242,14 +242,6 @@ class Main {
         for (year in firstYear...lastYear+1) {
             Neerc.startParsing("http://neerc.ifmo.ru/archive/" + (firstYear+(lastYear-year)) + "/standings.html", (firstYear+(lastYear-year)));
         }
-    }
-
-    public static function updateCodeforcesUsersHandles() {
-        CodeforcesUsers.ParseUsersFromRussia();
-    }
-
-    public static function updateCodeforcesUsersNames() {
-        CodeforcesUsers.updateCodeforcesUsersNames();
     }
 
     public static function updateNeercUsersRelationWithCodeforces() {
