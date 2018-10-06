@@ -63,7 +63,7 @@ class User extends sys.db.Object {
        var l:List<Attempt>;
        l = Attempt.manager.search(($userId ==user.id) && ($solved==true));
        for (i in l) {
-               rating += i.task.level;
+           rating += i.task.level;
        }
        return rating;
    }
