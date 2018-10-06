@@ -17,6 +17,7 @@ import model.Session;
 import model.User;
 import php.Lib.mail;
 
+
 class AuthService {
 
     public function new() {}
@@ -80,8 +81,9 @@ Scholae';
     private function greetUser(user: User) {
         var subjectForUser ='Scholae: здравствуйте!';
         var message = 'Здравствуйте,
-
 мы рады, что вы зарегистрировались в Scholae!
+Перейдите по ссылке для подтверждения электронной почты - http://scholae.lambda-calculus.ru/activation/${user.emailActivationCode}
+Активация электронной почты доступна в течении 7 дней (со дня регистрации - ${user.registrationDate}).
 
 Удачи в тренировках!
 
@@ -105,9 +107,49 @@ Scholae';
             u.registrationDate = Date.now();
             u.roles.set(Role.Learner);
             u.codeforcesHandle = user.codeforcesHandle;
+            u.emailActivationCode = Md5.encode(Std.string(u.registrationDate));
             u.insert();
             greetUser(u);
+
             return authenticate(user.email, user.password);
         }
+    }
+
+    function parseDateParts(date: Date): Dynamic {
+        return {
+            y: Std.parseInt(DateTools.format(date, "%Y")),
+            M: Std.parseInt(DateTools.format(date, "%m")),
+            d: Std.parseInt(DateTools.format(date, "%d")),
+            h: Std.parseInt(DateTools.format(date, "%H")),
+            m: Std.parseInt(DateTools.format(date, "%M")),
+            s: Std.parseInt(DateTools.format(date, "%S"))
+        }
+    }
+
+    public function checkDateActivation(date: Date): Bool {
+        var dateRParse = parseDateParts(date);
+        var dateDeadlineActivated: Float = DateTools.makeUtc(dateRParse.y,dateRParse.M - 1,dateRParse.d + 7,dateRParse.h,dateRParse.m,dateRParse.s) / 1000;
+
+        var dateCPase = parseDateParts(Date.now());
+        var dateCurrent: Float = DateTools.makeUtc(dateCPase.y,dateCPase.M - 1,dateCPase.d,dateCPase.h,dateCPase.m,dateCPase.s) / 1000;
+
+        // if current date < deadline date then return true, else false
+        if (dateCurrent <= dateDeadlineActivated) return true
+        else return false;
+    }
+
+    public function emailActivation(code: String): Bool {
+        var user: User = User.manager.select($emailActivationCode == code, true);
+        if (user != null) {
+            if (checkDateActivation(user.registrationDate)) {
+                user.emailActivationCode = null;
+                user.emailActivated = true;
+                user.update();
+
+                return true;
+            } else false;
+        }
+
+        return false;
     }
 }

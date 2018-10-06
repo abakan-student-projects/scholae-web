@@ -2,6 +2,7 @@ package services;
 
 import messages.UserMessage;
 import messages.SessionMessage;
+import messages.ResponseMessage;
 import js.Promise;
 
 class AuthServiceClient extends BaseServiceClient {
@@ -44,6 +45,18 @@ class AuthServiceClient extends BaseServiceClient {
     public function renewPassword(email: String): Promise<Bool> {
         return new Promise(function(success, fail) {
             context.AuthService.renewPassword.call([email], function(e) {
+                return if (null != e) {
+                    success(e);
+                } else {
+                    fail(null);
+                }
+            });
+        });
+    }
+
+    public function emailActivation(code: String): Promise<Bool> {
+        return new Promise(function(success, fail) {
+            context.AuthService.emailActivation.call([code], function(e) {
                 return if (null != e) {
                     success(e);
                 } else {

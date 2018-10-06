@@ -18,6 +18,7 @@ import services.AuthServiceClient;
 typedef ScholaeState = {
     auth: AuthState,
     loading: Bool,
+    activetedEmail: Bool,
     registration: RegistrationState
 }
 
@@ -45,6 +46,7 @@ class Scholae
             redirectPath: "/",
             errorMessage: null
         },
+        activetedEmail: false,
         loading: false
     };
 
@@ -116,7 +118,11 @@ class Scholae
                 });
             case Clear: initState;
             case RenewPassword (email):state;
-
+            case EmailActivationCodeCheck(check): copy(state,
+            {
+                activetedEmail: check
+            });
+            case EmailActivationCode(code): state;
         }
     }
 
@@ -142,9 +148,16 @@ class Scholae
                 Session.logout();
                 next();
 
-
             case RenewPassword(email):
                 AuthServiceClient.instance.renewPassword(email);
+                next();
+
+            case EmailActivationCode(code):
+                trace(code);
+                AuthServiceClient.instance.emailActivation(code)
+                    .then(function(check) {
+                        store.dispatch(EmailActivationCodeCheck(check));
+                    });
                 next();
 
             case Register(email, password, codeforcesId, firstName, lastName):

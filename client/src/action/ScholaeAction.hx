@@ -3,6 +3,7 @@ package action;
 import messages.SessionMessage;
 import messages.LearnerMessage;
 import messages.GroupMessage;
+import messages.ResponseMessage;
 
 enum ScholaeAction {
 
@@ -21,4 +22,7 @@ enum ScholaeAction {
     PreventRegistrationRedirection;
 
     RenewPassword(email: String);
+
+    EmailActivationCode(code: String);
+    EmailActivationCodeCheck(check: Bool);
 }

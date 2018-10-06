@@ -23,7 +23,7 @@ class NewGroupView extends ReactComponentOfRefs<NewGroupRefs> implements IConnec
 
     override function render() {
         return jsx('
-                <div id="new-group">
+                <div id="EmailActivationScreen-group">
                     <input className="uk-input uk-form-width-large uk-margin-right" ref="name" placeholder="Название курса, семестр, год"/>
                     <input className="uk-input uk-form-width-large uk-margin-right" ref="signUpKey" placeholder="Код записи для учеников"/>
                     <button className="uk-button uk-button-primary uk-margin-right" onClick=${onClick}>Создать</button>
