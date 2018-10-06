@@ -80,7 +80,7 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
                         startDateId="new-assignment-startdate"
                         startDatePlaceholderText="Дата начала"
                         endDate=${state.finishDate}
-                        endDateId="EmailActivationScreen-assignment-enddate"
+                        endDateId="new-assignment-enddate"
                         endDatePlaceholderText="Дата окончания"
                         onDatesChange=${function(range) { setState(copy(state, { startDate: range.startDate, finishDate: range.endDate })); }}
                         focusedInput=${state.focusedInput}
