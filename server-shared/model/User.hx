@@ -59,7 +59,7 @@ class User extends sys.db.Object {
     }
 
    public function calculateLearnerRating(user:User): Float {
-       var rating:Int=0;
+       var rating:Int = 0;
        var results:List<Attempt>;
        results = Attempt.manager.search(($userId ==user.id) && ($solved==true));
        for (valuation in results) {
