@@ -21,6 +21,14 @@
 		</antcall>
 	</target>
 
+	<target name="build.worker">
+		<mkdir dir="${site.build.path}/remoting"/>
+		<antcall target="haxe">
+			<param name="dir" value="${project.root.path}/worker"/>
+			<param name="hxml" value="worker.hxml"/>
+		</antcall>
+	</target>
+
 	<target name="build.cli">
 		<antcall target="haxe">
 			<param name="dir" value="${project.root.path}/cli"/>

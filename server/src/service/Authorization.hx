@@ -13,9 +13,10 @@ class Authorization {
     }
 
     public var currentUser(default, null): User;
+    public var session(default, null): Session;
 
     private function new() {
-        var session: Session = Session.findSession(php.Web.getParams().get("sid"));
+        session = Session.findSession(php.Web.getParams().get("sid"));
         currentUser = if (null != session) session.user else null;
     }
 

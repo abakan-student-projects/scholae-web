@@ -1,5 +1,9 @@
 package service;
 
+import jobs.JobQueue;
+import jobs.ScholaeJob;
+import haxe.io.Bytes;
+import haxe.Serializer;
 import haxe.ds.ArraySort;
 import messages.TaskMessage;
 import model.CodeforcesTask;
@@ -152,11 +156,9 @@ class TeacherService {
     public function refreshResultsForGroup(groupId: Float): ResponseMessage {
         return ServiceHelper.authorize(Role.Teacher, function() {
             return ServiceHelper.authorizeGroup(Group.manager.get(groupId), Authorization.instance.currentUser, function() {
-                for (gl in GroupLearner.manager.search($groupId == groupId)) {
-                    Attempt.updateAttemptsForUser(gl.learner);
-                    Sys.sleep(0.3);
-                }
-                return getTrainingsByGroup(groupId);
+                return ServiceHelper.successResponse(
+                    JobQueue.publishScholaeJob(ScholaeJob.RefreshResultsForGroup(groupId), Authorization.instance.session.id)
+                );
             });
         });
     }
