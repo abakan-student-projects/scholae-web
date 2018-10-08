@@ -119,9 +119,7 @@ class Scholae
             case Clear: initState;
             case RenewPassword (email):state;
             case EmailActivationCode(code): copy(state, null);
-            case EmailActivationCodeCheck(check): copy(state,
-            {
-                registration: {redirectPath: "/"},
+            case EmailActivationCodeCheck(check): copy(state, {
                 activetedEmail: check
             });
         }
