@@ -28,11 +28,21 @@ class AuthService {
     public function authenticate(email: String, password: String): ResponseMessage {
         var user = User.getUserByEmailAndPassword(email, password);
         if (null != user) {
-            var session = Session.getSessionByUser(user);
-            if (null != session && null != Session.manager.search({ id: session.id }).first()) session.update() else session.insert();
-            return ServiceHelper.successResponse(user.toSessionMessage(session.id));
+            if (canAuth(user.registrationDate, user.emailActivated)) {
+                var session = Session.getSessionByUser(user);
+                if (null != session && null != Session.manager.search({ id: session.id }).first()) session.update() else session.insert();
+                return ServiceHelper.successResponse(user.toSessionMessage(session.id));
+            } else return ServiceHelper.failResponse("You can't sign in. The email activation period has expired.");
         }
         return ServiceHelper.failResponse("Email or password is wrong.");
+    }
+
+    public function canAuth(date: Date, emailActivated: Bool): Bool {
+        return
+            if (emailActivated) true;
+            else
+                if (Date.now().getTime() <= DateTools.delta(date, (86400 * 1000) * 7).getTime()) true;
+            else false;
     }
 
     public function checkSession(sessionId: String): ResponseMessage {
@@ -83,7 +93,7 @@ Scholae';
         var message = 'Здравствуйте,
 мы рады, что вы зарегистрировались в Scholae!
 Перейдите по ссылке для подтверждения электронной почты - http://scholae.lambda-calculus.ru/activation/${user.emailActivationCode}
-Активация электронной почты доступна в течении 7 дней (со дня регистрации - ${user.registrationDate}).
+Вы можете авторизоваться без подтверждения электронной почты 7 дней.
 
 Удачи в тренировках!
 
@@ -115,39 +125,14 @@ Scholae';
         }
     }
 
-    function parseDateParts(date: Date): Dynamic {
-        return {
-            y: Std.parseInt(DateTools.format(date, "%Y")),
-            M: Std.parseInt(DateTools.format(date, "%m")),
-            d: Std.parseInt(DateTools.format(date, "%d")),
-            h: Std.parseInt(DateTools.format(date, "%H")),
-            m: Std.parseInt(DateTools.format(date, "%M")),
-            s: Std.parseInt(DateTools.format(date, "%S"))
-        }
-    }
-
-    public function checkDateActivation(date: Date): Bool {
-        var dateRParse = parseDateParts(date);
-        var dateDeadlineActivated: Float = DateTools.makeUtc(dateRParse.y,dateRParse.M - 1,dateRParse.d + 7,dateRParse.h,dateRParse.m,dateRParse.s) / 1000;
-
-        var dateCPase = parseDateParts(Date.now());
-        var dateCurrent: Float = DateTools.makeUtc(dateCPase.y,dateCPase.M - 1,dateCPase.d,dateCPase.h,dateCPase.m,dateCPase.s) / 1000;
-
-        // if current date < deadline date then return true, else false
-        if (dateCurrent <= dateDeadlineActivated) return true
-        else return false;
-    }
-
     public function emailActivation(code: String): Bool {
         var user: User = User.manager.select($emailActivationCode == code, true);
         if (user != null) {
-            if (checkDateActivation(user.registrationDate)) {
-                user.emailActivationCode = null;
-                user.emailActivated = true;
-                user.update();
+            user.emailActivationCode = null;
+            user.emailActivated = true;
+            user.update();
 
-                return true;
-            } else false;
+            return true;
         }
 
         return false;

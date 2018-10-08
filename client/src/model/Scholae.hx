@@ -56,7 +56,7 @@ class Scholae
 
     public function reduce(state: ScholaeState, action: ScholaeAction): ScholaeState {
         return switch(action) {
-            case AuthenticationFailed: copy(state, { loading: false });
+            case AuthenticationFailed(failMessage): copy(state, { loading: false });
             case Authenticate(email, password): copy(state,
                 {
                     loading: true,
@@ -118,11 +118,12 @@ class Scholae
                 });
             case Clear: initState;
             case RenewPassword (email):state;
+            case EmailActivationCode(code): copy(state, null);
             case EmailActivationCodeCheck(check): copy(state,
             {
+                registration: {redirectPath: "/"},
                 activetedEmail: check
             });
-            case EmailActivationCode(code): state;
         }
     }
 
@@ -136,12 +137,12 @@ class Scholae
                             store.dispatch(Authenticated(sessionMessage));
                         },
                         function(e) {
-                            store.dispatch(AuthenticationFailed);
+                            store.dispatch(AuthenticationFailed(e));
                         }
                     );
                 next();
-            case AuthenticationFailed:
-                UIkit.notification({ message: "Неправильно введён логин или пароль.", timeout: 3000 });
+            case AuthenticationFailed(failMessage):
+                UIkit.notification({ message: Std.string(failMessage), timeout: 3000 });
                 next();
 
             case Clear:
@@ -153,7 +154,6 @@ class Scholae
                 next();
 
             case EmailActivationCode(code):
-                trace(code);
                 AuthServiceClient.instance.emailActivation(code)
                     .then(function(check) {
                         store.dispatch(EmailActivationCodeCheck(check));

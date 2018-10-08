@@ -6,7 +6,6 @@ import react.ReactComponent.ReactElement;
 import redux.react.IConnectedComponent;
 import view.EmailActivationView;
 import router.RouteComponentProps;
-import react.ReactComponent;
 import react.ReactComponent.ReactComponentOfPropsAndState;
 import react.ReactMacro.jsx;
 
@@ -25,8 +24,6 @@ class EmailActivationScreen
     }
 
     function mapState(state: ApplicationState, props: RouteComponentProps): EmailActivationViewProps {
-        trace(state);
-        //var code = state.scholae.auth.sessionId;
         return
             {
                 emailActivation: function(code) {

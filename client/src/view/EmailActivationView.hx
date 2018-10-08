@@ -22,16 +22,14 @@ class EmailActivationView extends ReactComponent {
     }
 
     override function componentDidMount() {
-        var code = props.dispatch.scope.props.params.code;
-
-        return props.emailActivation(code);
+        return props.emailActivation(props.dispatch.scope.props.params.code);
     }
 
     override function render() {
-        trace(this);
         var message =
             if (props.emailActivated) "Ваша электронная почта успешно подтверждёна."
-            else "Время подтверждения Вашей электронной почты истекло.";
+            else "Ошибка.";
+
         return
             jsx('
                 <div id="activation">

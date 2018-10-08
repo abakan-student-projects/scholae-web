@@ -24,7 +24,7 @@ class LoginScreen
     }
 
     function mapState(state: ApplicationState, props: RouteComponentProps): LoginViewProps {
-
+            trace(state);
             if (state.scholae != null && state.scholae.auth.loggedIn && state.scholae.auth.returnPath != null) {
                 var returnPath = state.scholae.auth.returnPath;
                 defer(function() {
