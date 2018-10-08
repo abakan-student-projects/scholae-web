@@ -143,7 +143,7 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
             tagIds: tagIds,
             taskIds: null,
             length: tasksCount
-        }));
+        }, refs.filterInput.value));
     }
 
     function onTrainingLearnersChanged(checkedLearnerIds: Array<Float>) {
@@ -161,7 +161,7 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
             tagIds: tagIds,
             taskIds: taskIds,
             length: tasksCount
-        }));
+        }, refs.filterInput.value));
     }
 
     function onCreateClicked() {
