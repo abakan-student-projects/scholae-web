@@ -1,5 +1,6 @@
 package ;
 
+import service.JobService;
 import service.EditorService;
 import service.LearnerService;
 import service.TeacherService;
@@ -17,6 +18,7 @@ class Main {
         context.addObject("TeacherService", new TeacherService());
         context.addObject("LearnerService", new LearnerService());
         context.addObject("EditorService", new EditorService());
+        context.addObject("JobService", new JobService());
 
         var cnx = sys.db.Mysql.connect({
             host : "127.0.0.1",

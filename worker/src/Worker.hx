@@ -1,5 +1,7 @@
 package ;
 
+import messages.MessagesHelper;
+import model.Training;
 import messages.ResponseStatus;
 import haxe.EnumTools.EnumValueTools;
 import model.Job;
@@ -47,18 +49,27 @@ class Worker {
     }
 
     public function onConsume(delivery: Delivery) {
-        var msg: JobMessage = Unserializer.run(delivery.body.readAll().toString());
+
+        var c = delivery.body.readAll().toString();
+
+        trace(c);
+
+        var msg: JobMessage = Unserializer.run(c);
 
         if (msg != null) {
             trace(EnumValueTools.getName(msg.job));
             switch(msg.job) {
                 case RefreshResultsForGroup(groupId):
                     for (gl in GroupLearner.manager.search($groupId == groupId)) {
+                        Sys.sleep(0.4);
                         Attempt.updateAttemptsForUser(gl.learner);
-                        Sys.sleep(0.3);
                         var job: Job = Job.manager.get(msg.id);
                         if (null != job) {
-                            job.response = { status: ResponseStatus.OK, result: true };
+                            job.response = MessagesHelper.successResponse(
+                                Lambda.array(
+                                    Lambda.map(
+                                        Training.getTrainingsByGroup(groupId),
+                                        function(t) { return t.toMessage(); })));
                             job.modificationDateTime = Date.now();
                             job.update();
                         }

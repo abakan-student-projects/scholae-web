@@ -7,10 +7,19 @@
 - Install Haxe plugin for Intellij IDEA
 - Install NodeJS
 - Install NPM
-- run "npm install" in the client directory
-- npm install -g browserify
-- install and configure apache + php + localbuild/site as virtual host scholae.lambda-calculus.ru
-- enable mod_rewrite in the apache configuration
-- put scholae.lambda-calculus.ru to hosts
-- install and configure mysql
-- create DB with name scholae and add user scholae with password that in the configuration
+- Run "npm install" in the client directory
+- Run "npm install -g browserify"
+- Install and configure apache + php + localbuild/site as virtual host scholae.lambda-calculus.ru
+- Enable mod_rewrite in the apache configuration
+- On Windows increase ThreadStackSize to 8Mb for PHP mpm_winnt_module
+- Put scholae.lambda-calculus.ru to hosts
+- Install and configure mysql
+- Create DB with name scholae and add user scholae with password that in the configuration
+- Learn about RabbitMQ: https://www.rabbitmq.com/documentation.html
+- Install and run RabbitMQ
+- Enable Managment UI: rabbitmq-plugins enable rabbitmq_management
+- Add an exchange with name "jobs" to vhost "/" in RabbitMQ 
+- Add a queue with name "jobs_common" to vhost "/" in RabbitMQ
+- Bind "jobs_common" queue with the routing key "common" in the "jobs" exchnage.
+- Build the whole project
+- Run the worker "/localbuild/scholae_worker/bin/Main-debug"

@@ -12,11 +12,16 @@ class Codeforces {
 
     private static function request(url: String, ?postfix: String): Dynamic {
         if (null == postfix) postfix = basePostfix;
-        var response: Response = Json.parse(Http.requestUrl(url + postfix ));
-        if (response.status == "OK") {
-            return response.result;
-        } else {
-            throw "HTTP request failed";
+        try {
+            var response: Response = Json.parse(Http.requestUrl(url + postfix ));
+            if (response.status == "OK") {
+                return response.result;
+            } else {
+                throw "HTTP request failed";
+            }
+        } catch(e: Dynamic) {
+            trace(url);
+            throw e;
         }
     }
 
@@ -25,7 +30,11 @@ class Codeforces {
     }
 
     public static function getUserSubmissions(userHandle: String, ?from: Int = 1, ?count=1000*1000): Array<Submission> {
-       return request('${baseApiUrl}user.status?handle=$userHandle&from=$from&count=$count&');
+        return
+            if (userHandle != null && userHandle.length >= 3)
+                request('${baseApiUrl}user.status?handle=$userHandle&from=$from&count=$count&')
+            else
+                [];
     }
 
     public static function getGymContests(): Array<Contest> {
