@@ -1,5 +1,11 @@
 package service;
 
+import jobs.JobQueue;
+import jobs.ScholaeJob;
+import haxe.io.Bytes;
+import haxe.Serializer;
+import haxe.ds.ArraySort;
+import messages.TaskMessage;
 import model.CodeforcesTask;
 import model.ModelUtils;
 import messages.MetaTrainingMessage;
@@ -151,11 +157,9 @@ class TeacherService {
     public function refreshResultsForGroup(groupId: Float): ResponseMessage {
         return ServiceHelper.authorize(Role.Teacher, function() {
             return ServiceHelper.authorizeGroup(Group.manager.get(groupId), Authorization.instance.currentUser, function() {
-                for (gl in GroupLearner.manager.search($groupId == groupId)) {
-                    Attempt.updateAttemptsForUser(gl.learner);
-                    Sys.sleep(0.3);
-                }
-                return getTrainingsByGroup(groupId);
+                return ServiceHelper.successResponse(
+                    JobQueue.publishScholaeJob(ScholaeJob.RefreshResultsForGroup(groupId), Authorization.instance.session.id)
+                );
             });
         });
     }
@@ -194,12 +198,15 @@ class TeacherService {
             taskIdsByTags.push(Std.parseFloat(t));
         }
 
-        var tasks = Lambda.array(
+
+        var tasks: Array<TaskMessage> = Lambda.array(
             Lambda.map(
                 CodeforcesTask.manager.search($active == true && $level >= metaTraining.minLevel && $level <= metaTraining.maxLevel && ($id in taskIdsByTags)),
                 function(t) { return t.toMessage(); }
             )
         );
+
+        ArraySort.sort(tasks, function(a: TaskMessage, b: TaskMessage) { return a.tagIds.length - b.tagIds.length; });
 
         return ServiceHelper.successResponse(
             {

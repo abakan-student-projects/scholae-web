@@ -7,7 +7,7 @@ typedef AttemptMessage = {
     description: String,
     solved: Bool,
     datetime: Date,
-    trainingId: Float,
-    assignmentId: Float,
-    groupId: Float
+    trainingId: Null<Float>,
+    assignmentId: Null<Float>,
+    groupId: Null<Float>
 }

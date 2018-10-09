@@ -57,6 +57,10 @@ class TeacherGroupView extends ReactComponentOfPropsAndState<TeacherGroupProps, 
             if (props.resultsRefreshing) jsx('<button className="uk-button uk-button-default uk-margin uk-width-1-1" disabled="true">Обновить результаты</button>')
             else jsx('<button className="uk-button uk-button-default uk-margin uk-width-1-1" onClick=${props.refreshResults}>Обновить результаты</button>');
 
+        var showSpinner =
+            if (props.resultsRefreshing) jsx('<span className="uk-margin-left" data-uk-spinner=""></span>')
+            else null;
+
         var assignmentsView =
                 if (state.isGridMode) jsx('<TeacherAssignmentsGridView {...props} />')
                 else jsx('<TeacherAssignmentsListView {...props} />');
@@ -97,6 +101,7 @@ class TeacherGroupView extends ReactComponentOfPropsAndState<TeacherGroupProps, 
                                 </ul>
                             </div>
                             $gridModeButton
+                            $showSpinner
                         </div>
                         $assignmentsView
                     </div>
