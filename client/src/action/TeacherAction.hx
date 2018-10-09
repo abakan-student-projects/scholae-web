@@ -46,4 +46,6 @@ enum TeacherAction {
 
     LoadPossibleTasks(metaTraining: MetaTrainingMessage, ?filter: String);
     LoadPossibleTasksFinished(tasks: ArrayChunk<TaskMessage>);
+
+    SetTasksFilter(filter: String);
 }

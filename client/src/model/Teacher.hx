@@ -28,6 +28,7 @@ class Teacher
         currentGroup: null,
         showNewGroupView: false,
         tags: RemoteDataHelper.createEmpty(),
+        filter: "",
         lastLearnerAttempts: RemoteDataHelper.createEmpty(),
         assignmentCreating: false,
         trainingsCreating: false,
@@ -182,6 +183,9 @@ class Teacher
                                         function(t) { return Std.string(t.assignmentId); })
                             })
                     });
+
+            case SetTasksFilter(filter):
+                copy(state, { filter: filter, newAssignment: { possibleTasks: RemoteDataHelper.createEmpty() } });
 
             case LoadPossibleTasks(metaTraining, filter):
                 copy(state, { newAssignment: { possibleTasks: RemoteDataHelper.createLoading() }});

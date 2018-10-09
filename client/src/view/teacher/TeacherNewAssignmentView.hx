@@ -21,6 +21,7 @@ typedef TeacherNewAssignmentProps = {
     tags: Array<TagMessage>,
     learners: Array<LearnerMessage>,
     possibleTasks: ArrayChunk<TaskMessage>,
+    filter: String,
     create: Array<Float> -> String -> Int -> Int -> Int -> Array<Float> -> Array<Float> -> Date -> Date -> Void,
     cancel: Void -> Void
 }
@@ -104,7 +105,7 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
                             $possibleTasksTotalOrLoading
                         </div>
                         <h2>Поиск задач</h2>
-                            <input type="text" placeholder="Поиск" className="uk-input uk-form-width-large uk-margin" ref="filterInput" onChange=$onFilterInputChanged />
+                            <input type="text" placeholder="Поиск" className="uk-input uk-form-width-large uk-margin" ref="filterInput" value=${props.filter} onChange=$onFilterInputChanged />
                         $possibleTasks
                     </div>
                 </div>
@@ -118,16 +119,16 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
     }
 
     function onFilterInputChanged(){
+        dispatch(TeacherAction.SetTasksFilter(refs.filterInput.value));
         setState(copy(state, { filter: refs.filterInput.value }));
         dispatch(TeacherAction.LoadPossibleTasks({
             id: null,
             minLevel: minLevel,
             maxLevel: maxLevel,
             tagIds: tagIds,
-            taskIds: null,
+            taskIds: taskIds,
             length: tasksCount
         }, refs.filterInput.value));
-
     }
 
     function onTrainingTasksChanged(changedTaskIds: Array<String>){
