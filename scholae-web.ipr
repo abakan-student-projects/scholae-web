@@ -21,7 +21,7 @@
       </driver-properties>
     </data-source>
   </component>
-  <component name="HaxeProjectSettings" defines="" />
+  <component name="HaxeProjectSettings" defines="cpp" />
   <component name="InspectionProjectProfileManager">
     <profile version="1.0" is_locked="false">
       <option name="myName" value="Project Default" />
@@ -158,6 +158,7 @@
       <module fileurl="file://$PROJECT_DIR$/server-shared/server-shared.iml" filepath="$PROJECT_DIR$/server-shared/server-shared.iml" />
       <module fileurl="file://$PROJECT_DIR$/shared/shared.iml" filepath="$PROJECT_DIR$/shared/shared.iml" />
       <module fileurl="file://$PROJECT_DIR$/static/static.iml" filepath="$PROJECT_DIR$/static/static.iml" />
+      <module fileurl="file://$PROJECT_DIR$/worker/worker.iml" filepath="$PROJECT_DIR$/worker/worker.iml" />
     </modules>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_3" default="true" project-jdk-name="Haxe 3.4" project-jdk-type="Haxe toolkit">
@@ -221,6 +222,15 @@
       </CLASSES>
       <JAVADOC />
       <SOURCES />
+    </library>
+    <library name="hxamqp" type="Haxe">
+      <CLASSES>
+        <root url="file://$PROJECT_DIR$/lib/hxamqp" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="file://$PROJECT_DIR$/lib/hxamqp" />
+      </SOURCES>
     </library>
     <library name="hxargs" type="Haxe">
       <CLASSES>

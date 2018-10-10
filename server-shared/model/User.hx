@@ -6,6 +6,7 @@ import haxe.crypto.Md5;
 import sys.db.Manager;
 import sys.db.Types;
 
+
 @:table("users")
 class User extends sys.db.Object {
     public var id: SBigId;
@@ -56,4 +57,14 @@ class User extends sys.db.Object {
                 sessionId: sessionId
             };
     }
+
+   public function calculateLearnerRating(user:User): Float {
+       var rating:Int = 0;
+       var results:List<Attempt>;
+       results = Attempt.manager.search(($userId ==user.id) && ($solved==true));
+       for (item in results) {
+           rating += item.task.level;
+       }
+       return rating;
+   }
 }
