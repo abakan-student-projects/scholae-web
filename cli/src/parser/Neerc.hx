@@ -148,21 +148,6 @@ class Neerc {
         return "";
     }
 
-    public static function getTeams(): List<String> {
-        var neercTeams: List<model.NeercTeam> = NeercTeam.manager.all();
-
-        if (neercTeams != null) {
-            var res: List<String> = Lambda.map(neercTeams, function(t) {
-                var s: String = t.name;
-                return s;
-            });
-
-            return res;
-        }
-
-        return null;
-    }
-
     public static function deleteAllDataFromDataBase() {
         /*
         TRUNCATE TABLE NeercUsers;

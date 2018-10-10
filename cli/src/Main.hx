@@ -262,7 +262,7 @@ class Main {
 
                 if (index != -1 && indexes.indexOf(index) == -1) {
                     var neerc = NeercUser.manager.select({id: neercUsersList[i].id});
-                    neerc.codeforcesUsersId = index;
+                    neerc.codeforcesUsersId = index + 1;
                     neerc.update();
 
                     indexes.push(index);

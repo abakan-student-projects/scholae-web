@@ -77,9 +77,9 @@ class CodeforcesUsers {
                     user.rating = Std.parseInt(records[3].innerHTML);
 
                     if (rank != null) {
-                        user.rankWorld = Std.parseInt(rank[0]);
+                        user.rankRussia = Std.parseInt(rank[0]);
                         if (Std.is(rank[1], String)) {
-                            user.rankRussia = Std.parseInt(rank[1].substring(0, rank[1].length-2));
+                            user.rankWorld = Std.parseInt(rank[1].substring(0, rank[1].length-2));
                         }
                     }
 
