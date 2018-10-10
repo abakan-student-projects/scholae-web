@@ -6,8 +6,13 @@ import model.CodeforcesTaskTag;
 import model.CodeforcesTag;
 import model.CodeforcesUser;
 import model.NeercUser;
+import model.NeercTeam;
+import model.NeercTeamUser;
+import model.NeercContest;
 import codeforces.Problem;
+import codeforces.Codeforces;
 import codeforces.Contest;
+import codeforces.Submission;
 import haxe.ds.IntMap;
 import model.CodeforcesTask;
 import codeforces.ProblemStatistics;
@@ -36,7 +41,8 @@ enum Action {
 typedef Config = {
     action: Action,
     batchCount: Int,
-    verbose: Bool
+    verbose: Bool,
+    year: String
 }
 
 
@@ -59,7 +65,7 @@ class Main {
         sys.db.Manager.cnx = cnx;
         sys.db.Manager.initialize();
 
-        cfg = { action: null, batchCount: 100, verbose: false };
+        cfg = { action: null, batchCount: 100, verbose: false, year: null };
 
         var args = Sys.args();
         var argHandler = hxargs.Args.generate([
@@ -72,6 +78,9 @@ class Main {
             @doc("Enable the verbose mode")
             ["-v", "--verbose"] => function() cfg.verbose=true,
 
+            @doc("Output Neerc users rating on Codeforces")
+            ["-n", "--solved-problems"] => function(year:String) cfg.year = year,
+
             _ => function(arg:String) throw "Unknown command: " +arg
         ]);
 
@@ -80,6 +89,11 @@ class Main {
         if (args.length <= 0) {
             Sys.println("Scholae command line tool");
             Sys.println(argHandler.getDoc());
+            Sys.exit(0);
+        }
+
+        if (cfg.year != null) {
+            updateNeercSolvedProblems(Std.parseInt(cfg.year));
             Sys.exit(0);
         }
 
@@ -271,5 +285,76 @@ class Main {
             }
         }
         trace("Updated " + updated + " records");
+    }
+
+    public static function updateUserSolvedProblemsByHandle(handle: String): Int {
+        var heh: Array<Submission> = Codeforces.getUserSubmissions(handle);
+        var problems = 0;
+
+        if (heh.length > 0) {
+            for (i in 0...heh.length) {
+                if (heh[i].verdict == "OK") {
+                    problems++;
+                }
+            }
+
+            var user = CodeforcesUser.manager.select($handle == handle, true);
+
+            if (user != null) {
+                user.solvedProblems = problems;
+                user.update();
+            }
+        }
+
+        return problems;
+    }
+
+    public static function updateNeercSolvedProblems(year: Int) {
+        var contest = NeercContest.manager.select($year == year, true);
+
+        if (contest != null) {
+            var teams: Array<NeercTeam> = Lambda.array(NeercTeam.manager.search($contestId == contest.id, false));
+
+            if (teams != null) {
+                for (i in 0...teams.length) {
+                    var members = NeercTeamUser.manager.search($teamId == teams[i].id, true);
+
+                    if (members != null) {
+                        trace(teams[i].rank + ". " + teams[i].name + ":");
+
+                        if (members.first().user.codeforcesUsersId != null) {
+                            trace(updateUserSolvedProblemsByHandle(members.first().user.codeforcesUser.handle));
+                        }
+
+                        /*for (j in members) {
+                            trace(j.toMessage());
+                        }*/
+                    }
+                }
+
+            }
+        }
+    }
+
+    public static function getNeercPlaceByUserHandle(handle: String): Int {
+        var user = CodeforcesUser.manager.select($handle == handle, true);
+
+        if (user != null) {
+            var neercUser = NeercUser.manager.select($codeforcesUsersId == user.id, true);
+
+            if (neercUser != null) {
+                var teams = NeercTeamUser.manager.select($userId == neercUser.id);
+
+                if (teams != null) {
+                    var team = NeercTeam.manager.select($id == teams.teamId);
+
+                    if (team != null) {
+                        return team.rank;
+                    }
+                }
+            }
+        }
+
+        return 0;
     }
 }

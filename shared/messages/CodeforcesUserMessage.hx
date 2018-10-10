@@ -10,5 +10,6 @@ typedef CodeforcesUserMessage = {
     rankWorld: Float,
     rankRussia: Float,
     countContests: Float,
-    rating: Float
+    rating: Float, 
+    solvedProblems: Float
 }

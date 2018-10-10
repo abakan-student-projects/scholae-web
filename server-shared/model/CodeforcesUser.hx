@@ -17,6 +17,7 @@ class CodeforcesUser extends sys.db.Object {
     public var rankRussia: SInt;
     public var countContests: SInt;
     public var rating: SInt;
+    public var solvedProblems: SInt;
 
     public function new() {
         super();
@@ -35,7 +36,8 @@ class CodeforcesUser extends sys.db.Object {
             rankWorld: rankWorld,
             rankRussia: rankRussia,
             countContests: countContests,
-            rating: rating
+            rating: rating,
+            solvedProblems: solvedProblems
         };
     }
 }

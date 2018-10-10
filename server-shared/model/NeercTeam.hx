@@ -1,6 +1,7 @@
 package model;
 
 import messages.NeercTeamMessage;
+import model.NeercContest;
 import sys.db.Manager;
 import sys.db.Types;
 
@@ -12,7 +13,7 @@ class NeercTeam extends sys.db.Object {
     public var contestId: SBigInt;
     public var solvedProblemsCount: SInt;
     public var time: SInt;
-    // @:relation(contestId) public var contest : NeercContest;
+    @:relation(contestId) public var contest : NeercContest;
 
     public function new() {
         super();
@@ -20,15 +21,15 @@ class NeercTeam extends sys.db.Object {
 
     public static var manager = new Manager<NeercTeam>(NeercTeam);
 
-    public function toMessage(/*includeContest: bool = false*/): NeercTeamMessage {
+    public function toMessage(): NeercTeamMessage {
         return {
             id: id,
             name: name,
             rank: rank,
             contestId: contestId,
             solvedProblemsCount: solvedProblemsCount,
-            time: time
-            // contestId: (includeContest) ? contest.toMessage() : null;
+            time: time,
+            contest: contest.toMessage()
         };
     }
 }

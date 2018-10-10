@@ -8,6 +8,7 @@ import sys.db.Types;
 class NeercTeamUser extends sys.db.Object {
     public var teamId: SBigId;
     public var userId: SBigInt;
+    @:relation(userId) public var user : model.NeercUser;
 
     public function new() {
         super();
@@ -18,7 +19,8 @@ class NeercTeamUser extends sys.db.Object {
     public function toMessage(): NeercTeamUserMessage {
         return {
             teamId: teamId,
-            userId: userId
+            userId: userId,
+            user: user.toMessage()
         };
     }
 }
