@@ -1,11 +1,5 @@
 package service;
 
-import jobs.JobQueue;
-import jobs.ScholaeJob;
-import haxe.io.Bytes;
-import haxe.Serializer;
-import haxe.ds.ArraySort;
-import messages.TaskMessage;
 import model.CodeforcesTask;
 import model.ModelUtils;
 import messages.MetaTrainingMessage;
@@ -157,9 +151,11 @@ class TeacherService {
     public function refreshResultsForGroup(groupId: Float): ResponseMessage {
         return ServiceHelper.authorize(Role.Teacher, function() {
             return ServiceHelper.authorizeGroup(Group.manager.get(groupId), Authorization.instance.currentUser, function() {
-                return ServiceHelper.successResponse(
-                    JobQueue.publishScholaeJob(ScholaeJob.RefreshResultsForGroup(groupId), Authorization.instance.session.id)
-                );
+                for (gl in GroupLearner.manager.search($groupId == groupId)) {
+                    Attempt.updateAttemptsForUser(gl.learner);
+                    Sys.sleep(0.3);
+                }
+                return getTrainingsByGroup(groupId);
             });
         });
     }
@@ -192,21 +188,26 @@ class TeacherService {
         });
     }
 
-    public function getAllTasksByMetaTraining(metaTraining: MetaTrainingMessage): ResponseMessage {
+    public function getAllTasksByMetaTraining(metaTraining: MetaTrainingMessage, filter: String): ResponseMessage {
         var taskIdsByTags = [];
         for (t in ModelUtils.getTaskIdsByTags(metaTraining.tagIds).keys()) {
             taskIdsByTags.push(Std.parseFloat(t));
         }
-
-
-        var tasks: Array<TaskMessage> = Lambda.array(
-            Lambda.map(
-                CodeforcesTask.manager.search($active == true && $level >= metaTraining.minLevel && $level <= metaTraining.maxLevel && ($id in taskIdsByTags)),
+        var tasks;
+        if (filter == null){
+            tasks = Lambda.array(
+                Lambda.map(
+                    CodeforcesTask.manager.search($active == true && $level >= metaTraining.minLevel && $level <= metaTraining.maxLevel && ($id in taskIdsByTags)),
+                function(t) { return t.toMessage(); }
+        )
+            );} else {
+            tasks= Lambda.array(
+                Lambda.map(
+                    CodeforcesTask.manager.search($active == true && $level >= metaTraining.minLevel && $level <= metaTraining.maxLevel && ($id in taskIdsByTags) && ($name.like("%"+filter+"%"))),
                 function(t) { return t.toMessage(); }
             )
-        );
-
-        ArraySort.sort(tasks, function(a: TaskMessage, b: TaskMessage) { return a.tagIds.length - b.tagIds.length; });
+            );
+        }
 
         return ServiceHelper.successResponse(
             {

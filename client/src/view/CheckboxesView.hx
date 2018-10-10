@@ -8,7 +8,7 @@ import react.ReactMacro.jsx;
 
 typedef CheckboxData = {
     id: String,
-    label: String,
+    label: Dynamic,
     checked: Bool
 }
 
@@ -50,7 +50,7 @@ class CheckboxesView extends ReactComponentOfPropsAndState<CheckboxesProps, Chec
             <div>
                 <button className="uk-button uk-button-default uk-button-small" onClick=$selectAll>Выбрать все</button>
                 <button className="uk-button uk-button-default uk-button-small" onClick=$deselectAll>Исключить все</button>
-                <div className="uk-margin uk-grid-small uk-child-width-auto uk-grid">
+                <div className="uk-margin">
                     $items
                 </div>
             </div>
