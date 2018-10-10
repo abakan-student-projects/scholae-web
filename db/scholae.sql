@@ -137,6 +137,8 @@ create table MetaTrainings
   minLevel int default '1' null,
   maxLevel int default '5' null,
   tagIds text null,
+
+  taskIds text null,
   length int null
 )
 ;

@@ -95,6 +95,8 @@ class TeacherService {
                 m.minLevel = assignment.metaTraining.minLevel;
                 m.maxLevel = assignment.metaTraining.maxLevel;
                 m.tagIds = assignment.metaTraining.tagIds;
+
+                m.taskIds = assignment.metaTraining.taskIds;
                 m.length = assignment.metaTraining.length;
                 m.insert();
 
@@ -191,19 +193,26 @@ class TeacherService {
         });
     }
 
-    public function getAllTasksByMetaTraining(metaTraining: MetaTrainingMessage): ResponseMessage {
+    public function getAllTasksByMetaTraining(metaTraining: MetaTrainingMessage, filter: String): ResponseMessage {
         var taskIdsByTags = [];
         for (t in ModelUtils.getTaskIdsByTags(metaTraining.tagIds).keys()) {
             taskIdsByTags.push(Std.parseFloat(t));
         }
-
-
-        var tasks: Array<TaskMessage> = Lambda.array(
-            Lambda.map(
-                CodeforcesTask.manager.search($active == true && $level >= metaTraining.minLevel && $level <= metaTraining.maxLevel && ($id in taskIdsByTags)),
+        var tasks;
+        if (filter == null){
+            tasks = Lambda.array(
+                Lambda.map(
+                    CodeforcesTask.manager.search($active == true && $level >= metaTraining.minLevel && $level <= metaTraining.maxLevel && ($id in taskIdsByTags)),
+                function(t) { return t.toMessage(); }
+        )
+            );} else {
+            tasks= Lambda.array(
+                Lambda.map(
+                    CodeforcesTask.manager.search($active == true && $level >= metaTraining.minLevel && $level <= metaTraining.maxLevel && ($id in taskIdsByTags) && ($name.like("%"+filter+"%"))),
                 function(t) { return t.toMessage(); }
             )
-        );
+            );
+        }
 
         ArraySort.sort(tasks, function(a: TaskMessage, b: TaskMessage) { return a.tagIds.length - b.tagIds.length; });
 

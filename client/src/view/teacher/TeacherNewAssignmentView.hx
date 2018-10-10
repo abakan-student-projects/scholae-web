@@ -1,6 +1,5 @@
 package view.teacher;
 
-import model.TeacherState;
 import codeforces.Codeforces;
 import messages.ArrayChunk;
 import messages.TaskMessage;
@@ -14,6 +13,7 @@ import react.ReactComponent;
 import react.ReactMacro.jsx;
 import redux.react.IConnectedComponent;
 import utils.DateRangePicker;
+import view.CheckboxesView;
 
 import react.ReactUtil.copy;
 
@@ -21,18 +21,20 @@ typedef TeacherNewAssignmentProps = {
     tags: Array<TagMessage>,
     learners: Array<LearnerMessage>,
     possibleTasks: ArrayChunk<TaskMessage>,
-    create: Array<Float> -> String -> Int -> Int -> Int -> Array<Float> -> Date -> Date -> Void,
+    create: Array<Float> -> String -> Int -> Int -> Int -> Array<Float> -> Array<Float> -> Date -> Date -> Void,
     cancel: Void -> Void
 }
 
 typedef TeacherNewAssignmentRefs = {
-    name: InputElement
+    name: InputElement,
+    filterInput: InputElement
 }
 
 typedef TeacherNewAssignmentState = {
     startDate: Moment,
     finishDate: Moment,
-    focusedInput: Dynamic
+    focusedInput: Dynamic,
+    filter: String
 }
 
 class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAssignmentProps, TeacherNewAssignmentRefs> implements IConnectedComponent {
@@ -42,20 +44,24 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
     var tasksCount: Int;
     var tagIds: Array<Float>;
     var learnerIds: Array<Float>;
+    var taskIds: Array<Float>;
+    var checkboxData: Array<CheckboxData>;
 
     public function new() {
         super();
         state = {
             startDate: Moment.moment({}),
-            finishDate: null
+            finishDate: null,
+            filter: ""
         };
     }
 
     override function render() {
-        var possibleTasks =
-            if (props.possibleTasks != null)
-                [for (t in props.possibleTasks.data) renderTask(t)]
-            else [];
+        var checkboxData =
+        if (props.possibleTasks != null)
+            [for (t in props.possibleTasks.data) {id:Std.string(t.id),label:renderTask(t),checked:false}];
+        else [];
+        var possibleTasks = jsx('<CheckboxesView data=${checkboxData} onChanged=$onTrainingTasksChanged />');
 
         var possibleTasksTotalOrLoading =
             if (props.possibleTasks != null)
@@ -97,6 +103,8 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
                         <div className="uk-margin">
                             $possibleTasksTotalOrLoading
                         </div>
+                        <h2>Поиск задач</h2>
+                            <input type="text" placeholder="Поиск" className="uk-input uk-form-width-large uk-margin" value=${state.filter} ref="filterInput" onChange=$onFilterInputChanged />
                         $possibleTasks
                     </div>
                 </div>
@@ -109,6 +117,22 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
         ');
     }
 
+    function onFilterInputChanged(){
+        setState(copy(state, { filter: refs.filterInput.value }));
+        dispatch(TeacherAction.LoadPossibleTasks({
+            id: null,
+            minLevel: minLevel,
+            maxLevel: maxLevel,
+            tagIds: tagIds,
+            taskIds: taskIds,
+            length: tasksCount
+        }, refs.filterInput.value));
+    }
+
+    function onTrainingTasksChanged(changedTaskIds: Array<String>){
+        taskIds = [for (t in changedTaskIds) Std.parseFloat(t)];
+    }
+
     function onTrainingTagsChanged(checkedTagIds: Array<Float>) {
         tagIds = checkedTagIds;
         dispatch(TeacherAction.LoadPossibleTasks({
@@ -116,8 +140,9 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
             minLevel: minLevel,
             maxLevel: maxLevel,
             tagIds: tagIds,
+            taskIds: null,
             length: tasksCount
-        }));
+        }, refs.filterInput.value));
     }
 
     function onTrainingLearnersChanged(checkedLearnerIds: Array<Float>) {
@@ -133,14 +158,15 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
             minLevel: minLevel,
             maxLevel: maxLevel,
             tagIds: tagIds,
+            taskIds: taskIds,
             length: tasksCount
-        }));
+        }, refs.filterInput.value));
     }
 
     function onCreateClicked() {
         var startDate: Date = Date.fromTime(state.startDate.utc());
         var finishDate: Date = Date.fromTime(state.finishDate.utc());
-        props.create(learnerIds, refs.name.value, minLevel, maxLevel, tasksCount, tagIds,
+        props.create(learnerIds, refs.name.value, minLevel, maxLevel, tasksCount, tagIds, taskIds,
                 new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), 0 , 0, 0),
                 new Date(finishDate.getFullYear(), finishDate.getMonth(), finishDate.getDate(), 23 , 59, 59));
     }
@@ -165,11 +191,9 @@ class TeacherNewAssignmentView extends ReactComponentOfPropsAndRefs<TeacherNewAs
         };
 
         return jsx('
-            <div key=${Std.string(task.id)} className="uk-margin-small">
-                <div>
+                <span>
                     <a href=$problemUrl target="_blank">${task.name}</a> <span className=${"uk-label" + labelStyle}>${Std.string(task.level)}</span>
-                </div>
-            </div>
+                </span>
         ');
     }
 }
