@@ -28,7 +28,7 @@ class EmailActivationView extends ReactComponent {
     override function render() {
         var message =
             if (props.emailActivated) "Ваша электронная почта успешно подтверждёна."
-            else "Ошибка.";
+            else "Возникла ошибка при подтверждении электронной почты. Обратитесь, пожалуйста, к администратору.";
 
         return
             jsx('

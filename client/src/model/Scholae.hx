@@ -119,7 +119,7 @@ class Scholae
             case Clear: initState;
             case RenewPassword (email):state;
             case EmailActivationCode(code): copy(state, null);
-            case EmailActivationCodeCheck(check): copy(state, {
+            case EmailActivationCodeFinished(check): copy(state, {
                 activetedEmail: check
             });
         }
@@ -154,7 +154,7 @@ class Scholae
             case EmailActivationCode(code):
                 AuthServiceClient.instance.emailActivation(code)
                     .then(function(check) {
-                        store.dispatch(EmailActivationCodeCheck(check));
+                        store.dispatch(EmailActivationCodeFinished(check));
                     });
                 next();
 

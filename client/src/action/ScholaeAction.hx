@@ -24,5 +24,5 @@ enum ScholaeAction {
     RenewPassword(email: String);
 
     EmailActivationCode(code: String);
-    EmailActivationCodeCheck(check: Bool);
+    EmailActivationCodeFinished(check: Bool);
 }
