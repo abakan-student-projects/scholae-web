@@ -246,9 +246,10 @@ create table CodeforcesUsers (
   lastName varchar(64) null,
   russianFirstName varchar(64) null,
   russianLastName varchar(64) null,
-  rankWorld int NOT NULL,
-  rankRussia int NOT NULL,
-  countContests int NOT NULL,
-  rating int NOT NULL
+  rankWorld int not null,
+  rankRussia int not null,
+  countContests int not null,
+  rating int not null,
+  solvedProblems int null
 )
 ;
