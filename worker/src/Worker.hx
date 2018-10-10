@@ -23,9 +23,9 @@ class Worker {
     public function new() {
         trace("Started");
         mq = new AmqpConnection(getConnectionParams());
-        trace("Connection is up " + mq);
+        //trace("Connection is up " + mq);
         channel = mq.channel();
-        trace("Channel:" + channel);
+        //trace("Channel:" + channel);
         //channel.bind("jobs_common", "jobs", null);
         channel.consume("jobs_common", onConsume, false);
         trace("On consume is setup");

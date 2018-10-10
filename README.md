@@ -22,4 +22,4 @@
 - Add a queue with name "jobs_common" to vhost "/" in RabbitMQ
 - Bind "jobs_common" queue with the routing key "common" in the "jobs" exchnage.
 - Build the whole project
-- Run the worker "/localbuild/scholae_worker/bin/Main-debug"
+- Run the worker "neko /localbuild/scholae_worker.n"

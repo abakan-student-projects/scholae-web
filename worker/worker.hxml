@@ -1,4 +1,5 @@
--cpp ../localbuild/scholae_worker
+#-cpp ../localbuild/scholae_worker
+-neko ../localbuild/scholae_worker.n
 -main Main
 -cp src
 -cp ../shared
