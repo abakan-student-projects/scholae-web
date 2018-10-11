@@ -24,7 +24,7 @@ rabbitmqadmin declare vhost name=scholae
 rabbitmqadmin -V scholae declare queue name=jobs_common durable=true
 rabbitmqadmin -V scholae declare exchange name=jobs durable=true type=fanout
 rabbitmqadmin -V scholae declare binding source=jobs destination=jobs_common routing_key=common
-rabbitmqadmin declare user name=scholae password=scholae tags=scholae
+rabbitmqadmin declare user name=scholae password=scholae tags=administrator
 rabbitmqadmin declare permission vhost=scholae user=scholae read=true write=true configure=true
 ```
 
