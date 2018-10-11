@@ -9,5 +9,6 @@ typedef UserMessage = {
     lastName: String,
     codeforcesHandle: String,
     ?password: String,
-    roles: Roles
+    roles: Roles, 
+    ?rating: Float
 }

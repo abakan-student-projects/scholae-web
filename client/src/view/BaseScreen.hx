@@ -93,6 +93,7 @@ class BaseScreen
         return
             if (state.scholae.auth.loggedIn)
                 jsx('<div>
+                        <span data-uk-icon="chevron-left"></span> ${state.scholae.auth.rating} <span data-uk-icon="chevron-right"></span>
                         <span data-uk-icon="user"></span> ${state.scholae.auth.firstName} ${state.scholae.auth.lastName}
                         <Link className="uk-button uk-button-default uk-margin-left" to="/" onClick=$onLogoutClick>Выйти</Link>
                      </div>')

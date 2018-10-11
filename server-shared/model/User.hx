@@ -20,6 +20,7 @@ class User extends sys.db.Object {
     public var registrationDate: SDateTime;
     public var emailActivationCode: SString<128>;
     public var emailActivated: SBool;
+    public var rating: SFloat;
 
     public function new() {
         super();
@@ -33,7 +34,10 @@ class User extends sys.db.Object {
             email: email,
             passwordHash: Md5.encode(password)
         });
-        return if (users.length > 0) users.first() else null;
+        var user: User = users.first();
+        user.rating = User.calculateLearnerRating(user);
+
+        return if (users.length > 0) user else null;
     }
 
     public function toLearnerMessage(): LearnerMessage {
@@ -54,16 +58,19 @@ class User extends sys.db.Object {
                 firstName: firstName,
                 lastName: lastName,
                 roles: roles,
-                sessionId: sessionId
+                sessionId: sessionId,
+                rating: rating
             };
     }
 
-   public function calculateLearnerRating(user:User): Float {
+   public static function calculateLearnerRating(user:User): Float {
        var rating:Int=0;
        var results:List<Attempt>;
        results = Attempt.manager.search(($userId ==user.id) && ($solved==true));
-       for (item in results) {
-           rating += item.task.level;
+       if (results.length > 0) {
+           for (item in results) {
+               rating += item.task.level;
+           }
        }
        return rating;
    }

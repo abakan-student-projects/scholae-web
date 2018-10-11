@@ -33,7 +33,8 @@ class Scholae
             returnPath: null,
             firstName: null,
             lastName: null,
-            roles: new Roles()
+            roles: new Roles(),
+            rating: null
         },
         registration: {
             codeforcesId: null,
@@ -69,7 +70,8 @@ class Scholae
                         sessionId: sessionMessage.sessionId,
                         firstName: sessionMessage.firstName,
                         lastName: sessionMessage.lastName,
-                        roles: sessionMessage.roles
+                        roles: sessionMessage.roles,
+                        rating: sessionMessage.rating
                     })
                 });
 
@@ -89,7 +91,7 @@ class Scholae
                         sessionId: sessionMessage.sessionId,
                         firstName: sessionMessage.firstName,
                         lastName: sessionMessage.lastName,
-                        roles: sessionMessage.roles
+                        roles: sessionMessage.roles,
                     }),
                     registration: copy(state.registration, {
                         registered: true

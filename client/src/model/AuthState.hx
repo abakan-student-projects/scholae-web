@@ -9,5 +9,6 @@ typedef AuthState = {
     returnPath: String,
     firstName: String,
     lastName: String,
-    roles: Roles
+    roles: Roles,
+    ?rating: Float
 }
