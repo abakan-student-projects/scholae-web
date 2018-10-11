@@ -5,9 +5,9 @@ import sys.db.Manager;
 import sys.db.Types;
 
 @:table("NeercTeamUsers")
+@:id(teamId, userId)
 class NeercTeamUser extends sys.db.Object {
-    public var teamId: SBigId;
-    public var userId: SBigInt;
+    @:relation(teamId) public var team : model.NeercTeam;
     @:relation(userId) public var user : model.NeercUser;
 
     public function new() {
@@ -18,8 +18,7 @@ class NeercTeamUser extends sys.db.Object {
 
     public function toMessage(): NeercTeamUserMessage {
         return {
-            teamId: teamId,
-            userId: userId,
+            team: team.toMessage(),
             user: user.toMessage()
         };
     }

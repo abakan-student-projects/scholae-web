@@ -86,7 +86,7 @@ class Neerc {
                 var neercTeam = new NeercTeam();
                 neercTeam.name = team[0];
                 neercTeam.rank = Std.parseInt(a[i][0]);
-                neercTeam.contestId = contestId;
+                neercTeam.contest = NeercContest.manager.select($id == contestId, true);
                 neercTeam.solvedProblemsCount = Std.parseInt(a[i][a[i].length-2]);
                 neercTeam.time = Std.parseInt(a[i][a[i].length-1]);
                 neercTeam.insert();
@@ -114,12 +114,12 @@ class Neerc {
                     for (j in 0...teamMembers.length) {
                         var neercUser = new NeercUser();
                         neercUser.lastName = teamMembers[j];
-                        neercUser.universityId = univerityId;
+                        neercUser.university = neercUniversities[univerityId];
                         neercUser.insert();
 
                         var neercTeamUser = new NeercTeamUser();
-                        neercTeamUser.teamId = neercTeam.id;
-                        neercTeamUser.userId = neercUser.id;
+                        neercTeamUser.team = neercTeam;
+                        neercTeamUser.user = neercUser;
                         neercTeamUser.insert();
 
                         users++;
@@ -133,7 +133,6 @@ class Neerc {
         trace("Added " + users + ((users == 1) ? " user" : " users\n"));
     }
 
-    // deleting number of team name
     public static function getUniversityNameByTeamName(name: String): String {
         var wasDigit = false;
 

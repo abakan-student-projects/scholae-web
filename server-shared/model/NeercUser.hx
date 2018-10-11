@@ -10,8 +10,6 @@ import model.NeercUniversity;
 class NeercUser extends sys.db.Object {
     public var id: SBigId;
     public var lastName: SString<512>;
-    public var codeforcesUsersId: SBigInt;
-    public var universityId: SBigInt;
     @:relation(codeforcesUsersId) public var codeforcesUser : CodeforcesUser;
     @:relation(universityId) public var university : NeercUniversity;
 
@@ -25,10 +23,8 @@ class NeercUser extends sys.db.Object {
         return {
             id: id,
             lastName: lastName,
-            codeforcesUsersId: codeforcesUsersId,
-            universityId: universityId,
-            codeforcesUser: codeforcesUser.toMessage(),
-            university: university.toMessage()
+            codeforcesUser: (codeforcesUser != null) ? codeforcesUser.toMessage() : null,
+            university: (university != null) ? university.toMessage() : null
         };
     }
 }

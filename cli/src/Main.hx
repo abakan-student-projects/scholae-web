@@ -276,7 +276,7 @@ class Main {
 
                 if (index != -1 && indexes.indexOf(index) == -1) {
                     var neerc = NeercUser.manager.select({id: neercUsersList[i].id});
-                    neerc.codeforcesUsersId = index + 1;
+                    neerc.codeforcesUser = codeforcesUsersList[index];
                     neerc.update();
 
                     indexes.push(index);
@@ -288,12 +288,12 @@ class Main {
     }
 
     public static function updateUserSolvedProblemsByHandle(handle: String): Int {
-        var heh: Array<Submission> = Codeforces.getUserSubmissions(handle);
+        var submissions: Array<Submission> = Codeforces.getUserSubmissions(handle);
         var problems = 0;
 
-        if (heh.length > 0) {
-            for (i in 0...heh.length) {
-                if (heh[i].verdict == "OK") {
+        if (submissions.length > 0) {
+            for (i in 0...submissions.length) {
+                if (submissions[i].verdict == "OK") {
                     problems++;
                 }
             }
@@ -317,18 +317,17 @@ class Main {
 
             if (teams != null) {
                 for (i in 0...teams.length) {
-                    var members = NeercTeamUser.manager.search($teamId == teams[i].id, true);
+                    var members: Array<NeercTeamUser> = Lambda.array(NeercTeamUser.manager.search($team == teams[i], true));
 
                     if (members != null) {
                         trace(teams[i].rank + ". " + teams[i].name + ":");
 
-                        if (members.first().user.codeforcesUsersId != null) {
-                            trace(updateUserSolvedProblemsByHandle(members.first().user.codeforcesUser.handle));
+                        for (j in 0...members.length) {
+                            if (members[j].user.codeforcesUser != null && members[j].user.codeforcesUser.handle != null) {
+                                var handle = members[j].user.codeforcesUser.handle;
+                                trace(handle + ": " + updateUserSolvedProblemsByHandle(handle));
+                            }
                         }
-
-                        /*for (j in members) {
-                            trace(j.toMessage());
-                        }*/
                     }
                 }
 
@@ -340,17 +339,13 @@ class Main {
         var user = CodeforcesUser.manager.select($handle == handle, true);
 
         if (user != null) {
-            var neercUser = NeercUser.manager.select($codeforcesUsersId == user.id, true);
+            var neercUser = NeercUser.manager.select($codeforcesUser == user, true);
 
             if (neercUser != null) {
-                var teams = NeercTeamUser.manager.select($userId == neercUser.id);
+                var teams = NeercTeamUser.manager.select($user == neercUser);
 
                 if (teams != null) {
-                    var team = NeercTeam.manager.select($id == teams.teamId);
-
-                    if (team != null) {
-                        return team.rank;
-                    }
+                    return teams.team.rank;
                 }
             }
         }

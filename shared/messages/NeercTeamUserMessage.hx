@@ -1,7 +1,6 @@
 package messages;
 
 typedef NeercTeamUserMessage = {
-    teamId: Float,
-    userId: Float,
+    team: NeercTeamMessage,
     user: NeercUserMessage
 }

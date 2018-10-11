@@ -10,7 +10,6 @@ class NeercTeam extends sys.db.Object {
     public var id: SBigId;
     public var name: SString<512>;
     public var rank: SInt;
-    public var contestId: SBigInt;
     public var solvedProblemsCount: SInt;
     public var time: SInt;
     @:relation(contestId) public var contest : NeercContest;
@@ -26,7 +25,6 @@ class NeercTeam extends sys.db.Object {
             id: id,
             name: name,
             rank: rank,
-            contestId: contestId,
             solvedProblemsCount: solvedProblemsCount,
             time: time,
             contest: contest.toMessage()
