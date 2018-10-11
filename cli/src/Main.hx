@@ -42,7 +42,8 @@ typedef Config = {
     action: Action,
     batchCount: Int,
     verbose: Bool,
-    year: String
+    solvedProblemsYear: Int,
+    correlationYear: Int
 }
 
 
@@ -65,7 +66,7 @@ class Main {
         sys.db.Manager.cnx = cnx;
         sys.db.Manager.initialize();
 
-        cfg = { action: null, batchCount: 100, verbose: false, year: null };
+        cfg = { action: null, batchCount: 100, verbose: false, solvedProblemsYear: null, correlationYear: null };
 
         var args = Sys.args();
         var argHandler = hxargs.Args.generate([
@@ -79,7 +80,10 @@ class Main {
             ["-v", "--verbose"] => function() cfg.verbose=true,
 
             @doc("Output Neerc users rating on Codeforces")
-            ["-n", "--solved-problems"] => function(year:String) cfg.year = year,
+            ["-s", "--solved-problems"] => function(solvedProblemsYear:String) cfg.solvedProblemsYear = Std.parseInt(solvedProblemsYear),
+
+            @doc("Correlation")
+            ["-k", "--correlation"] => function(correlationYear:String) cfg.correlationYear = Std.parseInt(correlationYear),
 
             _ => function(arg:String) throw "Unknown command: " +arg
         ]);
@@ -92,8 +96,11 @@ class Main {
             Sys.exit(0);
         }
 
-        if (cfg.year != null) {
-            updateNeercSolvedProblems(Std.parseInt(cfg.year));
+        if (cfg.solvedProblemsYear != null) {
+            updateNeercSolvedProblems(cfg.solvedProblemsYear);
+            Sys.exit(0);
+        } else if (cfg.correlationYear != null) {
+            updateCorrelation(cfg.correlationYear);
             Sys.exit(0);
         }
 
@@ -306,6 +313,8 @@ class Main {
             }
         }
 
+        Sys.sleep(0.3);
+
         return problems;
     }
 
@@ -330,8 +339,11 @@ class Main {
                         }
                     }
                 }
-
+            } else {
+                trace("Teams not found");
             }
+        } else {
+            trace("Contest not found");
         }
     }
 
@@ -351,5 +363,106 @@ class Main {
         }
 
         return 0;
+    }
+
+    public static function updateCorrelation(year: Int) {
+        var data: Array<Array<Int>> = [];
+
+        var contest: NeercContest = NeercContest.manager.select($year == year, true);
+
+        if (contest != null) {
+            var teams: Array<NeercTeam> = Lambda.array(NeercTeam.manager.search($contestId == contest.id, false));
+
+            for (i in 0...teams.length) {
+                var members: Array<NeercTeamUser> = Lambda.array(NeercTeamUser.manager.search($team == teams[i], true));
+
+                for (j in 0...members.length) {
+                    if (members[j].user.codeforcesUser != null && members[j].user.codeforcesUser.handle != null) {
+                        data.push([teams[i].rank, members[j].user.codeforcesUser.solvedProblems]);
+                    }   
+                }
+            }
+
+            trace(getCorrelation(data));
+            trace(getPearsonCorrelation(data));
+        } else {
+            trace("Contest not found");
+        }
+    }
+
+    public static function getUsersByContestId(id: Float): Array<NeercUser> {
+        var users: Array<NeercUser> = [];
+        var teams: Array<NeercTeam> = Lambda.array(NeercTeam.manager.search($contestId == id, false));
+
+        if (teams != null) {
+            for (i in 0...teams.length) {
+                var members: Array<NeercTeamUser> = Lambda.array(NeercTeamUser.manager.search($team == teams[i], true));
+
+                for (j in 0...members.length) {
+                    if (members[j].user != null) {
+                        users.push(members[j].user);
+                    }
+                }
+            }
+        }
+
+        return users;
+    }
+
+    public static function getCorrelation(data: Array<Array<Int>>): Float {
+        var uX: Float = 0;
+        var uY: Float = 0;
+        var oX: Float = 0;
+        var oY: Float = 0;
+        var sumX: Float = 0;
+        var sumY: Float = 0;
+
+        for (i in 0...data.length) {
+            uX += data[i][0];
+            uY += data[i][1];
+        }
+
+        uX /= data.length;
+        uY /= data.length;
+
+        for (i in 0...data.length) {
+            sumX += Math.pow((data[i][0] - uX), 2);
+            sumY += Math.pow((data[i][1] - uY), 2);
+        }
+
+        oX = Math.sqrt(1 / (data.length - 1) * sumX);
+        oY = Math.sqrt(1 / (data.length - 1) * sumY);
+
+        sumX = 0;
+
+        for (i in 0...data.length) {
+            sumX += ((data[i][0] - uX) / oX) * ((data[i][1] - uY) / uY);
+        }
+
+        return (1 / (data.length - 1)) * sumX;
+    }
+
+    public static function getPearsonCorrelation(data: Array<Array<Int>>): Float {
+        var uX: Float = 0;
+        var uY: Float = 0;
+        var sum: Float = 0;
+        var sumXSqr: Float = 0;
+        var sumYSqr: Float = 0;
+
+        for (i in 0...data.length) {
+            uX += data[i][0];
+            uY += data[i][1];
+        }
+
+        uX /= data.length;
+        uY /= data.length;
+
+        for (i in 0...data.length) {
+            sum += (data[i][0] - uX) * (data[i][1] - uY);
+            sumXSqr += Math.pow(data[i][0] - uX, 2);
+            sumYSqr += Math.pow(data[i][1] - uY, 2);
+        }
+
+        return sum / Math.sqrt(sumXSqr * sumYSqr);
     }
 }

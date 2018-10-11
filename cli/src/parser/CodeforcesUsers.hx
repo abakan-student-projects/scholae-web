@@ -33,7 +33,7 @@ class CodeforcesUsers {
                     var lastName = result.result[i].lastName;
                     var handle = result.result[i].handle;
 
-                    if (lastName != null) {
+                    if (lastName != null && handle != null) {
                         var updateUserInfo = CodeforcesUser.manager.select({handle: handle});
                         updateUserInfo.firstName = firstName;
                         updateUserInfo.lastName = lastName;
@@ -45,7 +45,7 @@ class CodeforcesUsers {
 
                 trace("Updated " + updated + " " + postfix + "-names of the users");
             } else {
-                trace("?");
+                trace("No handles");
             }
         }
     }
@@ -104,6 +104,4 @@ class CodeforcesUsers {
             return user.handle;
         }));
     }
-
-    // clear table: TRUNCATE TABLE CodeforcesUsers
 }

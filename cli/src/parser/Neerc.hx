@@ -75,6 +75,7 @@ class Neerc {
         var users = 0;
         var teams = 0;
         var universities = 0;
+        var contest = NeercContest.manager.select($id == contestId);
 
         for (i in 0...a.length) {
             var team = a[i][1].split("(");
@@ -86,7 +87,7 @@ class Neerc {
                 var neercTeam = new NeercTeam();
                 neercTeam.name = team[0];
                 neercTeam.rank = Std.parseInt(a[i][0]);
-                neercTeam.contest = NeercContest.manager.select($id == contestId, true);
+                neercTeam.contest = contest;
                 neercTeam.solvedProblemsCount = Std.parseInt(a[i][a[i].length-2]);
                 neercTeam.time = Std.parseInt(a[i][a[i].length-1]);
                 neercTeam.insert();
@@ -154,6 +155,7 @@ class Neerc {
         TRUNCATE TABLE NeercTeams;
         TRUNCATE TABLE NeercUniversities;
         TRUNCATE TABLE NeercContests;
+        TRUNCATE TABLE CodeforcesUsers;
         */
     }
 }
