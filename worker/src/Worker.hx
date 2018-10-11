@@ -33,9 +33,9 @@ class Worker {
 
     public static function getConnectionParams(): ConnectionParameters {
         var params:ConnectionParameters = new ConnectionParameters();
-        params.username = "guest";
-        params.password = "guest";
-        params.vhostpath = "/";
+        params.username = "scholae";
+        params.password = "scholae";
+        params.vhostpath = "scholae";
         params.serverhost = "127.0.0.1";
         return params;
     }

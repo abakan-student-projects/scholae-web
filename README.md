@@ -18,8 +18,15 @@
 - Learn about RabbitMQ: https://www.rabbitmq.com/documentation.html
 - Install and run RabbitMQ
 - Enable Managment UI: rabbitmq-plugins enable rabbitmq_management
-- Add an exchange with name "jobs" to vhost "/" in RabbitMQ 
-- Add a queue with name "jobs_common" to vhost "/" in RabbitMQ
-- Bind "jobs_common" queue with the routing key "common" in the "jobs" exchnage.
+
+```bash
+rabbitmqadmin declare vhost name=scholae
+rabbitmqadmin -V scholae declare queue name=jobs_common durable=true
+rabbitmqadmin -V scholae declare exchange name=jobs durable=true type=fanout
+rabbitmqadmin -V scholae declare binding source=jobs destination=jobs_common routing_key=common
+rabbitmqadmin declare user name=scholae password=scholae tags=scholae
+rabbitmqadmin declare permission vhost=scholae user=scholae read=true write=true configure=true
+```
+
 - Build the whole project
 - Run the worker "neko /localbuild/scholae_worker.n"

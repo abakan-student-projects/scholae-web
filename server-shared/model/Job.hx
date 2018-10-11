@@ -11,7 +11,7 @@ class Job extends sys.db.Object {
     public var id: SBigId;
     public var sessionId: SString<255>;
     public var request: SData<ScholaeJob>;
-    public var response: SData<ResponseMessage>;
+    public var response: SNull<SData<ResponseMessage>>;
     public var progress: SFloat;
     public var creationDateTime: SDateTime;
     public var modificationDateTime: SDateTime;
