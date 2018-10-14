@@ -13,6 +13,7 @@ import haxe.Http;
 class Neerc {
     private static var url: String;
     private static var contestName: String;
+    private static var countOfProblems: Int;
 
     public static function startParsing(_url: String, year: Int) {
         url = _url;
@@ -27,6 +28,10 @@ class Neerc {
                 var contest = new NeercContest();
                 contest.name = contestName;
                 contest.year = year;
+
+                if (countOfProblems != null) 
+                    contest.countOfProblems = countOfProblems;
+                
                 contest.insert();
 
                 neercContestsList.push(contest);
@@ -50,6 +55,10 @@ class Neerc {
         var teams = [];
         
         contestName = eregTags.replace(html.find("table.wrapper>tr>td>center>a>h2")[0].innerHTML, "");
+
+        if (a.length > 0) {
+            countOfProblems = a[0].find("td").length - 4;
+        }
 
         for (i in 0...a.length) {
         	var b = a[i].find("td");
@@ -156,6 +165,7 @@ class Neerc {
         TRUNCATE TABLE NeercUniversities;
         TRUNCATE TABLE NeercContests;
         TRUNCATE TABLE CodeforcesUsers;
+        TRUNCATE TABLE NeercAttempts;
         */
     }
 }

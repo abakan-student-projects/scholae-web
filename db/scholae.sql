@@ -197,7 +197,8 @@ create table NeercContests
   id bigint auto_increment
     primary key,
   name varchar(128) not null,
-  year int not null
+  year int not null,
+  countOfProblems int not null
 )
 ;
 
@@ -250,6 +251,20 @@ create table CodeforcesUsers (
   rankRussia int not null,
   countContests int not null,
   rating int not null,
-  solvedProblems int null
+  solvedProblems int null,
+  lastCodeforcesSubmissionId bigint not null,
+  learnerRating bigint not null
+)
+;
+
+create table NeercAttempts (
+  id bigint auto_increment
+    primary key,
+  taskId bigint null,
+  userId bigint null,
+  description text null,
+  solved tinyint(4) null,
+  datetime datetime null,
+  vendorId bigint null
 )
 ;

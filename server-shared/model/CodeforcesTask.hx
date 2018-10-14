@@ -2,6 +2,8 @@ package model;
 
 import utils.StringUtils;
 import messages.TaskMessage;
+import model.NeercAttempt;
+import model.CodeforcesUser;
 import sys.db.Types;
 import sys.db.Manager;
 
@@ -50,7 +52,11 @@ class CodeforcesTask extends sys.db.Object {
         return if (user != null) Attempt.manager.count($taskId == id && $solved == true && $userId == user.id) > 0 else false;
     }
 
-    public function toMessage(?user: User): TaskMessage {
+    public function isNeercSolved(user: model.CodeforcesUser) {
+        return if (user != null) NeercAttempt.manager.count($taskId == id && $solved == true && $userId == user.id) > 0 else false;
+    }
+
+    public function toMessage(?user: User, ?neercUser: CodeforcesUser): TaskMessage {
         return {
             id: id,
             name: StringUtils.unescapeHtmlSpecialCharacters(name),
@@ -59,7 +65,7 @@ class CodeforcesTask extends sys.db.Object {
             isGymTask: isGymTask(),
             codeforcesContestId: contestId,
             codeforcesIndex: contestIndex,
-            isSolved: isSolved(user)
+            isSolved: (user != null) ? isSolved(user) : isNeercSolved(neercUser)
         };
     }
 }

@@ -10,6 +10,7 @@ class NeercContest extends sys.db.Object {
     public var id: SBigId;
     public var name: SString<512>;
     public var year: SInt;
+    public var countOfProblems: SInt;
 
     public function new() {
         super();
@@ -21,7 +22,8 @@ class NeercContest extends sys.db.Object {
         return {
             id: id,
             name: name,
-            year: year
+            year: year,
+            countOfProblems: countOfProblems
         };
     }
 }

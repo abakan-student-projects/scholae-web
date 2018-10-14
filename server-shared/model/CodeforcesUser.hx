@@ -18,6 +18,8 @@ class CodeforcesUser extends sys.db.Object {
     public var countContests: SInt;
     public var rating: SInt;
     public var solvedProblems: SInt;
+    public var lastCodeforcesSubmissionId: SBigInt;
+    public var learnerRating: SBigInt;
 
     public function new() {
         super();
@@ -37,7 +39,21 @@ class CodeforcesUser extends sys.db.Object {
             rankRussia: rankRussia,
             countContests: countContests,
             rating: rating,
-            solvedProblems: solvedProblems
+            solvedProblems: solvedProblems,
+            lastCodeforcesSubmissionId: lastCodeforcesSubmissionId,
+            learnerRating: learnerRating
         };
+    }
+
+    public static function calculateLearnerRating(user: CodeforcesUser): Float {
+        var rating:Int = 0;
+        var results:List<NeercAttempt> = NeercAttempt.manager.search(($userId ==user.id) && ($solved==true));
+
+        for (item in results) {
+            if (item.task != null && item.task.level != null)
+                rating += item.task.level;
+        }
+
+        return rating;
     }
 }

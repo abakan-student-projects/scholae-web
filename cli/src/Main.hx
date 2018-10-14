@@ -9,6 +9,7 @@ import model.NeercUser;
 import model.NeercTeam;
 import model.NeercTeamUser;
 import model.NeercContest;
+import model.NeercAttempt;
 import codeforces.Problem;
 import codeforces.Codeforces;
 import codeforces.Contest;
@@ -36,6 +37,9 @@ enum Action {
     updateCodeforcesUsersHandles;
     updateCodeforcesUsersNames;
     updateNeercUsersRelationWithCodeforces;
+    updateAttemptsForNeercUsers;
+    updateLearnerRating;
+    updateNeercAll;
 }
 
 typedef Config = {
@@ -114,6 +118,9 @@ class Main {
             case Action.updateCodeforcesUsersHandles: CodeforcesUsers.ParseUsersFromRussia();
             case Action.updateCodeforcesUsersNames: CodeforcesUsers.updateCodeforcesUsersNames();
             case Action.updateNeercUsersRelationWithCodeforces: updateNeercUsersRelationWithCodeforces();
+            case Action.updateAttemptsForNeercUsers: updateAttemptsForNeercUsers();
+            case Action.updateLearnerRating: updateLearnerRating();
+            case Action.updateNeercAll: updateNeercAll();
         }
 
         sys.db.Manager.cleanup();
@@ -257,11 +264,11 @@ class Main {
     }
 
     public static function updateNeercData() {
-        var firstYear = 2010;
+        var firstYear = 2015;
         var lastYear = 2017;
 
-        for (year in firstYear...lastYear+1) {
-            Neerc.startParsing("http://neerc.ifmo.ru/archive/" + (firstYear+(lastYear-year)) + "/standings.html", (firstYear+(lastYear-year)));
+        for (year in firstYear...lastYear + 1) {
+            Neerc.startParsing("http://neerc.ifmo.ru/archive/" + (firstYear + (lastYear - year)) + "/standings.html", (firstYear + (lastYear - year)));
         }
     }
 
@@ -274,20 +281,25 @@ class Main {
         var neercUsers: Array<String> = Lambda.array(Lambda.map(neercUsersList, function(user) {
             return user.lastName;
         }));
-        var indexes: Array<Int> = [];
+        var indexes: Array<Float> = [];
         var updated = 0;
 
         for (i in 0...neercUsers.length) {
             if (neercUsers[i] != "null") {
                 var index = codeforcesUsers.indexOf(neercUsers[i]);
+                var users: Array<CodeforcesUser> = Lambda.array(CodeforcesUser.manager.search($lastName == neercUsers[i]));
 
-                if (index != -1 && indexes.indexOf(index) == -1) {
-                    var neerc = NeercUser.manager.select({id: neercUsersList[i].id});
-                    neerc.codeforcesUser = codeforcesUsersList[index];
-                    neerc.update();
+                if (users != null && users.length == 1) {
+                    var user: CodeforcesUser = users[0];
 
-                    indexes.push(index);
-                    updated++;
+                    if (indexes.indexOf(user.id) == -1) {
+                        var neerc = NeercUser.manager.select({id: neercUsersList[i].id});
+                        neerc.codeforcesUser = user;
+                        neerc.update();
+
+                        indexes.push(user.id);
+                        updated++;
+                    }
                 }
             }
         }
@@ -319,32 +331,16 @@ class Main {
     }
 
     public static function updateNeercSolvedProblems(year: Int) {
-        var contest = NeercContest.manager.select($year == year, true);
+        functionWithTeamMembersByYear(year, function(team: NeercTeam, members: Array<NeercTeamUser>) {
+            trace(team.rank + ". " + team.name + ":");
 
-        if (contest != null) {
-            var teams: Array<NeercTeam> = Lambda.array(NeercTeam.manager.search($contestId == contest.id, false));
-
-            if (teams != null) {
-                for (i in 0...teams.length) {
-                    var members: Array<NeercTeamUser> = Lambda.array(NeercTeamUser.manager.search($team == teams[i], true));
-
-                    if (members != null) {
-                        trace(teams[i].rank + ". " + teams[i].name + ":");
-
-                        for (j in 0...members.length) {
-                            if (members[j].user.codeforcesUser != null && members[j].user.codeforcesUser.handle != null) {
-                                var handle = members[j].user.codeforcesUser.handle;
-                                trace(handle + ": " + updateUserSolvedProblemsByHandle(handle));
-                            }
-                        }
-                    }
+            for (j in 0...members.length) {
+                if (members[j].user.codeforcesUser != null && members[j].user.codeforcesUser.handle != null) {
+                    var handle = members[j].user.codeforcesUser.handle;
+                    trace(handle + ": " + updateUserSolvedProblemsByHandle(handle));
                 }
-            } else {
-                trace("Teams not found");
             }
-        } else {
-            trace("Contest not found");
-        }
+        });
     }
 
     public static function getNeercPlaceByUserHandle(handle: String): Int {
@@ -375,15 +371,19 @@ class Main {
 
             for (i in 0...teams.length) {
                 var members: Array<NeercTeamUser> = Lambda.array(NeercTeamUser.manager.search($team == teams[i], true));
+                var x: Float = 0;
+                var y: Float = 0;
 
                 for (j in 0...members.length) {
-                    if (members[j].user.codeforcesUser != null && members[j].user.codeforcesUser.handle != null) {
-                        data.push([teams[i].rank, members[j].user.codeforcesUser.solvedProblems]);
+                    if (members[j].user.codeforcesUser != null && members[j].user.codeforcesUser.handle != null && members[j].user.codeforcesUser.learnerRating > 0) {
+                        x += (members[j].user.codeforcesUser.learnerRating > x) ? members[j].user.codeforcesUser.learnerRating : x;
+                        y += (members[j].user.codeforcesUser.solvedProblems > y) ? members[j].user.codeforcesUser.solvedProblems : y;
                     }   
                 }
+
+                data.push([Std.parseInt(x + ""), Std.parseInt(y + "")]);
             }
 
-            trace(getCorrelation(data));
             trace(getPearsonCorrelation(data));
         } else {
             trace("Contest not found");
@@ -409,39 +409,6 @@ class Main {
         return users;
     }
 
-    public static function getCorrelation(data: Array<Array<Int>>): Float {
-        var uX: Float = 0;
-        var uY: Float = 0;
-        var oX: Float = 0;
-        var oY: Float = 0;
-        var sumX: Float = 0;
-        var sumY: Float = 0;
-
-        for (i in 0...data.length) {
-            uX += data[i][0];
-            uY += data[i][1];
-        }
-
-        uX /= data.length;
-        uY /= data.length;
-
-        for (i in 0...data.length) {
-            sumX += Math.pow((data[i][0] - uX), 2);
-            sumY += Math.pow((data[i][1] - uY), 2);
-        }
-
-        oX = Math.sqrt(1 / (data.length - 1) * sumX);
-        oY = Math.sqrt(1 / (data.length - 1) * sumY);
-
-        sumX = 0;
-
-        for (i in 0...data.length) {
-            sumX += ((data[i][0] - uX) / oX) * ((data[i][1] - uY) / uY);
-        }
-
-        return (1 / (data.length - 1)) * sumX;
-    }
-
     public static function getPearsonCorrelation(data: Array<Array<Int>>): Float {
         var uX: Float = 0;
         var uY: Float = 0;
@@ -464,5 +431,66 @@ class Main {
         }
 
         return sum / Math.sqrt(sumXSqr * sumYSqr);
+    }
+
+    public static function updateAttemptsForNeercUsers() {
+        var users = CodeforcesUser.manager.search($solvedProblems > 0);
+
+        for (user in users) {
+            var attempts = NeercAttempt.updateNeercAttemptsForUser(user);
+            if (attempts >= 0)
+                trace("Added " + attempts + " attempts for " + user.handle);
+        }
+    }
+
+    public static function updateLearnerRating() {
+        var contests = NeercContest.manager.all();
+
+        for (contest in contests) {
+            functionWithTeamMembersByYear(contest.year, function(team: NeercTeam, members: Array<NeercTeamUser>) {
+                for (i in 0...members.length) {
+                    if (members[i].user.codeforcesUser != null) {
+                        members[i].user.codeforcesUser.lock();
+                        members[i].user.codeforcesUser.learnerRating = CodeforcesUser.calculateLearnerRating(members[i].user.codeforcesUser);
+                        members[i].user.codeforcesUser.update();
+
+                        trace(members[i].user.codeforcesUser.handle + ": " + members[i].user.codeforcesUser.learnerRating);
+                    }
+                }
+            });
+        }
+    }
+
+   public static function functionWithTeamMembersByYear(year: Int, f: haxe.Constraints.Function) {
+        var data: Array<Array<Int>> = [];
+        var contest: NeercContest = NeercContest.manager.select($year == year);
+
+        if (contest != null) {
+            var teams: Array<NeercTeam> = Lambda.array(NeercTeam.manager.search($contestId == contest.id, false));
+
+            for (i in 0...teams.length) {
+                var members: Array<NeercTeamUser> = Lambda.array(NeercTeamUser.manager.search($team == teams[i], false));
+                
+                if (members != null) {
+                    f(teams[i], members);
+                }
+            }
+        }
+    }
+
+    public static function updateNeercAll() {
+        updateNeercData();
+        CodeforcesUsers.ParseUsersFromRussia();
+        CodeforcesUsers.updateCodeforcesUsersNames();
+        updateNeercUsersRelationWithCodeforces();
+
+        var contests = NeercContest.manager.all();
+
+        for (i in contests) {
+            updateNeercSolvedProblems(i.year);
+        }
+
+        updateAttemptsForNeercUsers();
+        updateLearnerRating();
     }
 }
