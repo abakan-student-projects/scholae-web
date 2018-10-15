@@ -391,25 +391,40 @@ class Main {
 
     public static function saveCorrelationData(year: Int) {
         var contest: NeercContest = NeercContest.manager.select($year == year, true);
+        var tags: List<CodeforcesTag> = CodeforcesTag.manager.all();
 
         if (contest != null) {
             var teams: Array<NeercTeam> = Lambda.array(NeercTeam.manager.search($contestId == contest.id, false));
 
-            for (i in 0...teams.length) {
-                var members: Array<NeercTeamUser> = Lambda.array(NeercTeamUser.manager.search($team == teams[i], true));
+            Sys.print('neerc team rank; meanTeamRatingOnCodeforce; maxTeamRatingOnCodeforce; ' +
+            'meanTeamSolvedProblemsOnCodeforce; maxTeamSolvedProblemsOnCodeforce; ' +
+            'meanLearnerRating; maxLearnerRating; ' +
+            'meanLearnerRating1; maxLearnerRating1; '
+            );
 
+            for (t in tags) {
+                Sys.print(t.name + "; ");
+            }
+
+            Sys.println("");
+
+            for (i in 0...teams.length) {
+                var teamSolvedByTags: StringMap<Float> = new StringMap<Float>();
+
+                var members: Array<NeercTeamUser> = Lambda.array(NeercTeamUser.manager.search($team == teams[i], true));
                 var meanTeamRatingOnCodeforce = 0.0;
                 var maxTeamRatingOnCodeforce = 0.0;
                 var meanTeamSolvedProblemsOnCodeforce = 0.0;
                 var maxTeamSolvedProblemsOnCodeforce = 0.0;
                 var meanLearnerRating = 0.0;
                 var maxLearnerRating = 0.0;
+                var meanLearnerRating1 = 0.0;
+                var maxLearnerRating1 = 0.0;
 //                trace(teams[i]);
 
                 for (j in 0...members.length) {
 
 //                    trace(members[j]);
-
                     if (members[j].user.codeforcesUser != null && members[j].user.codeforcesUser.solvedProblems > 20) {
                         meanTeamSolvedProblemsOnCodeforce += members[j].user.codeforcesUser.solvedProblems/3;
                         maxTeamSolvedProblemsOnCodeforce = Math.max(members[j].user.codeforcesUser.solvedProblems, maxTeamSolvedProblemsOnCodeforce);
@@ -420,13 +435,55 @@ class Main {
                         meanLearnerRating += members[j].user.codeforcesUser.learnerRating/3;
                         maxLearnerRating = Math.max(members[j].user.codeforcesUser.learnerRating, maxLearnerRating);
 
+                        var learnerRating1 = 0.0;
+                        var solvedByTags: StringMap<Float> = new StringMap<Float>();
+
+                        var successfulAttempts: List<NeercAttempt> = NeercAttempt.manager.search($userId == members[j].user.codeforcesUser.id && $solved == true);
+                        if (successfulAttempts != null) {
+
+
+                            for (a in successfulAttempts) {
+                                if (a.task == null) continue;
+                                var tags = CodeforcesTaskTag.manager.search($taskId == a.task.id);
+                                for (tt in tags) {
+                                    var id = Std.string(tt.tag.id);
+                                    var v = if (solvedByTags.exists(id)) solvedByTags.get(id) else 0.0;
+                                    solvedByTags.set(id, v + a.task.level);
+                                }
+                            }
+
+
+                            for (s in solvedByTags) {
+                                learnerRating1 += Math.log(s);
+                            }
+
+                            for (t in tags) {
+                                var id = Std.string(t.id);
+                                var teamV = if (teamSolvedByTags.exists(id)) teamSolvedByTags.get(id) else 0.0;
+                                var memberV = if (solvedByTags.exists(id)) solvedByTags.get(id) else 0.0;
+                                teamSolvedByTags.set(id, Math.max(teamV, memberV));
+                            }
+                        }
+
+                        meanLearnerRating1 += learnerRating1/3;
+                        maxLearnerRating1 = Math.max(learnerRating1, maxLearnerRating1);
                     }
+
+
                 }
 
                 if (maxTeamSolvedProblemsOnCodeforce > 20) {
-                    Sys.println('${teams[i].rank}; $meanTeamRatingOnCodeforce; $maxTeamRatingOnCodeforce; ' +
+                    Sys.print('${teams[i].rank}; $meanTeamRatingOnCodeforce; $maxTeamRatingOnCodeforce; ' +
                                 '$meanTeamSolvedProblemsOnCodeforce; $maxTeamSolvedProblemsOnCodeforce; ' +
-                                '$meanLearnerRating; $maxLearnerRating');
+                                '$meanLearnerRating; $maxLearnerRating; ' +
+                                '$meanLearnerRating1; $maxLearnerRating1; '
+                    );
+
+                    for (t in tags) {
+                        var v = teamSolvedByTags.get(Std.string(t.id));
+                        Sys.print((if (v != 0) Math.log(v) else v) + "; ");
+                    }
+                    Sys.println("");
                 }
             }
 
