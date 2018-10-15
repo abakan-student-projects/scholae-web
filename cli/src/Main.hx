@@ -40,6 +40,9 @@ enum Action {
     updateAttemptsForNeercUsers;
     updateLearnerRating;
     updateNeercAll;
+    saveCorrelationData;
+    updateNeercSolvedProblems;
+    updateCorrelation;
 }
 
 typedef Config = {
@@ -70,7 +73,7 @@ class Main {
         sys.db.Manager.cnx = cnx;
         sys.db.Manager.initialize();
 
-        cfg = { action: null, batchCount: 100, verbose: false, solvedProblemsYear: null, correlationYear: null };
+        cfg = { action: null, batchCount: 100, verbose: false, solvedProblemsYear: 2017, correlationYear: 2017 };
 
         var args = Sys.args();
         var argHandler = hxargs.Args.generate([
@@ -86,7 +89,7 @@ class Main {
             @doc("Output Neerc users rating on Codeforces")
             ["-s", "--solved-problems"] => function(solvedProblemsYear:String) cfg.solvedProblemsYear = Std.parseInt(solvedProblemsYear),
 
-            @doc("Correlation")
+            @doc("Year for correlation (default: 2017)")
             ["-k", "--correlation"] => function(correlationYear:String) cfg.correlationYear = Std.parseInt(correlationYear),
 
             _ => function(arg:String) throw "Unknown command: " +arg
@@ -97,14 +100,6 @@ class Main {
         if (args.length <= 0) {
             Sys.println("Scholae command line tool");
             Sys.println(argHandler.getDoc());
-            Sys.exit(0);
-        }
-
-        if (cfg.solvedProblemsYear != null) {
-            updateNeercSolvedProblems(cfg.solvedProblemsYear);
-            Sys.exit(0);
-        } else if (cfg.correlationYear != null) {
-            updateCorrelation(cfg.correlationYear);
             Sys.exit(0);
         }
 
@@ -121,6 +116,9 @@ class Main {
             case Action.updateAttemptsForNeercUsers: updateAttemptsForNeercUsers();
             case Action.updateLearnerRating: updateLearnerRating();
             case Action.updateNeercAll: updateNeercAll();
+            case Action.saveCorrelationData: saveCorrelationData(cfg.correlationYear);
+            case Action.updateNeercSolvedProblems: updateNeercSolvedProblems(cfg.solvedProblemsYear);
+            case Action.updateCorrelation: updateCorrelation(cfg.correlationYear);
         }
 
         sys.db.Manager.cleanup();
@@ -386,6 +384,52 @@ class Main {
             }
 
             trace(getPearsonCorrelation(data));
+        } else {
+            trace("Contest not found");
+        }
+    }
+
+    public static function saveCorrelationData(year: Int) {
+        var contest: NeercContest = NeercContest.manager.select($year == year, true);
+
+        if (contest != null) {
+            var teams: Array<NeercTeam> = Lambda.array(NeercTeam.manager.search($contestId == contest.id, false));
+
+            for (i in 0...teams.length) {
+                var members: Array<NeercTeamUser> = Lambda.array(NeercTeamUser.manager.search($team == teams[i], true));
+
+                var meanTeamRatingOnCodeforce = 0.0;
+                var maxTeamRatingOnCodeforce = 0.0;
+                var meanTeamSolvedProblemsOnCodeforce = 0.0;
+                var maxTeamSolvedProblemsOnCodeforce = 0.0;
+                var meanLearnerRating = 0.0;
+                var maxLearnerRating = 0.0;
+//                trace(teams[i]);
+
+                for (j in 0...members.length) {
+
+//                    trace(members[j]);
+
+                    if (members[j].user.codeforcesUser != null && members[j].user.codeforcesUser.solvedProblems > 20) {
+                        meanTeamSolvedProblemsOnCodeforce += members[j].user.codeforcesUser.solvedProblems/3;
+                        maxTeamSolvedProblemsOnCodeforce = Math.max(members[j].user.codeforcesUser.solvedProblems, maxTeamSolvedProblemsOnCodeforce);
+
+                        meanTeamRatingOnCodeforce += members[j].user.codeforcesUser.rating/3;
+                        maxTeamRatingOnCodeforce = Math.max(members[j].user.codeforcesUser.rating, maxTeamRatingOnCodeforce);
+
+                        meanLearnerRating += members[j].user.codeforcesUser.learnerRating/3;
+                        maxLearnerRating = Math.max(members[j].user.codeforcesUser.learnerRating, maxLearnerRating);
+
+                    }
+                }
+
+                if (maxTeamSolvedProblemsOnCodeforce > 20) {
+                    Sys.println('${teams[i].rank}; $meanTeamRatingOnCodeforce; $maxTeamRatingOnCodeforce; ' +
+                                '$meanTeamSolvedProblemsOnCodeforce; $maxTeamSolvedProblemsOnCodeforce; ' +
+                                '$meanLearnerRating; $maxLearnerRating');
+                }
+            }
+
         } else {
             trace("Contest not found");
         }
