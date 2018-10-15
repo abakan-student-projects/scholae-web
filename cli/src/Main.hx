@@ -377,9 +377,10 @@ class Main {
                 for (j in 0...members.length) {
                     if (members[j].user.codeforcesUser != null && members[j].user.codeforcesUser.handle != null && members[j].user.codeforcesUser.learnerRating > 0) {
                         x += (members[j].user.codeforcesUser.learnerRating > x) ? members[j].user.codeforcesUser.learnerRating : x;
-                        y += (members[j].user.codeforcesUser.solvedProblems > y) ? members[j].user.codeforcesUser.solvedProblems : y;
+                        // y += (members[j].user.codeforcesUser.solvedProblems > y) ? members[j].user.codeforcesUser.solvedProblems : y;
                     }   
                 }
+                y = teams[i].rank;
 
                 data.push([Std.parseInt(x + ""), Std.parseInt(y + "")]);
             }
