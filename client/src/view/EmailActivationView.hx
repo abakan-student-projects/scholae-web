@@ -33,12 +33,8 @@ class EmailActivationView extends ReactComponent {
         return
             jsx('
                 <div id="activation">
-                    <div className="uk-flex uk-flex-middle uk-margin">
-                        <h2 className="uk-margin-remove">Подтверждение E-mail</h2>
-                    </div>
-                    <div className="uk-section uk-padding-small">
-                        <div className="uk-container uk-margin-remove uk-padding-remove">$message</div>
-                    </div>
+                    <h2 className="uk-margin-remove">Подтверждение E-mail</h2>
+                    <div className="uk-margin">$message</div>
                 </div>
             ');
     }
