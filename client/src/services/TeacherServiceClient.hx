@@ -89,7 +89,7 @@ class TeacherServiceClient extends BaseServiceClient {
     public function refreshResultsForGroup(groupId: Float): Promise<Array<TrainingMessage>> {
         return request(function(success, fail) {
             context.TeacherService.refreshResultsForGroup.call([groupId], function(e) {
-                processResponse(e, success, fail);
+                processAsyncJobResponse(e, success, fail);
             });
         });
     }
@@ -102,9 +102,9 @@ class TeacherServiceClient extends BaseServiceClient {
         });
     }
 
-    public function getAllTasksByMetaTraining(metaTraining: MetaTrainingMessage): Promise<ArrayChunk<TaskMessage>> {
+    public function getAllTasksByMetaTraining(metaTraining: MetaTrainingMessage, filter: String): Promise<ArrayChunk<TaskMessage>> {
         return request(function(success, fail) {
-            context.TeacherService.getAllTasksByMetaTraining.call([metaTraining], function(e) {
+            context.TeacherService.getAllTasksByMetaTraining.call([metaTraining, filter], function(e) {
                 processResponse(e, success, fail);
             });
         });

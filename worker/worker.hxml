@@ -1,0 +1,9 @@
+#-cpp ../localbuild/scholae_worker
+-neko ../localbuild/scholae_worker.n
+-main Main
+-cp src
+-cp ../shared
+-cp ../server-shared
+-cp ../lib/haxe-htmlparser/library
+-cp ../lib/hxamqp
+-lib record-macros

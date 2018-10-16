@@ -183,7 +183,7 @@ class Teacher
                             })
                     });
 
-            case LoadPossibleTasks(metaTraining):
+            case LoadPossibleTasks(metaTraining, filter):
                 copy(state, { newAssignment: { possibleTasks: RemoteDataHelper.createLoading() }});
 
             case LoadPossibleTasksFinished(tasks):
@@ -265,8 +265,8 @@ class Teacher
                 UIkit.notification({ message: "Результаты обновлены.", timeout: 3000 });
                 next();
 
-            case LoadPossibleTasks(metaTraining):
-                TeacherServiceClient.instance.getAllTasksByMetaTraining(metaTraining)
+            case LoadPossibleTasks(metaTraining,filter):
+                TeacherServiceClient.instance.getAllTasksByMetaTraining(metaTraining,filter)
                     .then(function(tasks) { store.dispatch(LoadPossibleTasksFinished(tasks)); });
                 next();
 

@@ -21,6 +21,14 @@
 		</antcall>
 	</target>
 
+	<target name="build.worker">
+		<mkdir dir="${site.build.path}/remoting"/>
+		<antcall target="haxe">
+			<param name="dir" value="${project.root.path}/worker"/>
+			<param name="hxml" value="worker.hxml"/>
+		</antcall>
+	</target>
+
 	<target name="build.cli">
 		<antcall target="haxe">
 			<param name="dir" value="${project.root.path}/cli"/>
@@ -53,13 +61,20 @@
 
 	<target name="deploy">
 		<antcall target="build"/>
-		<tar destfile="${local.build.path}/size.tar" basedir="${site.build.path}" />
-		<bzip2 destfile="${local.build.path}/size.tar.bz2" src="${local.build.path}/size.tar" />
+		<tar destfile="${local.build.path}/site.tar" basedir="${site.build.path}" />
+		<bzip2 destfile="${local.build.path}/site.tar.bz2" src="${local.build.path}/site.tar" />
 		<sshexec host="hosting.scholae.lambda-calculus.ru" username="deploy" keyfile="../../keys/deploy-private.openssh" command="mkdir -p /home/deploy/scholae" trust="yes"/>
-		<scp file="${local.build.path}/size.tar.bz2" todir="deploy@hosting.scholae.lambda-calculus.ru:/home/deploy/scholae" keyfile="../../keys/deploy-private.openssh" passphrase="" trust="yes"/>
-		<sshexec host="hosting.scholae.lambda-calculus.ru" username="deploy" keyfile="../../keys/deploy-private.openssh" command="bunzip2 -f /home/deploy/scholae/size.tar.bz2; tar -xf /home/deploy/scholae/size.tar -C /var/www/scholae.lambda-calculus.ru/site" trust="yes" usepty="true"/>
-		<delete file="${local.build.path}/size.tar" />
-		<delete file="${local.build.path}/size.tar.bz2" />
+		<scp file="${local.build.path}/site.tar.bz2" todir="deploy@hosting.scholae.lambda-calculus.ru:/home/deploy/scholae" keyfile="../../keys/deploy-private.openssh" passphrase="" trust="yes"/>
+		<sshexec host="hosting.scholae.lambda-calculus.ru" username="deploy" keyfile="../../keys/deploy-private.openssh" command="bunzip2 -f /home/deploy/scholae/site.tar.bz2; tar -xf /home/deploy/scholae/site.tar -C /var/www/scholae.lambda-calculus.ru/site" trust="yes" usepty="true"/>
+		<delete file="${local.build.path}/site.tar" />
+		<delete file="${local.build.path}/site.tar.bz2" />
+	</target>
+
+	<target name="deploy.worker">
+		<antcall target="build.worker"/>
+		<sshexec host="hosting.scholae.lambda-calculus.ru" username="deploy" keyfile="../../keys/deploy-private.openssh" command="mkdir -p /home/deploy/scholae" trust="yes"/>
+		<scp file="${local.build.path}/scholae_worker.n" todir="deploy@hosting.scholae.lambda-calculus.ru:/home/deploy/scholae" keyfile="../../keys/deploy-private.openssh" passphrase="" trust="yes"/>
+		<sshexec host="hosting.scholae.lambda-calculus.ru" username="deploy" keyfile="../../keys/deploy-private.openssh" command="sudo systemctl restart scholaeworker" trust="yes"/>
 	</target>
 
 </project>
