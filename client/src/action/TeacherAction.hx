@@ -44,6 +44,6 @@ enum TeacherAction {
     RefreshResults(groupId: Float);
     RefreshResultsFinished(trainings: Array<TrainingMessage>);
 
-    LoadPossibleTasks(metaTraining: MetaTrainingMessage);
+    LoadPossibleTasks(metaTraining: MetaTrainingMessage, ?filter: String);
     LoadPossibleTasksFinished(tasks: ArrayChunk<TaskMessage>);
 }

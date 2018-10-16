@@ -12,6 +12,8 @@ class MetaTraining extends sys.db.Object {
     public var length: SInt;
     public var tagIds: SData<Array<Float>>;
 
+    public var taskIds: SData<Array<Float>>;
+
     public function new() {
         super();
     }
@@ -24,6 +26,8 @@ class MetaTraining extends sys.db.Object {
             minLevel: minLevel,
             maxLevel: maxLevel,
             tagIds: tagIds,
+
+            taskIds: taskIds,
             length: length
         };
     }

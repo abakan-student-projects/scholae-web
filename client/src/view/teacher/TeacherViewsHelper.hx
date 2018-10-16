@@ -20,7 +20,6 @@ class TeacherViewsHelper {
 
     public static function ensureGroupLoaded(groupId: Float, state: ApplicationState, ?next: Void -> Void) {
         ensureGroupsLoaded(state, function() {
-            trace("groups are loaded");
             if(
                 state.teacher.groups.loaded &&
                 (state.teacher.currentGroup == null || state.teacher.currentGroup.info.id != groupId)) {

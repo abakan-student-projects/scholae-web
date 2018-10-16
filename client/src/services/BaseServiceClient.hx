@@ -39,6 +39,13 @@ class BaseServiceClient {
         }
     }
 
+    private function processAsyncJobResponse<T>(response: ResponseMessage, success: T -> Void, fail: Dynamic -> Void) {
+        switch(response.status) {
+            case ResponseStatus.OK: JobServiceClient.instance.waitForResponse(response.result, success);
+            case ResponseStatus.Error: fail(response.message);
+        }
+    }
+
     private function request<T>(process: (T -> Void) -> (Dynamic -> Void) -> Void): Promise<T> {
         url = prepareUrl();
         return new Promise(process);
