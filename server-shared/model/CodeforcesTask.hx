@@ -31,6 +31,9 @@ class CodeforcesTask extends sys.db.Object {
             task.contestId = p.contestId;
             task.contestIndex = p.index;
             task.active = true;
+            task.name = p.name;
+            task.level = 0;
+            task.solvedCount = 0;
             task.insert();
         }
 

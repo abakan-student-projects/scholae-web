@@ -77,4 +77,10 @@
 		<sshexec host="hosting.scholae.lambda-calculus.ru" username="deploy" keyfile="../../keys/deploy-private.openssh" command="sudo systemctl restart scholaeworker" trust="yes"/>
 	</target>
 
+	<target name="deploy.cli">
+		<antcall target="build.cli"/>
+		<sshexec host="hosting.scholae.lambda-calculus.ru" username="deploy" keyfile="../../keys/deploy-private.openssh" command="mkdir -p /home/deploy/scholae" trust="yes"/>
+		<scp file="${local.build.path}/scholae.n" todir="deploy@hosting.scholae.lambda-calculus.ru:/home/deploy/scholae" keyfile="../../keys/deploy-private.openssh" passphrase="" trust="yes"/>
+		<sshexec host="hosting.scholae.lambda-calculus.ru" username="deploy" keyfile="../../keys/deploy-private.openssh" command="sudo systemctl restart scholaeworker" trust="yes"/>
+	</target>
 </project>
