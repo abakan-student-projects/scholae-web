@@ -43,6 +43,7 @@ enum Action {
     saveCorrelationData;
     updateNeercSolvedProblems;
     updateCorrelation;
+    updateTagsCount;
 }
 
 typedef Config = {
@@ -119,6 +120,7 @@ class Main {
             case Action.saveCorrelationData: saveCorrelationData(cfg.correlationYear);
             case Action.updateNeercSolvedProblems: updateNeercSolvedProblems(cfg.solvedProblemsYear);
             case Action.updateCorrelation: updateCorrelation(cfg.correlationYear);
+            case Action.updateTagsCount: updateTagsCount();
         }
 
         sys.db.Manager.cleanup();
@@ -374,11 +376,22 @@ class Main {
 
                 for (j in 0...members.length) {
                     if (members[j].user.codeforcesUser != null && members[j].user.codeforcesUser.handle != null && members[j].user.codeforcesUser.learnerRating > 0) {
-                        x += (members[j].user.codeforcesUser.learnerRating > x) ? members[j].user.codeforcesUser.learnerRating : x;
-                        // y += (members[j].user.codeforcesUser.solvedProblems > y) ? members[j].user.codeforcesUser.solvedProblems : y;
+                        /*x += teams[i].solvedProblemsCount; // 0.9
+                        y += members[j].user.codeforcesUser.tagsCount;*/
+
+                        x = teams[i].solvedProblemsCount; // 0.81
+                        y += members[j].user.codeforcesUser.tagsCount;
+
+                        /*x = teams[i].solvedProblemsCount; // 0.85
+                        y = (members[j].user.codeforcesUser.tagsCount > y) ? members[j].user.codeforcesUser.tagsCount : y;*/
+
+                        /*x += members[j].user.codeforcesUser.tagsCount; // 0.41
+                        y = teams[i].rank;*/
+
+                        /*x = (members[j].user.codeforcesUser.tagsCount > x) ? members[j].user.codeforcesUser.tagsCount : x; // 0.56
+                        y = teams[i].rank;*/
                     }   
                 }
-                y = teams[i].rank;
 
                 data.push([Std.parseInt(x + ""), Std.parseInt(y + "")]);
             }
@@ -594,5 +607,29 @@ class Main {
 
         updateAttemptsForNeercUsers();
         updateLearnerRating();
+    }
+
+    public static function updateTagsCount() {
+        var users: Array<CodeforcesUser> = Lambda.array(CodeforcesUser.manager.search($learnerRating > 0));
+
+        for (user in users) {
+            var attempts = NeercAttempt.manager.search($userId == user.id);
+            var tags = new Map();
+            
+            for (attempt in attempts) {
+                var description: Problem = Json.parse(attempt.description).problem;
+                
+                for (tag in description.tags) {
+                    tags.set(tag, 1);
+                }
+            }
+            var count = 0;
+            for (i in tags.keys()) {
+                count++;
+            }
+            trace(user.handle + " " + count);
+            user.tagsCount = count;
+            user.update();
+        }
     }
 }

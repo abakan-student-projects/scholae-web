@@ -20,6 +20,7 @@ class CodeforcesUser extends sys.db.Object {
     public var solvedProblems: SInt;
     public var lastCodeforcesSubmissionId: SBigInt;
     public var learnerRating: SBigInt;
+    public var tagsCount: SInt;
 
     public function new() {
         super();
@@ -41,7 +42,8 @@ class CodeforcesUser extends sys.db.Object {
             rating: rating,
             solvedProblems: solvedProblems,
             lastCodeforcesSubmissionId: lastCodeforcesSubmissionId,
-            learnerRating: learnerRating
+            learnerRating: learnerRating,
+            tagsCount: tagsCount
         };
     }
 
