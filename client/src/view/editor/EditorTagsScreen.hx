@@ -25,11 +25,15 @@ class EditorTagsScreen
 
     function mapState(state: ApplicationState, props: RouteComponentProps): EditorTagsProps {
         RemoteDataHelper.ensureRemoteDataLoaded(state.editor.tags, EditorAction.LoadTags);
+        RemoteDataHelper.ensureRemoteDataLoaded(state.editor.links, EditorAction.LoadLink);
+
         return {
             tags: state.editor.tags.data,
+            links: if (null != state.editor.links) state.editor.links.data else [],
             update: function(tag) { dispatch(EditorAction.UpdateTag(tag)); },
             insert: function(tag) { dispatch(EditorAction.InsertTag(tag)); },
-            showNewTagView: state.editor.showNewTagView
+            showNewTagView: state.editor.showNewTagView,
+            linkId: state.editor.linkId
         }
     }
 }

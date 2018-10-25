@@ -1,5 +1,6 @@
 package service;
 
+import model.LinksForTags;
 import model.CodeforcesTask;
 import model.ModelUtils;
 import messages.MetaTrainingMessage;
@@ -80,6 +81,14 @@ class TeacherService {
                     CodeforcesTag.manager.all(),
                     function(t) { return t.toMessage(); }))
         );
+    }
+
+    public function getAllLinks(): ResponseMessage {
+        return ServiceHelper.successResponse(
+            Lambda.array(
+                Lambda.map(
+                    LinksForTags.manager.all(),
+                    function(l) { return l.toMessage(); })));
     }
 
     public function createAssignment(group: GroupMessage, assignment: AssignmentMessage): ResponseMessage {

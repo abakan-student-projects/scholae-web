@@ -1,5 +1,12 @@
 package service;
 
+import haxe.EnumTools;
+import messages.LinkTypes;
+import haxe.EnumTools.EnumValueTools;
+import Lambda;
+import Lambda;
+import model.LinksForTags;
+import messages.LinksForTagsMessage;
 import model.CodeforcesTaskTag;
 import model.CodeforcesTag;
 import messages.TagMessage;
@@ -54,6 +61,41 @@ class EditorService {
             } else {
                 return ServiceHelper.failResponse("Тег id=" + tagMessage.id + " не существует.");
             }
+        });
+    }
+
+    public function insertLink(linkMessage: LinksForTagsMessage): ResponseMessage {
+        return authorize(function() {
+            var tag: CodeforcesTag = CodeforcesTag.manager.select($id==linkMessage.tag);
+            var link = new LinksForTags();
+            link.URL = linkMessage.url;
+            link.optional = linkMessage.optional;
+            link.type = EnumTools.createByIndex(LinkTypes, linkMessage.type);
+            link.tag = tag;
+            link.insert();
+            return ServiceHelper.successResponse(link.toMessage());
+        });
+    }
+
+    public function updateLink(linkMessage: LinksForTagsMessage): ResponseMessage {
+        return authorize(function() {
+            var link: LinksForTags = LinksForTags.manager.select($id==linkMessage.id);
+            if (link != null) {
+                link.type = EnumTools.createByIndex(LinkTypes, linkMessage.type);
+                link.optional = linkMessage.optional;
+                link.URL = linkMessage.url;
+                link.update();
+                return ServiceHelper.successResponse(link.toMessage());
+            } else {
+                return ServiceHelper.failResponse("Ссылка id = " + linkMessage.id + "не существует." );
+            }
+        });
+    }
+
+    public function deleteLink(linkMessage: LinksForTagsMessage): ResponseMessage {
+        return authorize(function() {
+            LinksForTags.manager.delete($id==linkMessage.id);
+            return ServiceHelper.successResponse(linkMessage.id);
         });
     }
 
