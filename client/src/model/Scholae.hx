@@ -18,6 +18,7 @@ import services.AuthServiceClient;
 typedef ScholaeState = {
     auth: AuthState,
     loading: Bool,
+    activetedEmail: Bool,
     registration: RegistrationState
 }
 
@@ -45,6 +46,7 @@ class Scholae
             redirectPath: "/",
             errorMessage: null
         },
+        activetedEmail: false,
         loading: false
     };
 
@@ -54,7 +56,7 @@ class Scholae
 
     public function reduce(state: ScholaeState, action: ScholaeAction): ScholaeState {
         return switch(action) {
-            case AuthenticationFailed: copy(state, { loading: false });
+            case AuthenticationFailed(failMessage): copy(state, { loading: false });
             case Authenticate(email, password): copy(state,
                 {
                     loading: true,
@@ -116,7 +118,10 @@ class Scholae
                 });
             case Clear: initState;
             case RenewPassword (email):state;
-
+            case EmailActivationCode(code): copy(state, null);
+            case EmailActivationCodeFinished(check): copy(state, {
+                activetedEmail: check
+            });
         }
     }
 
@@ -130,21 +135,27 @@ class Scholae
                             store.dispatch(Authenticated(sessionMessage));
                         },
                         function(e) {
-                            store.dispatch(AuthenticationFailed);
+                            store.dispatch(AuthenticationFailed(e));
                         }
                     );
                 next();
-            case AuthenticationFailed:
-                UIkit.notification({ message: "Неправильно введён логин или пароль.", timeout: 3000 });
+            case AuthenticationFailed(failMessage):
+                UIkit.notification({ message: Std.string(failMessage), timeout: 3000 });
                 next();
 
             case Clear:
                 Session.logout();
                 next();
 
-
             case RenewPassword(email):
                 AuthServiceClient.instance.renewPassword(email);
+                next();
+
+            case EmailActivationCode(code):
+                AuthServiceClient.instance.emailActivation(code)
+                    .then(function(check) {
+                        store.dispatch(EmailActivationCodeFinished(check));
+                    });
                 next();
 
             case Register(email, password, codeforcesId, firstName, lastName):

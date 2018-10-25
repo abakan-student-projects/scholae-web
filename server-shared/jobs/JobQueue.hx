@@ -18,7 +18,7 @@ class JobQueue {
         MessageQueue.publish("common", "jobs", Bytes.ofString(Serializer.run({
                 id: jobModel.id,
                 job: job
-            })));
+            })), "scholae");
 
         return jobModel.id;
     }

@@ -40,6 +40,7 @@ class TeacherNewAssignmentScreen
 
         return {
             tags: state.teacher.tags.dataOrEmptyArray(),
+            learners: if (null != state.teacher.currentGroup) state.teacher.currentGroup.learners.data else [],
             possibleTasks: state.teacher.newAssignment.possibleTasks.data,
             cancel: function() {
                 props.router.replace(
@@ -51,13 +52,14 @@ class TeacherNewAssignmentScreen
                     }
                 );
             },
-            create: function(name, minLevel, maxLevel, tasksCount, tagIds, taskIds, startDate, finishDate) {
+            create: function(learnerIds,name, minLevel, maxLevel, tasksCount, tagIds, taskIds, startDate, finishDate) {
                 dispatch(TeacherAction.CreateAssignment(state.teacher.currentGroup.info,
                     {
                         id: null,
                         startDate: startDate,
                         finishDate: finishDate,
                         name: name,
+                        learnerIds: learnerIds,
                         metaTraining:
                             {
                                 id: null,
@@ -67,12 +69,10 @@ class TeacherNewAssignmentScreen
                                 taskIds: taskIds,
                                 length: tasksCount
                             },
-                        learnerIds: null,
                         groupId: null
                     }
                 ));
             }
         };
     }
-
 }

@@ -5,6 +5,7 @@
       <customJdkName value="1.8" />
     </buildFile>
   </component>
+  <component name="CopyrightManager" default="" />
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
     <data-source source="LOCAL" name="scholae@localhost" uuid="1a00c394-2489-4558-b1a7-29e81c093e31">
       <driver-ref>mysql</driver-ref>
@@ -22,6 +23,13 @@
     </data-source>
   </component>
   <component name="HaxeProjectSettings" defines="cpp" />
+  <component name="InspectionProjectProfileManager">
+    <profile version="1.0" is_locked="false">
+      <option name="myName" value="Project Default" />
+    </profile>
+    <version value="1.0" />
+  </component>
+  <component name="HaxeProjectSettings" defines="" />
   <component name="InspectionProjectProfileManager">
     <profile version="1.0" is_locked="false">
       <option name="myName" value="Project Default" />

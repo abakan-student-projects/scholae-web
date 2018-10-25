@@ -17,6 +17,7 @@ import model.Session;
 import model.User;
 import php.Lib.mail;
 
+
 class AuthService {
 
     public function new() {}
@@ -27,11 +28,21 @@ class AuthService {
     public function authenticate(email: String, password: String): ResponseMessage {
         var user = User.getUserByEmailAndPassword(email, password);
         if (null != user) {
-            var session = Session.getSessionByUser(user);
-            if (null != session && null != Session.manager.search({ id: session.id }).first()) session.update() else session.insert();
-            return ServiceHelper.successResponse(user.toSessionMessage(session.id));
+            if (canAuth(user.registrationDate, user.emailActivated)) {
+                var session = Session.getSessionByUser(user);
+                if (null != session && null != Session.manager.search({ id: session.id }).first()) session.update() else session.insert();
+                return ServiceHelper.successResponse(user.toSessionMessage(session.id));
+            } else return ServiceHelper.failResponse("You can't sign in. The email activation period has expired.");
         }
         return ServiceHelper.failResponse("Email or password is wrong.");
+    }
+
+    public function canAuth(date: Date, emailActivated: Bool): Bool {
+        return
+            if (emailActivated) true;
+            else
+                if (Date.now().getTime() <= DateTools.delta(date, (86400 * 1000) * 7).getTime()) true;
+            else false;
     }
 
     public function checkSession(sessionId: String): ResponseMessage {
@@ -80,8 +91,9 @@ Scholae';
     private function greetUser(user: User) {
         var subjectForUser ='Scholae: здравствуйте!';
         var message = 'Здравствуйте,
-
 мы рады, что вы зарегистрировались в Scholae!
+Перейдите по ссылке для подтверждения электронной почты - http://scholae.lambda-calculus.ru/activation/${user.emailActivationCode}
+Вы можете входить в систему без подтверждения электронной почты в течении 7 дней.
 
 Удачи в тренировках!
 
@@ -105,9 +117,24 @@ Scholae';
             u.registrationDate = Date.now();
             u.roles.set(Role.Learner);
             u.codeforcesHandle = user.codeforcesHandle;
+            u.emailActivationCode = Md5.encode(Std.string(u.registrationDate));
             u.insert();
             greetUser(u);
+
             return authenticate(user.email, user.password);
         }
+    }
+
+    public function emailActivation(code: String): Bool {
+        var user: User = User.manager.select($emailActivationCode == code, true);
+        if (user != null) {
+            user.emailActivationCode = null;
+            user.emailActivated = true;
+            user.update();
+
+            return true;
+        }
+
+        return false;
     }
 }

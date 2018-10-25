@@ -1,0 +1,2 @@
+ALTER TABLE users MODIFY lastCodeforcesSubmissionId BIGINT(20) DEFAULT 0;
+ALTER TABLE CodeforcesTasks ALTER COLUMN level SET DEFAULT 0;
