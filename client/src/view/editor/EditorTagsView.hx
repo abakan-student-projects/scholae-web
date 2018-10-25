@@ -251,6 +251,7 @@ class EditorTagsView extends ReactComponentOfProps<EditorTagsProps> implements I
 
     function startTagEditing(tagId: Float) {
         setState(copy(state, { editingTagId: tagId }));
+
     }
 
     function saveEditingTag() {

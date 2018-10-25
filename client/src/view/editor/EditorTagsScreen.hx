@@ -1,5 +1,6 @@
 package view.editor;
 
+import view.teacher.TeacherViewsHelper;
 import action.EditorAction;
 import view.editor.EditorTagsView.EditorTagsProps;
 import react.ReactComponent;
