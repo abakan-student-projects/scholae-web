@@ -1,5 +1,6 @@
 package;
 
+import view.editor.EditorUsersScreen;
 import view.EmailActivationScreen;
 import view.editor.EditorTasksScreen;
 import view.editor.EditorTagsScreen;
@@ -78,6 +79,7 @@ class Main {
     					    <IndexRoute component=$EditorTagsScreen/>
     					    <Route path="tags" component=$EditorTagsScreen />
     					    <Route path="problems" component=$EditorTasksScreen />
+    					    <Route path="users" component=$EditorUsersScreen />
 					    </Route>
 					    <Route path="renew-password-response" component=$RenewPasswordResponseView/>
 					</Route>

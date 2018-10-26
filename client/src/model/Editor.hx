@@ -1,5 +1,6 @@
 package model;
 
+import messages.UserMessage;
 import messages.TaskMessage;
 import services.EditorServiceClient;
 import react.ReactUtil;
@@ -23,6 +24,7 @@ class Editor
     public var initState: EditorState = {
         tags: RemoteDataHelper.createEmpty(),
         tasks: RemoteDataHelper.createEmpty(),
+        users: RemoteDataHelper.createEmpty(),
         tasksActiveChunkIndex: 0,
         tasksChunkSize: 100,
         tasksFilter: "",
@@ -66,6 +68,9 @@ class Editor
                     }
                 }
                 state;
+
+            case LoadUsers: copy(state, { users: RemoteDataHelper.createLoading() });
+            case LoadUsersFinished(users): copy(state, { users: RemoteDataHelper.createLoaded(users) });
 
             case SetTasksChunkIndex(index):
                 if (state.tasksActiveChunkIndex != index) copy(state, { tasksActiveChunkIndex: index, tasks: RemoteDataHelper.createEmpty() }) else state;
@@ -126,6 +131,14 @@ class Editor
 
             case UpdateTaskTagsFinished(task):
                 UIkit.notification({ message: "Категории для задачи " + task.name + " изменены.", timeout: 3000 });
+                next();
+
+            case LoadUsers:
+                EditorServiceClient.instance.getAllUsers()
+                .then(function(users) {
+                    ArraySort.sort(users, function(x: UserMessage, y: UserMessage) { return if (x.firstName > y.firstName) 1 else -1; });
+                    store.dispatch(LoadUsersFinished(users));
+                });
                 next();
 
             default: next();

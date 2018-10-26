@@ -1,5 +1,6 @@
 package service;
 
+import model.User;
 import model.CodeforcesTaskTag;
 import model.CodeforcesTag;
 import messages.TagMessage;
@@ -71,6 +72,15 @@ class EditorService {
                 totalLength: tasksCount
             });
         });
+    }
+
+    public function getAllUsers(): ResponseMessage {
+        return ServiceHelper.successResponse(
+            Lambda.array(
+                Lambda.map(
+                    User.manager.all(),
+                    function(u) { return u.toLearnerMessage(); }))
+        );
     }
 
     public function updateTaskTags(taskId: Float, tagIds: Array<Float>): ResponseMessage {

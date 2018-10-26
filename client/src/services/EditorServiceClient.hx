@@ -1,5 +1,6 @@
 package services;
 
+import messages.UserMessage;
 import messages.ArrayChunk;
 import messages.TaskMessage;
 import messages.TagMessage;
@@ -47,6 +48,14 @@ class EditorServiceClient extends BaseServiceClient {
     public function updateTaskTags(taskId: Float, tagIds: Array<Float>): Promise<TaskMessage> {
         return request(function(success, fail) {
             context.EditorService.updateTaskTags.call([taskId, tagIds], function(e) {
+                processResponse(e, success, fail);
+            });
+        });
+    }
+
+    public function getAllUsers(): Promise<Array<UserMessage>> {
+        return request(function(success, fail) {
+            context.EditorService.getAllUsers.call([], function(e) {
                 processResponse(e, success, fail);
             });
         });

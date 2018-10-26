@@ -1,5 +1,6 @@
 package model;
 
+import messages.LearnerMessage;
 import messages.ArrayChunk;
 import messages.TaskMessage;
 import messages.TagMessage;
@@ -12,4 +13,5 @@ typedef EditorState = {
     tasksFilter: String,
     tasksActiveChunkIndex: Int,
     tasksChunkSize: Int,
+    users: RemoteData<Array<LearnerMessage>>
 }
