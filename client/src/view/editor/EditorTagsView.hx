@@ -1,5 +1,6 @@
 package view.editor;
 
+import utils.UIkit;
 import messages.LinkTypes;
 import Lambda;
 import Std;
@@ -68,6 +69,41 @@ class EditorTagsView extends ReactComponentOfProps<EditorTagsProps> implements I
     override function render() {
         if (props.tags != null) {
             var linkTypes = getAllLinkTypes();
+            var editLink = if (props.links != null)
+                [ for (l in props.links)
+                        if (state.editingLinkId != null && l.id == state.editingLinkId && props.linkId != Std.string(l.id))
+                            jsx('<table>
+                                    <tr>
+                                        <td><input type="text" className="uk-input uk-form-width-1-2" defaultValue=${l.url} ref="editingUrlInput"/></td>
+                                        <td><input type="text" className="uk-input uk-form-width-1-2" defaultValue=${l.optional} ref="editingOptionalInput"/></td>
+                                    </tr>
+                                    <Select
+                                            isMulti=${false}
+                                            value=${linkTypes[l.type]}
+                                            options=${linkTypes}
+                                            ref="editingTypeSelected"/>
+                                </table>')] else [jsx('<div></div>')];
+            var newLink = jsx('<div id="modalForm" data-uk-modal="${true}">
+                                    <div className="uk-modal-dialog uk-margin-auto-vertical">
+                                        <div className="uk-modal-body">
+                                            <table>
+                                                <tr>
+                                                    <td><input type="text" className="uk-input uk-form-width-1-2" placeholder="Новая ссылка" ref="urlInput"/></td>
+                                                    <td><input type="text" className="uk-input uk-form-width-1-2" placeholder="Описание" ref="optionalInput"/></td>
+                                                </tr>
+                                                <Select
+                                                        isMulti=${false}
+                                                        options=${linkTypes}
+                                                        placeholder="Выберите тип ссылки"
+                                                        ref="typeSelected"/>
+                                            </table>
+                                        </div>
+                                        <div className="uk-modal-footer uk-text-right">
+                                            <button className="uk-button uk-button-default uk-margin-left uk-modal-close" onClick=$cancelEditing>Отмена</button>
+                                            <button className="uk-button uk-button-primary uk-margin-left uk-modal-close" type="button" onClick=$addLink>Сохранить</button>
+                                        </div>
+                                    </div>
+                                </div>');
             var newTag =
                 if (props.showNewTagView)
                     jsx('<NewTagView dispatch=${dispatch} close=$onCloseAddTagClick/>')
@@ -81,20 +117,15 @@ class EditorTagsView extends ReactComponentOfProps<EditorTagsProps> implements I
                     if (state.editingTagId != null && state.editingTagId == t.id)
                         jsx('
                         <tr>
-                            <td><input type="text" className="uk-input" defaultValue=${t.name} ref="editingNameInput"/></td>
-                            <td><input type="text" className="uk-input" defaultValue=${t.russianName} ref="editingRussianNameInput"/></td>
-                            ${renderLinks(t.id)}
                             <tr>
-                                <td><input type="text" placeholder="Новая ссылка" ref="urlInput"/></td>
-                                <td><input type="text" placeholder="Описание" ref="optionalInput"/></td>
+                                <td>Название на английском:</td>
+                                <td><input type="text" className="uk-input uk-form-width-large" defaultValue=${t.name} ref="editingNameInput"/></td>
                             </tr>
-                            <Select
-                                    isMulti=${false}
-                                    defaultValue=${linkTypes[0]}
-                                    options=$${linkTypes}
-                                    placeholder="Выберите тип ссылки"
-                                    ref="typeSelected"/>
-                                <button className="uk-button uk-button-primary" onClick=$addLink>Добавить ссылку</button>
+                            <tr>
+                                <td>Название на русском:</td>
+                                <td><input type="text" className="uk-input uk-form-width-large" defaultValue=${t.russianName} ref="editingRussianNameInput"/></td>
+                            </tr>
+                            ${renderLinks(t.id)}
                                 <button className="uk-button uk-button-primary" onClick=$saveEditingTag>Сохранить</button>
                                 <button className="uk-button uk-button-default uk-margin-left" onClick=$cancelEditing>Отмена</button>
                         </tr>')
@@ -107,6 +138,7 @@ class EditorTagsView extends ReactComponentOfProps<EditorTagsProps> implements I
                             <td>
                                 <div className="scholae-list-item-menu">
                                     <button className="uk-button uk-button-primary" onClick=${startTagEditing.bind(t.id)}>Изменить</button>
+                                    <button className="uk-button uk-button-primary" onClick=${showModal.bind(t.id)}>Добавить ссылку</button>
                                 </div>
                             </td>
                         </tr>
@@ -127,6 +159,19 @@ class EditorTagsView extends ReactComponentOfProps<EditorTagsProps> implements I
                             </thead>
                             <tbody>
                                 $tags
+                                $newLink
+                                <div id="editForm" data-uk-modal="${true}">
+                                    <div className="uk-modal-dialog uk-margin-auto-vertical">
+                                        <div className="uk-modal-body">
+                                            $editLink
+                                            </div>
+                                        <div className="uk-modal-footer uk-clearfix">
+                                            <button className="uk-button uk-button-danger uk-margin-right uk-float-left uk-modal-close" onClick=$deleteLink><i data-uk-icon="trash"/>Удалить</button>
+                                            <button className="uk-button uk-button-primary uk-float-right uk-modal-close" onClick=$updateLink>Изменить</button>
+                                            <button className="uk-button uk-button-default uk-margin-right uk-float-right uk-modal-close" onClick=$cancelLink>Отмена</button>
+                                        </div>
+                                    </div>
+                                </div>
                             </tbody>
                         </table>
                         $newTag
@@ -138,40 +183,20 @@ class EditorTagsView extends ReactComponentOfProps<EditorTagsProps> implements I
     }
 
     function renderLinks(tagId: Float){
-        trace(props.links);
-        var id = Std.string(tagId);
         var linkTypes = getAllLinkTypes();
+        var id = Std.string(tagId);
         var newLinks:Map <String, Array<ReactElement>> =
         if (props.links != null )
             [for (l in props.links) Std.string(l.tag) =>
                 [for (li in props.links)
-                    if(li.tag == state.editingTagId)
-                        if (state.editingLinkId != null && li.id == state.editingLinkId && props.linkId != Std.string(li.id))
-                        jsx('
-                            <div key=${li.id}>
-                                <td><input type="text" defaultValue=${li.url} ref="editingUrlInput"/></td>
-                                <td><input type="text" defaultValue=${li.optional} ref="editingOptionalInput"/></td>
-                                <Select
-                                        isMulti=${false}
-                                        defaultValue=${linkTypes[li.type]}
-                                        options=${linkTypes}
-                                        ref="editingTypeSelected"/>
-                                <button onClick=$updateLink>Готово</button>
-                                <button onClick=$deleteLink>Удалить</button>
-                                <button onClick=$cancelLink>Отменить</button>
-                            </div>
-                        ')
-                        else if (props.linkId != Std.string(li.id))
+                    if(li.tag == state.editingTagId && props.linkId != Std.string(li.id))
                             jsx('
-                                <div key=${li.id}>
-                                    <td>${li.url}</td>
-                                    <td>${li.optional}</td>
-                                    <td>${EnumValueTools.getName(EnumTools.createByIndex(LinkTypes, li.type))}</td>
-                                    <button onClick=${startEditingLink.bind(li.id)}>Изменить ссылку</button>
-                                </div>
+                                <tr key=${li.id}>
+                                    <td><a href=${li.url}>${li.optional}</a>
+                                    <button className="uk-margin-left" data-uk-icon="file-edit" onClick=${startEditingLink.bind(li.id)}></button></td>
+                                </tr>
                             ')
-                        else
-                            jsx('<div></div>')
+                    else jsx('<div></div>')
                 ]
             ]
         else ['0'=>[jsx('<div></div>')]];
@@ -188,13 +213,11 @@ class EditorTagsView extends ReactComponentOfProps<EditorTagsProps> implements I
         if (props.links != null)
             [for (l in props.links) Std.string(l.tag) =>
                 [for (li in props.links)
-                    if(li.tag == tagId && Std.string(li.id) != props.linkId)
+                    if(li.tag == tagId && Std.string(li.id) != props.linkId && state.editingLink == null)
                         jsx('
-                            <div key=${li.id}>
-                                <td>${li.url}</td>
-                                <td>${li.optional}</td>
-                                <td>${EnumValueTools.getName(EnumTools.createByIndex(LinkTypes, li.type))}</td>
-                            </div>
+                            <tr key=${li.id}>
+                                <td><a href=${li.url}>${li.optional}</a></td>
+                            </tr>
                         ')
                 ]
             ]
@@ -205,17 +228,24 @@ class EditorTagsView extends ReactComponentOfProps<EditorTagsProps> implements I
         } else return [];
     }
 
+    function showModal(tagId: Float){
+        UIkit.modal("#modalForm").show();
+        setState(copy(state, { editingTagId: tagId }));
+    }
+
     function addLink(){
         var addType = refs.typeSelected.state.value;
-        dispatch(EditorAction.InsertLink({
+       dispatch(EditorAction.InsertLink({
             id: null,
             tag: state.editingTagId,
             url: refs.urlInput.value,
             optional: refs.optionalInput.value,
             type: addType.value
         }));
+        setState(copy(state, { editingTagId: null }));
         refs.urlInput.value = null;
         refs.optionalInput.value = null;
+        addType.value = null;
     }
 
     function updateLink(){
@@ -227,7 +257,6 @@ class EditorTagsView extends ReactComponentOfProps<EditorTagsProps> implements I
             optional: refs.editingOptionalInput.value,
             type: updateType.value
         }));
-        setState(copy(state, { editingLinkId: null }));
     }
 
     function deleteLink(){
@@ -243,6 +272,7 @@ class EditorTagsView extends ReactComponentOfProps<EditorTagsProps> implements I
 
     function startEditingLink(linkId: Float) {
         setState(copy(state, { editingLinkId: linkId }));
+        UIkit.modal("#editForm").show();
     }
 
     function onFilterInputChanged() {
