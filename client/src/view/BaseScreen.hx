@@ -75,8 +75,13 @@ class BaseScreen
 				    </div>
 				</div>
 				<div className="scholae-footer uk-margin uk-margin-top uk-flex uk-flex-right uk-flex-middle uk-margin-left uk-margin-right">
-				    <a data-uk-icon="github" className="uk-icon-button uk-margin-right-small" href="https://github.com/abakan-student-projects/scholae-web/"></a>
-				    <a className="uk-link-text" href="https://github.com/abakan-student-projects/scholae-web/issues/new">Сообщить об ошибке</a>
+				    <ul className="uk-list">
+				    <li><a data-uk-icon="github" className="uk-icon-button uk-margin-right-small" href="https://github.com/abakan-student-projects/scholae-web/"></a>
+				    <a className="uk-link-text" href="https://github.com/abakan-student-projects/scholae-web/issues/new">Сообщить об ошибке</a></li>
+				    <li>
+				        <a className="uk-link-text" href="http://lambda-calculus.ru/blog/education/158.html">Студенческий проект</a>
+                    </li>
+				    </ul>
 				</div>
 			</div>
 		');
