@@ -72,30 +72,46 @@ class EditorTagsView extends ReactComponentOfProps<EditorTagsProps> implements I
             var editLink = if (props.links != null)
                 [ for (l in props.links)
                         if (state.editingLinkId != null && l.id == state.editingLinkId && props.linkId != Std.string(l.id))
-                            jsx('<table>
+                            jsx('<table className="uk-container" key=${l.id}>
                                     <tr>
-                                        <td><input type="text" className="uk-input uk-form-width-1-2" defaultValue=${l.url} ref="editingUrlInput"/></td>
-                                        <td><input type="text" className="uk-input uk-form-width-1-2" defaultValue=${l.optional} ref="editingOptionalInput"/></td>
+                                        <td>URL:</td>
+                                        <td><input type="text" className="uk-input uk-margin-left" defaultValue=${l.url} ref="editingUrlInput"/></td>
                                     </tr>
-                                    <Select
-                                            isMulti=${false}
-                                            value=${linkTypes[l.type]}
-                                            options=${linkTypes}
-                                            ref="editingTypeSelected"/>
+                                    <tr>
+                                        <td className="uk-margin-top">Описание:</td>
+                                        <td><input type="text" className="uk-input uk-margin-left uk-margin-top" defaultValue=${l.optional} ref="editingOptionalInput"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td className="uk-margin-top">Тип:</td>
+                                        <td className="uk-margin-top">
+                                            <Select
+                                                isMulti=${false}
+                                                value=${linkTypes[l.type]}
+                                                options=${linkTypes}
+                                                ref="editingTypeSelected" className="uk-margin-left uk-margin-top"/></td>
+                                    </tr>
                                 </table>')] else [jsx('<div></div>')];
-            var newLink = jsx('<div id="modalForm" data-uk-modal="${true}">
+            var newLink = jsx('<div id="modalForm" data-uk-modal="${true}" key="1">
                                     <div className="uk-modal-dialog uk-margin-auto-vertical">
                                         <div className="uk-modal-body">
-                                            <table>
+                                            <table className="uk-container">
                                                 <tr>
-                                                    <td><input type="text" className="uk-input uk-form-width-1-2" placeholder="Новая ссылка" ref="urlInput"/></td>
-                                                    <td><input type="text" className="uk-input uk-form-width-1-2" placeholder="Описание" ref="optionalInput"/></td>
+                                                    <td>URL:</td>
+                                                    <td><input type="text" className="uk-input uk-margin-left" ref="urlInput"/></td>
                                                 </tr>
-                                                <Select
-                                                        isMulti=${false}
-                                                        options=${linkTypes}
-                                                        placeholder="Выберите тип ссылки"
-                                                        ref="typeSelected"/>
+                                                <tr>
+                                                    <td className="uk-margin-top">Описание:</td>
+                                                    <td><input type="text" className="uk-input uk-margin-left uk-margin-top" ref="optionalInput"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td className="uk-margin-top">Тип:</td>
+                                                    <td>
+                                                        <Select
+                                                            isMulti=${false}
+                                                            options=${linkTypes}
+                                                            placeholder="Выберите тип ссылки"
+                                                            ref="typeSelected" className="uk-margin-left uk-margin-top"/></td>
+                                                </tr>
                                             </table>
                                         </div>
                                         <div className="uk-modal-footer uk-text-right">
