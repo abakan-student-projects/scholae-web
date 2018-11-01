@@ -13,5 +13,4 @@ typedef EditorState = {
     tasksFilter: String,
     tasksActiveChunkIndex: Int,
     tasksChunkSize: Int,
-    users: RemoteData<Array<LearnerMessage>>
 }

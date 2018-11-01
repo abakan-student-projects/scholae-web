@@ -1,5 +1,6 @@
 package model;
 
+import messages.AdminMessage;
 import messages.SessionMessage;
 import messages.LearnerMessage;
 import haxe.crypto.Md5;
@@ -44,6 +45,17 @@ class User extends sys.db.Object {
                 firstName: firstName,
                 lastName: lastName
             };
+    }
+
+    public function toAdminMessage(): AdminMessage {
+        return
+        {
+            userId: id,
+            email: email,
+            firstName: firstName,
+            lastName: lastName,
+            roles: roles
+        }
     }
 
     public function toSessionMessage(sessionId: String): SessionMessage {

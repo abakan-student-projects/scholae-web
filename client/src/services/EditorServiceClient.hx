@@ -52,12 +52,4 @@ class EditorServiceClient extends BaseServiceClient {
             });
         });
     }
-
-    public function getAllUsers(): Promise<Array<UserMessage>> {
-        return request(function(success, fail) {
-            context.EditorService.getAllUsers.call([], function(e) {
-                processResponse(e, success, fail);
-            });
-        });
-    }
 }

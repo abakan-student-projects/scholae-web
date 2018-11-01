@@ -75,12 +75,14 @@ class EditorService {
     }
 
     public function getAllUsers(): ResponseMessage {
-        return ServiceHelper.successResponse(
+        var res = ServiceHelper.successResponse(
             Lambda.array(
                 Lambda.map(
                     User.manager.all(),
-                    function(u) { return u.toLearnerMessage(); }))
+                    function(u) { return u.toAdminMessage(); }))
         );
+        trace (res);
+        return res;
     }
 
     public function updateTaskTags(taskId: Float, tagIds: Array<Float>): ResponseMessage {

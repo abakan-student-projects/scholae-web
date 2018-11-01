@@ -16,9 +16,6 @@ enum EditorAction {
     LoadTags;
     LoadTagsFinished(tags: Array<TagMessage>);
 
-    LoadUsers;
-    LoadUsersFinished(users: Array<LearnerMessage>);
-
     InsertTag(tag: TagMessage);
     InsertTagFinished(tag: TagMessage);
 
