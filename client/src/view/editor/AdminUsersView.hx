@@ -1,5 +1,6 @@
 package view.editor;
 
+import Array;
 import messages.AdminMessage;
 import haxe.EnumTools.EnumValueTools;
 import model.Role;
@@ -12,6 +13,13 @@ typedef AdminUsersProps = {
     users: Array<AdminMessage>
 }
 
+typedef AdminUsersRefs = {
+
+}
+
+typedef AdminUsersState = {
+    editingUserId: Float
+}
 
 class AdminUsersView extends ReactComponentOfProps<AdminUsersProps> implements IConnectedComponent {
 
@@ -21,22 +29,15 @@ class AdminUsersView extends ReactComponentOfProps<AdminUsersProps> implements I
     }
 
     public function getNameRole(role: Roles){
-        var roles = Type.allEnums(Role);
-        var n: Roles;
-        if (role.has(EnumValueTools.getIndex(Role.Learner)))
-            n.set(Role.Learner);
-        if (role.has(EnumValueTools.getIndex(Role.Teacher)))
-            n.set(Role.Teacher);
-        if (role.has(EnumValueTools.getIndex(Role.Administrator)))
-            n.set(Role.Administrator);
-        if (role.has(EnumValueTools.getIndex(Role.Learner)))
-            n.set(Role.Learner);
-        trace (r);
-        return r;
+        var roles = Std.string(role);
+        roles = StringTools.replace(roles,"1"," Learner");
+        roles = StringTools.replace(roles,"2"," Teacher");
+        roles = StringTools.replace(roles,"3"," Administrator");
+        roles = StringTools.replace(roles,"4"," Editor");
+        return roles;
     }
 
     override function render() {
-        //var roles = getNameRole();
             var users = if (props.users != null)
                 [ for (u in props.users)
                         jsx('
@@ -44,6 +45,7 @@ class AdminUsersView extends ReactComponentOfProps<AdminUsersProps> implements I
                             <td>${u.firstName}</td>
                             <td>${u.lastName}</td>
                             <td>${getNameRole(u.roles)}</td>
+                            <td><button onClick=$updateUsers>Изменить</td>
                         </tr>
                     ')
                 ]else [jsx('<div></div>')];
@@ -73,5 +75,9 @@ class AdminUsersView extends ReactComponentOfProps<AdminUsersProps> implements I
         var allr = Type.allEnums(Role);
         trace(allr);
         return r;
+    }
+
+    function updateUsers(){
+        return
     }
 }

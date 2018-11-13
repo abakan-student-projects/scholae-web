@@ -1,5 +1,6 @@
 package service;
 
+import messages.AdminMessage;
 import model.User;
 import model.CodeforcesTaskTag;
 import model.CodeforcesTag;
@@ -75,14 +76,17 @@ class EditorService {
     }
 
     public function getAllUsers(): ResponseMessage {
-        var res = ServiceHelper.successResponse(
+        return ServiceHelper.successResponse(
             Lambda.array(
                 Lambda.map(
                     User.manager.all(),
-                    function(u) { return u.toAdminMessage(); }))
-        );
-        trace (res);
-        return res;
+                    function(u) { return u.toAdminMessage(); })));
+    }
+
+    public function updateRoleUsers(users: AdminMessage): ResponseMessage {
+        return authorize(function() {
+
+        })
     }
 
     public function updateTaskTags(taskId: Float, tagIds: Array<Float>): ResponseMessage {
