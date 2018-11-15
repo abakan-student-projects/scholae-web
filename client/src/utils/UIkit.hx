@@ -9,4 +9,5 @@ typedef UIkitNotificationArgs =  {
 
 @:native("UIkit") extern class UIkit {
     public static function notification(args: UIkitNotificationArgs): Void;
+    public static function modal(args: String): Dynamic;
 }

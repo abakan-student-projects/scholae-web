@@ -12,6 +12,7 @@ import messages.LearnerMessage;
 import messages.GroupMessage;
 import js.Promise;
 import messages.SessionMessage;
+import messages.LinksForTagsMessage;
 
 class TeacherServiceClient extends BaseServiceClient {
 
@@ -36,6 +37,14 @@ class TeacherServiceClient extends BaseServiceClient {
 
     public function getAllTags(): Promise<Array<TagMessage>> {
         return basicRequest(context.TeacherService.getAllTags, []);
+    }
+
+    public function getAllLinks(): Promise<Array<LinksForTagsMessage>> {
+        return request(function(success, fail) {
+            context.TeacherService.getAllLinks.call([], function(e) {
+                processResponse(e, success, fail);
+            });
+        });
     }
 
     public function getAllLearnersByGroup(groupId: Float): Promise<Array<LearnerMessage>> {

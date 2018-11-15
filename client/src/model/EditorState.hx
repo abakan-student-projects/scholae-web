@@ -1,5 +1,6 @@
 package model;
 
+import messages.LinksForTagsMessage;
 import messages.ArrayChunk;
 import messages.TaskMessage;
 import messages.TagMessage;
@@ -12,4 +13,6 @@ typedef EditorState = {
     tasksFilter: String,
     tasksActiveChunkIndex: Int,
     tasksChunkSize: Int,
+    links: RemoteData<Array<LinksForTagsMessage>>,
+    linkId: String
 }
