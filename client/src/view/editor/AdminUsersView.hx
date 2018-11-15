@@ -65,6 +65,7 @@ class AdminUsersView extends ReactComponentOfProps<AdminUsersProps> implements I
                             <td><Select
                                 isMulti=${true}
                                 options=$roles
+                                defaultValue=${getNameRole(u.roles)}
                                 onChange=$onSelectedRoleChanged
                                 placeholder="Выберите роль..."
                                 ref="rolesSelect"/></td>
@@ -107,7 +108,7 @@ class AdminUsersView extends ReactComponentOfProps<AdminUsersProps> implements I
         props.onRolesChanged(if (roles != null) Lambda.array(Lambda.map(roles, function(r) { return Std.parseFloat(r.value); })) else []);
         trace(roles);
     }
-//написать метод изменения данных
+
     function updateUsers(){
 
     }

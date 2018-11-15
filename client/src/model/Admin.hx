@@ -22,7 +22,8 @@ class Admin
     implements IMiddleware<AdminAction, ApplicationState> {
 
     public var initState: AdminState = {
-        users: RemoteDataHelper.createEmpty()
+        users: RemoteDataHelper.createEmpty(),
+        role: RemoteDataHelper.createEmpty()
     };
 
     public var store: StoreMethods<ApplicationState>;
@@ -36,15 +37,14 @@ class Admin
 
             case LoadUsers: copy(state, { users: RemoteDataHelper.createLoading() });
             case LoadUsersFinished(users): copy(state, { users: RemoteDataHelper.createLoaded(users) });
-/*
-            case UpdateRoleUsers(users): state;
+            case UpdateRoleUsers(role): state;
             case UpdateRoleUsersFinished(users):
                 var filtered = state.users.data.filter(function(u) { return u.id == users.id; });
                 if (filtered.length > 0) {
                     ReactUtil.assign(filtered[0], [users]);
                 }
             }
-            state;*/
+            state;
 
         }
 
