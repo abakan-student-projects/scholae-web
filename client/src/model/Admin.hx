@@ -36,7 +36,7 @@ class Admin
 
             case LoadUsers: copy(state, { users: RemoteDataHelper.createLoading() });
             case LoadUsersFinished(users): copy(state, { users: RemoteDataHelper.createLoaded(users) });
-
+/*
             case UpdateRoleUsers(users): state;
             case UpdateRoleUsersFinished(users):
                 var filtered = state.users.data.filter(function(u) { return u.id == users.id; });
@@ -44,7 +44,7 @@ class Admin
                     ReactUtil.assign(filtered[0], [users]);
                 }
             }
-            state;
+            state;*/
 
         }
 
@@ -58,13 +58,13 @@ class Admin
                     store.dispatch(LoadUsersFinished(users));
                 });
                 next();
-            case UpdateRoleUsers(users):
+/*            case UpdateRoleUsers(users):
                 AdminServiceClient.instance.UpdateRoleUsers()
                 .then(function(users) {
                 ArraySort.sort(users, function(x: AdminMessage, y: AdminMessage) { return if (x.firstName > y.firstName) 1 else -1; });
                 store.dispatch(LoadUsersFinished(users));
                 });
-                next();
+                next();*/
 
             default: next();
         }

@@ -10,7 +10,7 @@ enum AdminAction {
     LoadUsers;
     LoadUsersFinished(users: Array<AdminMessage>);
 
-    UpdateRoleUsers(users: AdminMessage);
-    UpdateRoleUsersFinished(users: AdminMessage);
+/*    UpdateRoleUsers(users: AdminMessage);
+    UpdateRoleUsersFinished(users: AdminMessage);*/
 
 }
