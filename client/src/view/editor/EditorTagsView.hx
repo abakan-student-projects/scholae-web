@@ -133,21 +133,19 @@ class EditorTagsView extends ReactComponentOfProps<EditorTagsProps> implements I
                     if (state.editingTagId != null && state.editingTagId == t.id)
                         jsx('
                         <tr>
-                            <tr>
-                                <td>Название на английском:</td>
-                                <td><input type="text" className="uk-input uk-form-width-large" defaultValue=${t.name} ref="editingNameInput"/></td>
-                            </tr>
-                            <tr>
-                                <td>Название на русском:</td>
-                                <td><input type="text" className="uk-input uk-form-width-large" defaultValue=${t.russianName} ref="editingRussianNameInput"/></td>
-                            </tr>
-                            ${renderLinks(t.id)}
-                                <button className="uk-button uk-button-primary uk-margin-bottom" onClick=$saveEditingTag>Сохранить</button>
-                                <button className="uk-button uk-button-default uk-margin-left uk-margin-bottom" onClick=$cancelEditing>Отмена</button>
+                                <div className="uk-flex uk-flex-wrap">
+                                    <div className="uk-width-1-3 uk-margin-top">Название на английском:</div>
+                                    <div className="uk-width-1-2 uk-margin-top"><input type="text" className="uk-input uk-form-width-large" defaultValue=${t.name} ref="editingNameInput"/></div>
+                                    <div className="uk-width-1-3 uk-margin-top">Название на русском:</div>
+                                    <div className="uk-width-1-2 uk-margin-top"><input type="text" className="uk-input uk-form-width-large" defaultValue=${t.russianName} ref="editingRussianNameInput"/></div>
+                                </div>
+                                ${renderLinks(t.id)}
+                                <button className="uk-button uk-button-primary uk-margin-bottom uk-margin-top" onClick=$saveEditingTag>Сохранить</button>
+                                <button className="uk-button uk-button-default uk-margin-left uk-margin-bottom uk-margin-top" onClick=$cancelEditing>Отмена</button>
                         </tr>')
                     else
                         jsx('
-                        <tr>
+                        <tr className="uk-margin scholae-list-item" key=${t.id}>
                             <td>${t.name}</td>
                             <td>${t.russianName}</td>
                             <td>${renderExistsLinks(t.id)}</td>
@@ -207,10 +205,10 @@ class EditorTagsView extends ReactComponentOfProps<EditorTagsProps> implements I
                 [for (li in props.links)
                     if(li.tag == state.editingTagId && props.linkId != Std.string(li.id))
                             jsx('
-                                <tr key=${li.id}>
-                                    <td><a href=${li.url}>${li.optional}</a>
-                                    <button className="uk-margin-left" data-uk-icon="file-edit" onClick=${startEditingLink.bind(li.id)}></button></td>
-                                </tr>
+                                <div className="uk-flex uk-flex-wrap">
+                                    <div className="uk-margin-top"><a href=${li.url}>${li.optional}</a></div>
+                                    <div className="uk-margin-top"><button className="uk-margin-left" data-uk-icon="file-edit" onClick=${startEditingLink.bind(li.id)}></button></div>
+                                </div>
                             ')
                     else jsx('<div></div>')
                 ]
