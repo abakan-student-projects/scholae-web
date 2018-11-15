@@ -147,7 +147,7 @@ class EditorTagsView extends ReactComponentOfProps<EditorTagsProps> implements I
                         </tr>')
                     else
                         jsx('
-                        <tr className="uk-margin scholae-list-item" key=${t.id}>
+                        <tr key=${t.id}>
                             <td>${t.name}</td>
                             <td>${t.russianName}</td>
                             <td>${renderExistsLinks(t.id)}</td>
