@@ -21,6 +21,7 @@
       </driver-properties>
     </data-source>
   </component>
+  <component name="Encoding" addBOMForNewFiles="with NO BOM" />
   <component name="HaxeProjectSettings" defines="cpp" />
   <component name="InspectionProjectProfileManager">
     <profile version="1.0" is_locked="false">
