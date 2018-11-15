@@ -26,6 +26,7 @@ class CheckboxesView extends ReactComponentOfPropsAndState<CheckboxesProps, Chec
     public function new()
     {
         super();
+        state = { checkedIds: new StringMap<Bool>() };
     }
 
     override function render() {

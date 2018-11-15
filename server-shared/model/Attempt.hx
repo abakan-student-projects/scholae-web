@@ -28,17 +28,20 @@ class Attempt extends sys.db.Object {
 
         var submissions = Codeforces.getUserSubmissions(user.codeforcesHandle);
 
-        var lastSubmissionId = user.lastCodeforcesSubmissionId;
+        var lastSubmissionId = if (user.lastCodeforcesSubmissionId != null) user.lastCodeforcesSubmissionId else 0;
 
-        trace(lastSubmissionId);
 
         for (s in submissions) {
-            if (s.id <= user.lastCodeforcesSubmissionId) break;
+            if (user.lastCodeforcesSubmissionId != null && s.id <= user.lastCodeforcesSubmissionId) break;
+            if (Attempt.manager.count($vendorId == cast(s.id, Float)) > 0) break;
+
             lastSubmissionId = Math.max(lastSubmissionId, s.id);
 
+            var t: CodeforcesTask = CodeforcesTask.manager.select($contestId == s.problem.contestId && $contestIndex == s.problem.index);
             var a: Attempt = new Attempt();
+
             a.vendorId = s.id;
-            a.task = CodeforcesTask.manager.select($contestId == s.problem.contestId && $contestIndex == s.problem.index);
+            a.task = t;
             a.user = user;
             a.description = Json.stringify(s);
             a.datetime = Date.fromTime(s.creationTimeSeconds * 1000.0);

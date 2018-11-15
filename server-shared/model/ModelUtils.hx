@@ -40,7 +40,13 @@ class ModelUtils {
         var tasks: Array<CodeforcesTask> =
                 Lambda.array(
                     Lambda.filter(
-                        CodeforcesTask.manager.search($active == true && $level >= minLevel && $level <= maxLevel && !($id in solvedTaskIds) && !($id in exercisesTaskIds) && ($id in taskIds)),
+                        CodeforcesTask.manager.search(
+                            $active == true &&
+                            $level >= minLevel &&
+                            $level <= maxLevel &&
+                            !($id in solvedTaskIds) &&
+                            !($id in exercisesTaskIds) &&
+                            if (taskIds != null && taskIds.length > 0) ($id in taskIds) else true),
                         function(t) { return  taskIdsByTags.exists(Std.string(t.id)); }));
         var res = [];
         if (tasks.length > length){

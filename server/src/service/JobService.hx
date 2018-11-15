@@ -10,7 +10,7 @@ class JobService {
 
     public function loadResponses(): ResponseMessage {
         return ServiceHelper.authorize(Role.Learner, function() {
-            var jobs = Job.manager.search($sessionId == Authorization.instance.session.id && $creationDateTime != $modificationDateTime);
+            var jobs = Job.manager.search($sessionId == Authorization.instance.session.id && $response != null);
             var result = ServiceHelper.successResponse(
                 Lambda.array(
                     Lambda.map(
