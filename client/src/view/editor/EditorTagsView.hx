@@ -142,19 +142,19 @@ class EditorTagsView extends ReactComponentOfProps<EditorTagsProps> implements I
                                 <td><input type="text" className="uk-input uk-form-width-large" defaultValue=${t.russianName} ref="editingRussianNameInput"/></td>
                             </tr>
                             ${renderLinks(t.id)}
-                                <button className="uk-button uk-button-primary" onClick=$saveEditingTag>Сохранить</button>
-                                <button className="uk-button uk-button-default uk-margin-left" onClick=$cancelEditing>Отмена</button>
+                                <button className="uk-button uk-button-primary uk-margin-bottom" onClick=$saveEditingTag>Сохранить</button>
+                                <button className="uk-button uk-button-default uk-margin-left uk-margin-bottom" onClick=$cancelEditing>Отмена</button>
                         </tr>')
                     else
                         jsx('
                         <tr>
                             <td>${t.name}</td>
                             <td>${t.russianName}</td>
-                            ${renderExistsLinks(t.id)}
+                            <td>${renderExistsLinks(t.id)}</td>
                             <td>
                                 <div className="scholae-list-item-menu">
-                                    <button className="uk-button uk-button-primary" onClick=${startTagEditing.bind(t.id)}>Изменить</button>
-                                    <button className="uk-button uk-button-primary" onClick=${showModal.bind(t.id)}>Добавить ссылку</button>
+                                    <button className="uk-button uk-button-primary uk-margin-small-top uk-margin-left" onClick=${startTagEditing.bind(t.id)}>Изменить</button>
+                                    <button className="uk-button uk-button-primary uk-margin-small-top uk-margin-left" onClick=${showModal.bind(t.id)}>Добавить ссылку</button>
                                 </div>
                             </td>
                         </tr>
