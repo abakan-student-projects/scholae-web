@@ -26,9 +26,11 @@ class AdminServiceClient extends BaseServiceClient {
         });
     }
 
-    public function UpdateRoleUsers(users: AdminMessage): Promise<AdminMessage> {
+    public function UpdateRoleUsers(user: AdminMessage): Promise<AdminMessage> {
         return request(function(success, fail) {
-            context.
-        })
+            context.EditorService.updateRole.call([user], function(e) {
+                processResponse(e, success, fail);
+            });
+        });
     }
 }

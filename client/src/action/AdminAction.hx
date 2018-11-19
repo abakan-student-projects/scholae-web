@@ -2,7 +2,6 @@ package action;
 
 import model.Role.Roles;
 import messages.AdminMessage;
-import messages.ArrayChunk;
 
 enum AdminAction {
 
@@ -11,7 +10,7 @@ enum AdminAction {
     LoadUsers;
     LoadUsersFinished(users: Array<AdminMessage>);
 
-    UpdateRoleUsers(role: Roles);
-    UpdateRoleUsersFinished(role: Roles);
+    UpdateRoleUsers(user: AdminMessage);
+    UpdateRoleUsersFinished(user: AdminMessage);
 
 }

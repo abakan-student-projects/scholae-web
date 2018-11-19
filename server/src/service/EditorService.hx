@@ -1,5 +1,6 @@
 package service;
 
+import haxe.EnumTools;
 import messages.AdminMessage;
 import model.User;
 import model.CodeforcesTaskTag;
@@ -83,10 +84,17 @@ class EditorService {
                     function(u) { return u.toAdminMessage(); })));
     }
 
-    public function updateRoleUsers(users: AdminMessage): ResponseMessage {
+    public function updateRole(userMessage: AdminMessage): ResponseMessage {
         return authorize(function() {
-
-        })
+            var user: User = User.manager.select($id==userMessage.userId);
+            if (user != null && user.roles != null){
+                user.roles = userMessage.roles;
+                user.update();
+                return ServiceHelper.successResponse(user.toAdminMessage());
+            } else {
+                return ServiceHelper.failResponse("Вы не изменили роль");
+            }
+        });
     }
 
     public function updateTaskTags(taskId: Float, tagIds: Array<Float>): ResponseMessage {

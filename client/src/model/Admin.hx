@@ -22,8 +22,7 @@ class Admin
     implements IMiddleware<AdminAction, ApplicationState> {
 
     public var initState: AdminState = {
-        users: RemoteDataHelper.createEmpty(),
-        role: RemoteDataHelper.createEmpty()
+        users: RemoteDataHelper.createEmpty()
     };
 
     public var store: StoreMethods<ApplicationState>;
@@ -37,16 +36,19 @@ class Admin
 
             case LoadUsers: copy(state, { users: RemoteDataHelper.createLoading() });
             case LoadUsersFinished(users): copy(state, { users: RemoteDataHelper.createLoaded(users) });
-            case UpdateRoleUsers(role): state;
-            case UpdateRoleUsersFinished(users):
-                var filtered = state.users.data.filter(function(u) { return u.id == users.id; });
+
+            case UpdateRoleUsers(user): state;
+            case UpdateRoleUsersFinished(user):
+                if (state.users.loaded){
+                var filtered = state.users.data.filter(function(r) { return r.userId == user.userId; });
                 if (filtered.length > 0) {
-                    ReactUtil.assign(filtered[0], [users]);
+                    ReactUtil.assign(filtered[0], [user]);
                 }
             }
             state;
 
         }
+    }
 
     public function middleware(action: AdminAction, next:Void -> Dynamic) {
         trace(action);
@@ -58,13 +60,16 @@ class Admin
                     store.dispatch(LoadUsersFinished(users));
                 });
                 next();
-/*            case UpdateRoleUsers(users):
-                AdminServiceClient.instance.UpdateRoleUsers()
-                .then(function(users) {
-                ArraySort.sort(users, function(x: AdminMessage, y: AdminMessage) { return if (x.firstName > y.firstName) 1 else -1; });
-                store.dispatch(LoadUsersFinished(users));
+
+            case UpdateRoleUsers(user):
+                AdminServiceClient.instance.UpdateRoleUsers(user)
+                .then(function(user) {
+                store.dispatch(UpdateRoleUsersFinished(user));
                 });
-                next();*/
+                next();
+            case UpdateRoleUsersFinished(user):
+                UIkit.notification({ message: "Роль изменена", timeout: 3000 });
+                next();
 
             default: next();
         }

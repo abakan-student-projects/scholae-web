@@ -22,12 +22,11 @@ class AdminUsersScreen
     public override function render(): ReactElement {
         return jsx('<AdminUsersView {...state} dispatch=$dispatch/>');
     }
-//добавить данные по роли
+
     function mapState(state: ApplicationState, props: RouteComponentProps): AdminUsersProps {
         RemoteDataHelper.ensureRemoteDataLoaded(state.admin.users, AdminAction.LoadUsers);
         return {
-            users: state.admin.users.dataб
-            roles:
+            users: state.admin.users.data
         }
     }
 }
