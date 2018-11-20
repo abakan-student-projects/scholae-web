@@ -19,7 +19,6 @@ import utils.Select;
 
 typedef AdminUsersProps = {
     users: Array<AdminMessage>
-    //roles: Array<Role>
 }
 
 typedef AdminUsersRefs = {

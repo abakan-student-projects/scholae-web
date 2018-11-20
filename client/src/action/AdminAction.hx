@@ -12,5 +12,4 @@ enum AdminAction {
 
     UpdateRoleUsers(user: AdminMessage);
     UpdateRoleUsersFinished(user: AdminMessage);
-
 }

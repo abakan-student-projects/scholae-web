@@ -46,7 +46,6 @@ class User extends sys.db.Object {
                 lastName: lastName
             };
     }
-
     public function toAdminMessage(): AdminMessage {
         return
         {

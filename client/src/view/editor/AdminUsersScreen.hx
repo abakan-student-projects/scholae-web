@@ -2,7 +2,6 @@ package view.editor;
 
 import action.AdminAction;
 import view.editor.AdminUsersView.AdminUsersProps;
-import action.EditorAction;
 import utils.RemoteDataHelper;
 import react.ReactComponent;
 import react.ReactMacro.jsx;

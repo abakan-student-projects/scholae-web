@@ -1,5 +1,4 @@
 package messages;
-
 import model.Role.Roles;
 
 typedef AdminMessage = {

@@ -3,7 +3,6 @@ package services;
 import messages.AdminMessage;
 import js.Promise;
 
-
 class AdminServiceClient extends BaseServiceClient {
 
     private static var _instance: AdminServiceClient;

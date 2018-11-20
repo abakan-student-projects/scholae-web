@@ -49,7 +49,6 @@ class Admin
 
         }
     }
-
     public function middleware(action: AdminAction, next:Void -> Dynamic) {
         trace(action);
         return switch(action) {
