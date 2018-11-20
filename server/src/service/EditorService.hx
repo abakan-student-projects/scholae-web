@@ -1,7 +1,7 @@
 package service;
 
+import messages.UserMessage;
 import haxe.EnumTools;
-import messages.AdminMessage;
 import model.User;
 import haxe.EnumTools;
 import messages.LinkTypes;
@@ -123,16 +123,16 @@ class EditorService {
             Lambda.array(
                 Lambda.map(
                     User.manager.all(),
-                    function(u) { return u.toAdminMessage(); })));
+                    function(u) { return u.toUserMessage(); })));
     }
 
-    public function updateRole(userMessage: AdminMessage): ResponseMessage {
+    public function updateRole(userMessage: UserMessage): ResponseMessage {
         return authorize(function() {
-            var user: User = User.manager.select($id==userMessage.userId);
+            var user: User = User.manager.select($id==userMessage.id);
             if (user != null){
                 user.roles = userMessage.roles;
                 user.update();
-                return ServiceHelper.successResponse(user.toAdminMessage());
+                return ServiceHelper.successResponse(user.toUserMessage());
             } else {
                 return ServiceHelper.failResponse("Такого пользователя не существует");
             }

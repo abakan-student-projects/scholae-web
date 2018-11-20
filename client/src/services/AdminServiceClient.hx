@@ -1,6 +1,6 @@
 package services;
 
-import messages.AdminMessage;
+import messages.UserMessage;
 import js.Promise;
 
 class AdminServiceClient extends BaseServiceClient {
@@ -17,7 +17,7 @@ class AdminServiceClient extends BaseServiceClient {
     }
 
 
-    public function getAllUsers(): Promise<Array<AdminMessage>> {
+    public function getAllUsers(): Promise<Array<UserMessage>> {
         return request(function(success, fail) {
             context.EditorService.getAllUsers.call([], function(e) {
                 processResponse(e, success, fail);
@@ -25,7 +25,7 @@ class AdminServiceClient extends BaseServiceClient {
         });
     }
 
-    public function UpdateRoleUsers(user: AdminMessage): Promise<AdminMessage> {
+    public function UpdateRoleUsers(user: UserMessage): Promise<UserMessage> {
         return request(function(success, fail) {
             context.EditorService.updateRole.call([user], function(e) {
                 processResponse(e, success, fail);

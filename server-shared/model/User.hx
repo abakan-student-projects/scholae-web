@@ -1,6 +1,6 @@
 package model;
 
-import messages.AdminMessage;
+import messages.UserMessage;
 import messages.SessionMessage;
 import messages.LearnerMessage;
 import haxe.crypto.Md5;
@@ -47,14 +47,15 @@ class User extends sys.db.Object {
             };
     }
 
-    public function toAdminMessage(): AdminMessage {
+    public function toUserMessage(): UserMessage {
         return
         {
-            userId: id,
+            id: id,
             email: email,
             firstName: firstName,
             lastName: lastName,
-            roles: roles
+            roles: roles,
+            codeforcesHandle: codeforcesHandle
         }
     }
 

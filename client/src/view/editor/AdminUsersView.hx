@@ -8,7 +8,7 @@ import model.Role;
 import haxe.EnumTools.EnumValueTools;
 import js.html.InputElement;
 import Array;
-import messages.AdminMessage;
+import messages.UserMessage;
 import haxe.EnumTools.EnumValueTools;
 import model.Role;
 import react.ReactComponent;
@@ -18,8 +18,8 @@ import react.ReactUtil.copy;
 import utils.Select;
 
 typedef AdminUsersProps = {
-    users: Array<AdminMessage>,
-    update: AdminMessage -> Void
+    users: Array<UserMessage>,
+    update: UserMessage -> Void
 }
 
 typedef AdminUsersRefs = {
@@ -73,9 +73,9 @@ class AdminUsersView extends ReactComponentOfProps<AdminUsersProps> implements I
             var r = getAllRoles();
             var users =
             [for (u in props.users)
-                if (state.editingUserId != null && state.editingUserId == u.userId)
+                if (state.editingUserId != null && state.editingUserId == u.id)
                     jsx('
-                        <tr className="uk-margin scholae-list-item" key=${u.userId}>
+                        <tr className="uk-margin scholae-list-item" key=${u.id}>
                             <td>${u.firstName}</td>
                             <td>${u.lastName}</td>
                             <td><Select
@@ -88,11 +88,11 @@ class AdminUsersView extends ReactComponentOfProps<AdminUsersProps> implements I
                             <button className="uk-button uk-button-default uk-margin-left uk-margin-top" onClick=$cancelUpdating>Отмена</button>
                         </tr>
                     ') else jsx('
-                            <tr className="uk-margin scholae-list-item" key=${u.userId}>
+                            <tr className="uk-margin scholae-list-item" key=${u.id}>
                                     <td>${u.firstName}</td>
                                     <td>${u.lastName}</td>
                                     <td>${getNameRole(u.roles)}</td>
-                                    <td><button data-uk-icon="file-edit" onClick=${startEditingRole.bind(u.userId)}></button></td>
+                                    <td><button data-uk-icon="file-edit" onClick=${startEditingRole.bind(u.id)}></button></td>
                                 </tr>
                                 ')];
             return jsx('
@@ -134,10 +134,11 @@ class AdminUsersView extends ReactComponentOfProps<AdminUsersProps> implements I
         }
 
         props.update({
-            userId: state.editingUserId,
+            id: state.editingUserId,
             email: null,
             firstName: null,
             lastName: null,
+            codeforcesHandle: null,
             roles: roleForUpdate
         });
         setState(copy(state, { editingUserId: null }));

@@ -1,15 +1,15 @@
 package action;
 
 import model.Role.Roles;
-import messages.AdminMessage;
+import messages.UserMessage;
 
 enum AdminAction {
 
     Clear;
 
     LoadUsers;
-    LoadUsersFinished(users: Array<AdminMessage>);
+    LoadUsersFinished(users: Array<UserMessage>);
 
-    UpdateRoleUsers(user: AdminMessage);
-    UpdateRoleUsersFinished(user: AdminMessage);
+    UpdateRoleUsers(user: UserMessage);
+    UpdateRoleUsersFinished(user: UserMessage);
 }

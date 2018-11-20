@@ -3,7 +3,7 @@ package model;
 import services.AdminServiceClient;
 import action.AdminAction;
 import haxe.ds.ArraySort;
-import messages.AdminMessage;
+import messages.UserMessage;
 import utils.RemoteDataHelper;
 import utils.UIkit;
 import react.ReactUtil;
@@ -36,7 +36,7 @@ class Admin
             case UpdateRoleUsers(user): state;
             case UpdateRoleUsersFinished(user):
                 if (state.users.loaded){
-                    var filtered = state.users.data.filter(function(r) { return r.userId == user.userId; });
+                    var filtered = state.users.data.filter(function(r) { return r.id == user.id; });
                     if (filtered.length > 0) {
                         ReactUtil.assign(filtered[0], [user]);
                     }
@@ -51,7 +51,7 @@ class Admin
             case LoadUsers:
                 AdminServiceClient.instance.getAllUsers()
                 .then(function(users) {
-                    ArraySort.sort(users, function(x: AdminMessage, y: AdminMessage) { return if (x.firstName > y.firstName) 1 else -1; });
+                    ArraySort.sort(users, function(x: UserMessage, y: UserMessage) { return if (x.firstName > y.firstName) 1 else -1; });
                     store.dispatch(LoadUsersFinished(users));
                 });
                 next();

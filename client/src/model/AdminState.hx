@@ -1,8 +1,8 @@
 package model;
 
-import messages.AdminMessage;
+import messages.UserMessage;
 import utils.RemoteData;
 
 typedef AdminState = {
-    users: RemoteData<Array<AdminMessage>>
+    users: RemoteData<Array<UserMessage>>
 }
