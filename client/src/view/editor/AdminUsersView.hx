@@ -114,9 +114,13 @@ class AdminUsersView extends ReactComponentOfProps<AdminUsersProps> implements I
                 ');
     }
 
-    function getIndexRole(role: Array<Role>){
+    function startEditingRole(userId: Float){
+        setState(copy(state, { editingUserId: userId }));
+    }
 
-        var roles = [for (r in role) EnumTools.createByIndex(Role, Std.parseInt(Std.string(r)))];
+    function updateUsers(){
+
+        var roles = [for (r in roleForSelect) EnumTools.createByIndex(Role, Std.parseInt(Std.string(r)))];
         for (role in roles){
             if (role == Role.Editor) roleForUpdate.set(Role.Editor);
             if (role == Role.Administrator) roleForUpdate.set(Role.Administrator);
@@ -124,24 +128,14 @@ class AdminUsersView extends ReactComponentOfProps<AdminUsersProps> implements I
             if (role == Role.Teacher) roleForUpdate.set(Role.Teacher);
         }
 
-        return roleForUpdate;
-
-    }
-
-    function startEditingRole(userId: Float){
-        setState(copy(state, { editingUserId: userId }));
-        trace(userId);
-    }
-
-    function updateUsers(){
-        var updateRole = getIndexRole(roleForSelect);
         dispatch(AdminAction.UpdateRoleUsers({
             userId: state.editingUserId,
             email: null,
             firstName: null,
             lastName: null,
-            roles: updateRole
+            roles: roleForUpdate
         }));
+        roleForUpdate = null;
     }
 
     function cancelUpdating(){

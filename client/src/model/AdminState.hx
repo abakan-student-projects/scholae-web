@@ -4,5 +4,5 @@ import messages.AdminMessage;
 import utils.RemoteData;
 
 typedef AdminState = {
-    users: RemoteData<Array<AdminMessage>>,
+    users: RemoteData<Array<AdminMessage>>
 }

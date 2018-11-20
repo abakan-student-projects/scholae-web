@@ -117,6 +117,7 @@ class EditorService {
             });
         });
     }
+
     public function getAllUsers(): ResponseMessage {
         return ServiceHelper.successResponse(
             Lambda.array(

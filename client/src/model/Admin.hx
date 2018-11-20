@@ -2,12 +2,8 @@ package model;
 
 import services.AdminServiceClient;
 import action.AdminAction;
-import action.EditorAction;
-import action.TeacherAction;
 import haxe.ds.ArraySort;
 import messages.AdminMessage;
-import services.EditorServiceClient;
-import services.TeacherServiceClient;
 import utils.RemoteDataHelper;
 import utils.UIkit;
 import react.ReactUtil;
@@ -46,9 +42,9 @@ class Admin
                 }
             }
             state;
-
         }
     }
+
     public function middleware(action: AdminAction, next:Void -> Dynamic) {
         trace(action);
         return switch(action) {
