@@ -1,5 +1,6 @@
 package view.teacher;
 
+import action.EditorAction;
 import utils.RemoteDataHelper;
 import redux.Redux.Action;
 import utils.RemoteData;
@@ -16,6 +17,10 @@ class TeacherViewsHelper {
 
     public static function ensureTagsLoaded(state: ApplicationState, ?next: Void -> Void) {
         RemoteDataHelper.ensureRemoteDataLoaded(state.teacher.tags, TeacherAction.LoadAllTags, next);
+    }
+
+    public static function ensureLinksLoaded(state: ApplicationState, ?next: Void -> Void) {
+        RemoteDataHelper.ensureRemoteDataLoaded(state.editor.links, EditorAction.LoadLink, next);
     }
 
     public static function ensureGroupLoaded(groupId: Float, state: ApplicationState, ?next: Void -> Void) {

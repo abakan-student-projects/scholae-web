@@ -1,11 +1,6 @@
 package service;
 
-import jobs.JobQueue;
-import jobs.ScholaeJob;
-import haxe.io.Bytes;
-import haxe.Serializer;
-import haxe.ds.ArraySort;
-import messages.TaskMessage;
+import model.LinksForTags;
 import model.CodeforcesTask;
 import model.ModelUtils;
 import messages.MetaTrainingMessage;
@@ -88,6 +83,14 @@ class TeacherService {
         );
     }
 
+    public function getAllLinks(): ResponseMessage {
+        return ServiceHelper.successResponse(
+            Lambda.array(
+                Lambda.map(
+                    LinksForTags.manager.all(),
+                    function(l) { return l.toMessage(); })));
+    }
+
     public function createAssignment(group: GroupMessage, assignment: AssignmentMessage): ResponseMessage {
         return ServiceHelper.authorize(Role.Teacher, function() {
             return ServiceHelper.authorizeGroup(Group.manager.get(group.id), Authorization.instance.currentUser, function() {
@@ -95,7 +98,6 @@ class TeacherService {
                 m.minLevel = assignment.metaTraining.minLevel;
                 m.maxLevel = assignment.metaTraining.maxLevel;
                 m.tagIds = assignment.metaTraining.tagIds;
-
                 m.taskIds = assignment.metaTraining.taskIds;
                 m.length = assignment.metaTraining.length;
                 m.insert();
@@ -158,9 +160,11 @@ class TeacherService {
     public function refreshResultsForGroup(groupId: Float): ResponseMessage {
         return ServiceHelper.authorize(Role.Teacher, function() {
             return ServiceHelper.authorizeGroup(Group.manager.get(groupId), Authorization.instance.currentUser, function() {
-                return ServiceHelper.successResponse(
-                    JobQueue.publishScholaeJob(ScholaeJob.RefreshResultsForGroup(groupId), Authorization.instance.session.id)
-                );
+                for (gl in GroupLearner.manager.search($groupId == groupId)) {
+                    Attempt.updateAttemptsForUser(gl.learner);
+                    Sys.sleep(0.3);
+                }
+                return getTrainingsByGroup(groupId);
             });
         });
     }
@@ -213,8 +217,6 @@ class TeacherService {
             )
             );
         }
-
-        ArraySort.sort(tasks, function(a: TaskMessage, b: TaskMessage) { return a.tagIds.length - b.tagIds.length; });
 
         return ServiceHelper.successResponse(
             {

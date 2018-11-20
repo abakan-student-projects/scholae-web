@@ -7,6 +7,7 @@ import messages.TagMessage;
 import js.Promise;
 import messages.GroupMessage;
 import messages.TrainingMessage;
+import messages.LinksForTagsMessage;
 
 class EditorServiceClient extends BaseServiceClient {
 
@@ -32,6 +33,30 @@ class EditorServiceClient extends BaseServiceClient {
     public function insertTag(tag: TagMessage): Promise<TagMessage> {
         return request(function(success, fail) {
             context.EditorService.insertTag.call([tag], function(e) {
+                processResponse(e, success, fail);
+            });
+        });
+    }
+
+    public function updateLink(link: LinksForTagsMessage): Promise<LinksForTagsMessage> {
+        return request(function(success, fail) {
+            context.EditorService.updateLink.call([link], function(e) {
+                processResponse(e, success, fail);
+            });
+        });
+    }
+
+    public function insertLink(link: LinksForTagsMessage): Promise<LinksForTagsMessage> {
+        return request(function(success, fail) {
+            context.EditorService.insertLink.call([link], function(e) {
+                processResponse(e, success, fail);
+            });
+        });
+    }
+
+    public function deleteLink(link: LinksForTagsMessage): Promise<LinksForTagsMessage> {
+        return request(function(success, fail) {
+            context.EditorService.deleteLink.call([link], function(e) {
                 processResponse(e, success, fail);
             });
         });
