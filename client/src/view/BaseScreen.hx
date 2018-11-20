@@ -1,5 +1,6 @@
 package view;
 
+import action.AdminAction;
 import model.Role;
 import action.LearnerAction;
 import action.TeacherAction;
@@ -51,6 +52,13 @@ class BaseScreen
                     </li>')
             else
                 null;
+        var adminMenuItem =
+        if (state.scholae.auth.loggedIn && state.scholae.auth.roles.has(Role.Administrator))
+            jsx('<li className=${if(props.location.pathname.indexOf("/administrator") == 0) "uk-active" else ""}>
+                        <Link to="/administrator/">Администратор</Link>
+                    </li>')
+        else
+            null;
 
         return jsx('
 			<div id="scholae">
@@ -61,6 +69,7 @@ class BaseScreen
                             $learnerMenuItem
                             $teacherMenuItem
                             $editorMenuItem
+                            $adminMenuItem
                         </ul>
                      </div>
 				    <div className="uk-navbar-right">
@@ -87,6 +96,7 @@ class BaseScreen
         dispatch(ScholaeAction.Clear);
         dispatch(TeacherAction.Clear);
         dispatch(LearnerAction.Clear);
+        dispatch(AdminAction.Clear);
     }
 
     function renderUserInfo() {

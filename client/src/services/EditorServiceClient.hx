@@ -1,5 +1,6 @@
 package services;
 
+import messages.UserMessage;
 import messages.ArrayChunk;
 import messages.TaskMessage;
 import messages.TagMessage;

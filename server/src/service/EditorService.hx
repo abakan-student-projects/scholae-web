@@ -1,5 +1,8 @@
 package service;
 
+import messages.UserMessage;
+import haxe.EnumTools;
+import model.User;
 import haxe.EnumTools;
 import messages.LinkTypes;
 import haxe.EnumTools.EnumValueTools;
@@ -112,6 +115,27 @@ class EditorService {
                 offset: offset,
                 totalLength: tasksCount
             });
+        });
+    }
+
+    public function getAllUsers(): ResponseMessage {
+        return ServiceHelper.successResponse(
+            Lambda.array(
+                Lambda.map(
+                    User.manager.all(),
+                    function(u) { return u.toUserMessage(); })));
+    }
+
+    public function updateRole(userMessage: UserMessage): ResponseMessage {
+        return authorize(function() {
+            var user: User = User.manager.select($id==userMessage.id);
+            if (user != null){
+                user.roles = userMessage.roles;
+                user.update();
+                return ServiceHelper.successResponse(user.toUserMessage());
+            } else {
+                return ServiceHelper.failResponse("Такого пользователя не существует");
+            }
         });
     }
 

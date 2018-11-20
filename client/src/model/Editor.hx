@@ -3,6 +3,7 @@ package model;
 import services.TeacherServiceClient;
 import messages.LinksForTagsMessage;
 import view.teacher.TeacherViewsHelper;
+import messages.UserMessage;
 import messages.TaskMessage;
 import services.EditorServiceClient;
 import react.ReactUtil;
