@@ -36,12 +36,12 @@ class Admin
             case UpdateRoleUsers(user): state;
             case UpdateRoleUsersFinished(user):
                 if (state.users.loaded){
-                var filtered = state.users.data.filter(function(r) { return r.userId == user.userId; });
-                if (filtered.length > 0) {
-                    ReactUtil.assign(filtered[0], [user]);
+                    var filtered = state.users.data.filter(function(r) { return r.userId == user.userId; });
+                    if (filtered.length > 0) {
+                        ReactUtil.assign(filtered[0], [user]);
+                    }
                 }
-            }
-            state;
+                copy(state, { });
         }
     }
 

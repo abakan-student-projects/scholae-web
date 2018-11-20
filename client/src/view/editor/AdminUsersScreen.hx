@@ -25,7 +25,8 @@ class AdminUsersScreen
     function mapState(state: ApplicationState, props: RouteComponentProps): AdminUsersProps {
         RemoteDataHelper.ensureRemoteDataLoaded(state.admin.users, AdminAction.LoadUsers);
         return {
-            users: state.admin.users.data
+            users: state.admin.users.data,
+            update: function(users) { dispatch(AdminAction.UpdateRoleUsers(users)); }
         }
     }
 }

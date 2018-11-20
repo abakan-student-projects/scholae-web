@@ -129,12 +129,12 @@ class EditorService {
     public function updateRole(userMessage: AdminMessage): ResponseMessage {
         return authorize(function() {
             var user: User = User.manager.select($id==userMessage.userId);
-            if (user != null && user.roles != null){
+            if (user != null){
                 user.roles = userMessage.roles;
                 user.update();
                 return ServiceHelper.successResponse(user.toAdminMessage());
             } else {
-                return ServiceHelper.failResponse("Вы не изменили роль");
+                return ServiceHelper.failResponse("Такого пользователя не существует");
             }
         });
     }

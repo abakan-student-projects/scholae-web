@@ -18,7 +18,8 @@ import react.ReactUtil.copy;
 import utils.Select;
 
 typedef AdminUsersProps = {
-    users: Array<AdminMessage>
+    users: Array<AdminMessage>,
+    update: AdminMessage -> Void
 }
 
 typedef AdminUsersRefs = {
@@ -68,11 +69,12 @@ class AdminUsersView extends ReactComponentOfProps<AdminUsersProps> implements I
     }
 
     override function render() {
+        if (props.users != null){
             var r = getAllRoles();
-            var users = if (props.users != null)
-                [for (u in props.users)
-                    if (state.editingUserId != null && state.editingUserId == u.userId)
-                        jsx('
+            var users =
+            [for (u in props.users)
+                if (state.editingUserId != null && state.editingUserId == u.userId)
+                    jsx('
                         <tr className="uk-margin scholae-list-item" key=${u.userId}>
                             <td>${u.firstName}</td>
                             <td>${u.lastName}</td>
@@ -82,7 +84,7 @@ class AdminUsersView extends ReactComponentOfProps<AdminUsersProps> implements I
                                 defaultValue=${getNameRoleForSelect(u.roles)}
                                 onChange=$onSelectedRoleChanged
                                 ref="roleSelect"/></td>
-                            <button className="uk-button uk-button-primary uk-margin-top"  onClick=$updateUsers>Сохранить</button>
+                            <button className="uk-button uk-button-primary uk-margin-top" onClick=$updateUsers>Сохранить</button>
                             <button className="uk-button uk-button-default uk-margin-left uk-margin-top" onClick=$cancelUpdating>Отмена</button>
                         </tr>
                     ') else jsx('
@@ -90,10 +92,9 @@ class AdminUsersView extends ReactComponentOfProps<AdminUsersProps> implements I
                                     <td>${u.firstName}</td>
                                     <td>${u.lastName}</td>
                                     <td>${getNameRole(u.roles)}</td>
-                                    <td><button className="uk-margin-left" data-uk-icon="file-edit" onClick=${startEditingRole.bind(u.userId)}></button></td>
+                                    <td><button data-uk-icon="file-edit" onClick=${startEditingRole.bind(u.userId)}></button></td>
                                 </tr>
-                                ')]
-                        else [jsx('<div></div>')];
+                                ')];
             return jsx('
                     <div id="users">
                         <h2>Пользователи</h2>
@@ -112,6 +113,9 @@ class AdminUsersView extends ReactComponentOfProps<AdminUsersProps> implements I
                         </table>
                     </div>
                 ');
+        } else {
+            return jsx('<div>Данные отсутствуют</div>');
+        }
     }
 
     function startEditingRole(userId: Float){
@@ -119,6 +123,7 @@ class AdminUsersView extends ReactComponentOfProps<AdminUsersProps> implements I
     }
 
     function updateUsers(){
+
 
         var roles = [for (r in roleForSelect) EnumTools.createByIndex(Role, Std.parseInt(Std.string(r)))];
         for (role in roles){
@@ -128,13 +133,14 @@ class AdminUsersView extends ReactComponentOfProps<AdminUsersProps> implements I
             if (role == Role.Teacher) roleForUpdate.set(Role.Teacher);
         }
 
-        dispatch(AdminAction.UpdateRoleUsers({
+        props.update({
             userId: state.editingUserId,
             email: null,
             firstName: null,
             lastName: null,
             roles: roleForUpdate
-        }));
+        });
+        setState(copy(state, { editingUserId: null }));
         roleForUpdate = null;
     }
 
