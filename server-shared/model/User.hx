@@ -54,7 +54,7 @@ class User extends sys.db.Object {
                 lastName: lastName,
                 roles: roles,
                 sessionId: sessionId,
-                firstAuthMes: firstAuthMessage
+                firstAuthMessage: firstAuthMessage
             };
     }
 }
