@@ -39,7 +39,7 @@ class TeacherDashboardView extends ReactComponentOfProps<TeacherDashboardProps> 
                     jsx('
                         <div className="uk-margin" key=${a.id}>
                             ${DateUtils.toStringWithTime(a.datetime)}
-                            <Link className="uk-margin-small-left" to=${"/teacher/group/" + a.groupId + "/training/" + a.trainingId}>${a.learner.lastName} ${a.learner.firstName} - ${a.task.name}</Link>
+                            <Link className="uk-margin-small-left" to=${"http://codeforces.com/contest/" + a.task.id + "/submission/" + a.vendorId}>${a.learner.lastName} ${a.learner.firstName} - ${a.task.name}</Link>
                             <span className=${"uk-label uk-margin-small-left " + if(a.solved)"uk-label-success"else"uk-label-danger"}>${if(a.solved) "Решено" else "Ошибка"}</span>
                         </div>')
                 ];

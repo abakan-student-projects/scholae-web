@@ -179,6 +179,7 @@ class TeacherService {
                         message.trainingId = e.training.id;
                         message.assignmentId = e.training.assignment.id;
                         message.groupId = e.training.assignment.group.id;
+                        message.vendorId = a.vendorId;
                         res.push(message);
                     }
                 }

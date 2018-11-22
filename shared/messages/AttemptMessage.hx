@@ -9,5 +9,6 @@ typedef AttemptMessage = {
     datetime: Date,
     trainingId: Float,
     assignmentId: Float,
-    groupId: Float
+    groupId: Float,
+    ?vendorId: Float
 }
