@@ -35,10 +35,7 @@ class Teacher
         resultsRefreshing: false,
         newAssignment: {
             possibleTasks: RemoteDataHelper.createEmpty()
-        },
-        learnerId: "",
-        groupId: ""
-
+        }
     };
 
     public var store: StoreMethods<ApplicationState>;
@@ -284,7 +281,7 @@ class Teacher
 
             case DeleteLearnerFromCourse(learnerId, groupId):
                 TeacherServiceClient.instance.deleteLearner(learnerId, groupId)
-                    .then(function (learnerId) {store.dispatch(DeleteLearnerFromCourseFinished(Std.parseFloat(Std.string(learnerId)))); });
+                    .then(function (learnerId) {store.dispatch(DeleteLearnerFromCourseFinished(learnerId)); });
                 next();
 
             case DeleteLearnerFromCourseFinished(learner):

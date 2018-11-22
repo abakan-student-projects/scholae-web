@@ -97,14 +97,12 @@ class TeacherAssignmentsGridView extends ReactComponentOfProps<TeacherAssignment
     }
 
     function startDeleteLearner(learnerID: Float, groupId: GroupMessage){
-        setState(copy(state, {learnerId: learnerID}));
-        setState(copy(state, {groupId: groupId.id}));
+        setState(copy(state, {learnerId: learnerID, groupId: groupId.id}));
         UIkit.modal("#deleteForm").show();
     }
 
     function cancelDelete(){
-        setState(copy(state, {learnerId: null}));
-        setState(copy(state, {groupId: null}));
+        setState(copy(state, {learnerId: null, groupId: null}));
     }
 
     function deleteLearner(){
