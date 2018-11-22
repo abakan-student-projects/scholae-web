@@ -46,4 +46,7 @@ enum TeacherAction {
 
     LoadPossibleTasks(metaTraining: MetaTrainingMessage, ?filter: String);
     LoadPossibleTasksFinished(tasks: ArrayChunk<TaskMessage>);
+
+    DeleteLearnerFromCourse(learnerId: Float, groupId: Float);
+    DeleteLearnerFromCourseFinished(learnerId: Float);
 }

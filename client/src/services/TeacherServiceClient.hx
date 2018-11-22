@@ -118,4 +118,12 @@ class TeacherServiceClient extends BaseServiceClient {
             });
         });
     }
+
+    public function deleteLearner(learnerId: Float, groupId: Float): Promise<Array<AssignmentMessage>> {
+        return request(function(success, fail) {
+            context.TeacherService.deleteLearner.call([learnerId,groupId], function(e) {
+                processResponse(e, success, fail);
+            });
+        });
+    }
 }

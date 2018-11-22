@@ -28,5 +28,7 @@ typedef TeacherState = {
     resultsRefreshing: Bool,
     newAssignment: {
         possibleTasks: RemoteData<ArrayChunk<TaskMessage>>
-    }
+    },
+    learnerId: String,
+    groupId: String
 }
