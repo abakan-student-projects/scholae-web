@@ -1,5 +1,6 @@
 package view.teacher;
 
+import js.jquery.JQuery;
 import action.TeacherAction;
 import utils.UIkit;
 import utils.DateUtils;
@@ -40,7 +41,7 @@ class TeacherAssignmentsGridView extends ReactComponentOfProps<TeacherAssignment
     override function render() {
         var header = createAssignmentsHeaderRow(props.assignments);
         var rows = [ for (l in props.learners) createLearnerRow(l, props.assignments)];
-        var delete = jsx('<div id="deleteForm" data-uk-modal="${true}" key="1">
+        var delete = jsx('<div id="deleteForm" className="teacherLearnerDelete" data-uk-modal="${true}" >
                                     <div className="uk-modal-dialog uk-margin-auto-vertical">
                                         <div className="uk-modal-body">
                                             Вы действительно хотите удалить этого ученика?
@@ -97,8 +98,12 @@ class TeacherAssignmentsGridView extends ReactComponentOfProps<TeacherAssignment
     }
 
     function startDeleteLearner(learnerID: Float, groupId: GroupMessage){
+        UIkit.modal(".teacherLearnerDelete").show();
         setState(copy(state, {learnerId: learnerID, groupId: groupId.id}));
-        UIkit.modal("#deleteForm").show();
+    }
+
+    override function componentWillUnmount(){
+        new JQuery(".teacherLearnerDelete").remove();
     }
 
     function cancelDelete(){
