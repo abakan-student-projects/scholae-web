@@ -41,7 +41,8 @@ class TeacherService {
                             return {
                                 id: g.id,
                                 name: g.name,
-                                signUpKey: g.signUpKey
+                                signUpKey: g.signUpKey,
+                                deleted: g.deleted
                             }
                         }))
             );

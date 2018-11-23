@@ -10,6 +10,7 @@ class Group extends sys.db.Object {
     public var id: SBigId;
     public var name: SString<512>;
     public var signUpKey: SString<512>;
+    public var deleted: SBool;
 
     @:relation(teacherId) public var teacher : User;
 
@@ -31,7 +32,8 @@ class Group extends sys.db.Object {
         return {
             id: id,
             name: name,
-            signUpKey: signUpKey
+            signUpKey: signUpKey,
+            deleted: deleted
         };
     }
 }

@@ -11,6 +11,7 @@ class Training extends sys.db.Object {
     public var name: SString<512>;
     @:relation(userId) public var user : User;
     @:relation(assignmentId) public var assignment : Assignment;
+    public var deleted: SBool;
 
     public function new() {
         super();
@@ -25,7 +26,8 @@ class Training extends sys.db.Object {
             assignmentId: assignment.id,
             assignment: if (includeAssignment) assignment.toMessage() else null,
             userId: user.id,
-            exercises: Lambda.array(Lambda.map(Exercise.getExercisesByTraining(id), function(e) { return e.toMessage(); }))
+            exercises: Lambda.array(Lambda.map(Exercise.getExercisesByTraining(id), function(e) { return e.toMessage(); })),
+            deleted: deleted
         };
     }
 

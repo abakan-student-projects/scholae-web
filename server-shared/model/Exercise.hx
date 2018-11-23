@@ -9,6 +9,7 @@ class Exercise extends sys.db.Object {
     public var id: SBigId;
     @:relation(taskId) public var task : CodeforcesTask;
     @:relation(trainingId) public var training : Training;
+    public var deleted: SBool;
     
     public function new() {
         super();
@@ -24,7 +25,8 @@ class Exercise extends sys.db.Object {
         return {
             id: id,
             task: task.toMessage(training.user),
-            trainingId: training.id
+            trainingId: training.id,
+            deleted: deleted
         };
     }
 

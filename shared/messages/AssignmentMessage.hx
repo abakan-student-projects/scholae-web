@@ -8,4 +8,5 @@ typedef AssignmentMessage = {
     metaTraining: MetaTrainingMessage,
     groupId: Float,
     learnerIds: Array<Float>,
+    deleted: Bool
 }
