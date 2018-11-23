@@ -77,7 +77,7 @@ class TeacherAssignmentsGridView extends ReactComponentOfProps<TeacherAssignment
             }
             trainings.push(jsx('<TeacherTrainingCellView key=${a.id} training=$t tags=${props.tags} group=${props.group} assignment=$a/>'));
         }
-        return jsx('<tr key=${learner.id}><td>${learner.firstName} ${learner.lastName} <button className="uk-margin-top uk-button uk-button-danger" onClick=${startDeleteLearner.bind(learner.id,props.group )}>Удалить</button></td>$trainings</tr>');
+        return jsx('<tr key=${learner.id}><td><div className="uk-flex">${learner.firstName} ${learner.lastName} <button data-uk-icon="trash" onClick=${startDeleteLearner.bind(learner.id,props.group )}></button></div></td>$trainings</tr>');
     }
 
     function createAssignmentsHeaderRow(assignments: Array<AssignmentMessage>) {
