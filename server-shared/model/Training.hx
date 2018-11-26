@@ -26,17 +26,16 @@ class Training extends sys.db.Object {
             assignmentId: assignment.id,
             assignment: if (includeAssignment) assignment.toMessage() else null,
             userId: user.id,
-            exercises: Lambda.array(Lambda.map(Exercise.getExercisesByTraining(id), function(e) { return e.toMessage(); })),
-            deleted: deleted
+            exercises: Lambda.array(Lambda.map(Exercise.getExercisesByTraining(id), function(e) { return e.toMessage(); }))
         };
     }
 
     public static function getTrainingsByGroup(groupId: Float): Array<Training> {
-        var assignments: List<Assignment> = Assignment.manager.search($groupId == groupId);
+        var assignments: List<Assignment> = Assignment.manager.search($groupId == groupId && $deleted != true);
         var trainings: Array<Training> = [];
 
         for (a in assignments) {
-            trainings = trainings.concat(Lambda.array(Training.manager.search($assignmentId == a.id)));
+            trainings = trainings.concat(Lambda.array(Training.manager.search($assignmentId == a.id && $deleted != true)));
         }
 
         return trainings;

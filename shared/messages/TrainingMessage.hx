@@ -6,6 +6,5 @@ typedef TrainingMessage = {
     assignmentId: Float,
     assignment: AssignmentMessage,
     userId: Float,
-    exercises: Array<ExerciseMessage>,
-    deleted: Bool
+    exercises: Array<ExerciseMessage>
 }

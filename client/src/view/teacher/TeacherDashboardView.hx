@@ -12,6 +12,7 @@ import js.html.InputElement;
 import react.ReactComponent;
 import react.ReactMacro.jsx;
 import router.Link;
+import react.ReactUtil.copy;
 import messages.AttemptMessage;
 
 typedef TeacherDashboardProps = {
@@ -23,8 +24,7 @@ typedef TeacherDashboardProps = {
 typedef TeacherDashboardState = {
     courseId: Float
 }
-//при удалении курса меняется статус на тру, если deleted == false то все показывается, в остальных связанных таблицах (groups,assignments,trainings,exercises),
-// также надо просмотреть те места, где будет проверка на наличие данного курса и заданий, у ученика и учителя
+
 class TeacherDashboardView extends ReactComponentOfProps<TeacherDashboardProps> implements IConnectedComponent {
 
     public function new()
@@ -33,7 +33,7 @@ class TeacherDashboardView extends ReactComponentOfProps<TeacherDashboardProps> 
     }
 
     override function render() {
-        var list = [ for (g in props.groups) if (g.deleted != true) jsx('<div className="uk-margin" key=${g.id}><span data-uk-icon="users"></span> <Link className="uk-margin-small-left" to=${"/teacher/group/" + g.id}>${g.name}</Link> <button className="uk-margin-left" data-uk-icon="trash" onClick=${startDeleteCourse.bind(g.id)}></button></div>') ];
+        var list = [ for (g in props.groups) jsx('<div className="uk-margin" key=${g.id}><span data-uk-icon="users"></span> <Link className="uk-margin-small-left" to=${"/teacher/group/" + g.id}>${g.name}</Link> <button className="uk-margin-left" data-uk-icon="trash" onClick=${startDeleteCourse.bind(g.id)}></button></div>') ];
         var newGroup =
             if (props.showNewGroupView)
                 jsx('<NewGroupView dispatch=${dispatch} close=$onCloseAddGroupClick/>')
@@ -90,8 +90,8 @@ class TeacherDashboardView extends ReactComponentOfProps<TeacherDashboardProps> 
     }
 
     function startDeleteCourse(courseID: Float){
+        UIkit.modal(".deleteTeacherCourse").show();
         setState(copy(state, { courseId: courseID }));
-        UIkit.modal("#deleteCourseForm").show();
     }
 
     function cancelDeleteCourse(){
@@ -100,13 +100,8 @@ class TeacherDashboardView extends ReactComponentOfProps<TeacherDashboardProps> 
 
     function deleteCourse(){
         dispatch(TeacherAction.DeleteCourse(
-            Std.parseFloat(Std.string(state.groupId))
+            Std.parseFloat(Std.string(state.courseId))
         ));
         cancelDeleteCourse();
     }
-
-    override function componentWillUnmount(){
-        new JQuery(".teacherCourseDelete").remove();
-    }
-
 }

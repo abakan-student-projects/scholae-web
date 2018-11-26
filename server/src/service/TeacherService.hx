@@ -41,8 +41,7 @@ class TeacherService {
                             return {
                                 id: g.id,
                                 name: g.name,
-                                signUpKey: g.signUpKey,
-                                deleted: g.deleted
+                                signUpKey: g.signUpKey
                             }
                         }))
             );
@@ -125,7 +124,7 @@ class TeacherService {
                 return ServiceHelper.successResponse(
                     Lambda.array(
                         Lambda.map(
-                            Assignment.manager.search($groupId == groupId),
+                            Assignment.manager.search($groupId == groupId && $deleted != true),
                             function(a) { return a.toMessage(); }))
                 );
             });
@@ -263,27 +262,26 @@ class TeacherService {
 
     public function deleteCourse(groupId: Float): ResponseMessage {
         return ServiceHelper.authorize(Role.Teacher, function() {
-            var groups: Group = Group.manager.select($id == groupId);
-            /*groups.deleted = true;
-            groups.update();*/
-
-            var groupLearner: GroupLearner = GroupLearner.manager.search($groupId == groupId);
-            trace(groupLearner);
-            /*for (g in groupLearner) {
-                g.deleted = true;
-                g.update();
-            }*/
-
-            var assignment: Assignment = Assignment.manager.search($groupId == groupId);
-            trace(assignment);
-            /*for (a in assignment) {
+            var groups = Group.manager.select($id == groupId);
+            groups.deleted = true;
+            groups.update();
+            var assignment = Assignment.manager.search($groupId == groupId);
+            var assignmentIds = [for (a in assignment) a.id];
+            for (a in assignment) {
                 a.deleted = true;
                 a.update();
             }
-            */
-            var trainings: Training = Training.manager.search($assignmentId in assignment);
-            trace(trainings);
-
+            var trainings = Training.manager.search($assignmentId in assignmentIds);
+            var trainingIds = [ for (t in trainings) t.id];
+            for (t in trainings) {
+                t.deleted = true;
+                t.update();
+            }
+            var exercise = Exercise.manager.search($trainingId in trainingIds);
+            for (e in exercise) {
+                e.deleted = true;
+                e.update();
+            }
 
             return ServiceHelper.successResponse(groupId);
         });

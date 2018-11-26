@@ -69,8 +69,7 @@ class TeacherNewAssignmentScreen
                                 taskIds: taskIds,
                                 length: tasksCount
                             },
-                        groupId: null,
-                        deleted: false
+                        groupId: null
                     }
                 ));
             }

@@ -29,8 +29,7 @@ class Assignment extends sys.db.Object {
             name: name,
             metaTraining: metaTraining.toMessage(),
             learnerIds: learnerIds,
-            groupId: group.id,
-            deleted: deleted
+            groupId: group.id
         };
     }
 }

@@ -8,7 +8,6 @@ import sys.db.Types;
 class GroupLearner extends sys.db.Object {
     @:relation(groupId) public var group : Group;
     @:relation(learnerId) public var learner : User;
-    public var deleted: SBool;
 
     public function new() {
         super();

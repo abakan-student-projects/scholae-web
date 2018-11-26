@@ -202,7 +202,7 @@ class Teacher
             case DeleteCourseFinished(groupId):
                 copy(state, {
                     groups: {
-                        data: [for (g in state.currentGroup.data) if (g.id != groupId) g],
+                        data: [for (g in state.groups.data) if (g.id != groupId) g],
                         loading: false,
                         loaded: true
                     }

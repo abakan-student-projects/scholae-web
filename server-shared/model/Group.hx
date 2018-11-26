@@ -21,19 +21,18 @@ class Group extends sys.db.Object {
     public static var manager = new Manager<Group>(Group);
 
     public static function getGroupsByTeacher(teacher: User): List<Group> {
-        return manager.search($teacherId == teacher.id, false);
+        return manager.search($teacherId == teacher.id && $deleted != true, false);
     }
 
     public static function getGroupBySignUpKey(key: String): Group {
-        return manager.select($signUpKey == key, false);
+        return manager.select($signUpKey == key && $deleted != true, false);
     }
 
     public function toMessage(): GroupMessage {
         return {
             id: id,
             name: name,
-            signUpKey: signUpKey,
-            deleted: deleted
+            signUpKey: signUpKey
         };
     }
 }
