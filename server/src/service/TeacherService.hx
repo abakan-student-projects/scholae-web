@@ -260,4 +260,32 @@ class TeacherService {
             return ServiceHelper.successResponse(learnerId);
         });
     }
+
+    public function deleteCourse(groupId: Float): ResponseMessage {
+        return ServiceHelper.authorize(Role.Teacher, function() {
+            var groups: Group = Group.manager.select($id == groupId);
+            /*groups.deleted = true;
+            groups.update();*/
+
+            var groupLearner: GroupLearner = GroupLearner.manager.search($groupId == groupId);
+            trace(groupLearner);
+            /*for (g in groupLearner) {
+                g.deleted = true;
+                g.update();
+            }*/
+
+            var assignment: Assignment = Assignment.manager.search($groupId == groupId);
+            trace(assignment);
+            /*for (a in assignment) {
+                a.deleted = true;
+                a.update();
+            }
+            */
+            var trainings: Training = Training.manager.search($assignmentId in assignment);
+            trace(trainings);
+
+
+            return ServiceHelper.successResponse(groupId);
+        });
+    }
 }

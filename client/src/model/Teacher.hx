@@ -197,6 +197,16 @@ class Teacher
                             learners: { data: [for (l in state.currentGroup.learners.data) if (Std.parseFloat(Std.string(l.id)) != learnerId) l], loaded: true, loading: false}
                         })
                 });
+
+            case DeleteCourse(groupId): state;
+            case DeleteCourseFinished(groupId):
+                copy(state, {
+                    groups: {
+                        data: [for (g in state.currentGroup.data) if (g.id != groupId) g],
+                        loading: false,
+                        loaded: true
+                    }
+                });
         }
     }
 
@@ -286,6 +296,15 @@ class Teacher
 
             case DeleteLearnerFromCourseFinished(learner):
                 UIkit.notification({ message: "Ученик удалён", timeout: 3000 });
+                next();
+
+            case DeleteCourse(groupId):
+                TeacherServiceClient.instance.deleteCourse(groupId)
+                    .then(function(groupId) { store.dispatch(DeleteCourseFinished(groupId)); });
+                next();
+
+            case DeleteCourseFinished(groupId):
+                UIkit.notification({ message: "Курс удален", timeout: 3000 });
                 next();
 
             default: next();
