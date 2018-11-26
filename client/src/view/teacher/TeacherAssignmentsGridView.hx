@@ -1,5 +1,8 @@
 package view.teacher;
 
+import js.jquery.JQuery;
+import action.TeacherAction;
+import utils.UIkit;
 import utils.DateUtils;
 import haxe.ds.ArraySort;
 import haxe.ds.StringMap;
@@ -9,7 +12,11 @@ import messages.LearnerMessage;
 import messages.TagMessage;
 import messages.TrainingMessage;
 import react.ReactComponent;
+import redux.react.IConnectedComponent;
+import react.ReactComponent.ReactElement;
 import react.ReactMacro.jsx;
+import react.ReactUtil.copy;
+import utils.DateUtils;
 import utils.StringUtils;
 import router.Link;
 import view.teacher.TeacherTrainingCellView;
@@ -19,23 +26,38 @@ typedef TeacherAssignmentsGridProps = {
     learners: Array<LearnerMessage>,
     assignments: Array<AssignmentMessage>,
     trainingsByUsersAndAssignments: StringMap<StringMap<Array<TrainingMessage>>>,
-    tags: StringMap<TagMessage>,
+    tags: StringMap<TagMessage>
 }
 
-class TeacherAssignmentsGridView extends ReactComponentOfProps<TeacherAssignmentsGridProps> {
+typedef TeacherAssignmentsGridState = {
+    learnerId: Float,
+    groupId: Float
+}
+
+class TeacherAssignmentsGridView extends ReactComponentOfProps<TeacherAssignmentsGridProps> implements IConnectedComponent {
 
     public function new() { super(); }
 
     override function render() {
-
         var header = createAssignmentsHeaderRow(props.assignments);
         var rows = [ for (l in props.learners) createLearnerRow(l, props.assignments)];
-
+        var delete = jsx('<div id="deleteForm" className="teacherLearnerDelete" data-uk-modal="${true}" >
+                                    <div className="uk-modal-dialog uk-margin-auto-vertical">
+                                        <div className="uk-modal-body">
+                                            Вы действительно хотите удалить этого ученика?
+                                        </div>
+                                        <div className="uk-modal-footer uk-text-right">
+                                            <button className="uk-button uk-button-default uk-margin-left uk-modal-close" onClick=$cancelDelete>Отмена</button>
+                                            <button className="uk-button uk-button-danger uk-margin-left uk-modal-close" type="button" onClick=$deleteLearner>Удалить</button>
+                                        </div>
+                                    </div>
+                                </div>');
         return jsx('
                 <table className="uk-table uk-table-divider">
                     $header
                     <tbody>
                         $rows
+                        $delete
                     </tbody>
                 </table>
                 ');
@@ -56,7 +78,7 @@ class TeacherAssignmentsGridView extends ReactComponentOfProps<TeacherAssignment
             }
             trainings.push(jsx('<TeacherTrainingCellView key=${a.id} training=$t tags=${props.tags} group=${props.group} assignment=$a/>'));
         }
-        return jsx('<tr key=${learner.id}><td>${learner.firstName} ${learner.lastName}</td>$trainings</tr>');
+        return jsx('<tr key=${learner.id}><td><div className="uk-flex">${learner.firstName} ${learner.lastName} <button data-uk-icon="trash" onClick=${startDeleteLearner.bind(learner.id,props.group )}></button></div></td>$trainings</tr>');
     }
 
     function createAssignmentsHeaderRow(assignments: Array<AssignmentMessage>) {
@@ -73,5 +95,26 @@ class TeacherAssignmentsGridView extends ReactComponentOfProps<TeacherAssignment
                     </tr>
                 </thead>
             ');
+    }
+
+    function startDeleteLearner(learnerID: Float, groupId: GroupMessage){
+        UIkit.modal(".teacherLearnerDelete").show();
+        setState(copy(state, {learnerId: learnerID, groupId: groupId.id}));
+    }
+
+    override function componentWillUnmount(){
+        new JQuery(".teacherLearnerDelete").remove();
+    }
+
+    function cancelDelete(){
+        setState(copy(state, {learnerId: null, groupId: null}));
+    }
+
+    function deleteLearner(){
+        dispatch(TeacherAction.DeleteLearnerFromCourse(
+                Std.parseFloat(Std.string(state.learnerId)),
+                Std.parseFloat(Std.string(state.groupId))
+        ));
+        cancelDelete();
     }
 }

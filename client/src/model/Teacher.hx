@@ -1,5 +1,6 @@
 package model;
 
+import Lambda;
 import utils.IterableUtils;
 import messages.TagMessage;
 import haxe.ds.ArraySort;
@@ -35,7 +36,6 @@ class Teacher
         newAssignment: {
             possibleTasks: RemoteDataHelper.createEmpty()
         }
-
     };
 
     public var store: StoreMethods<ApplicationState>;
@@ -188,6 +188,15 @@ class Teacher
 
             case LoadPossibleTasksFinished(tasks):
                 copy(state, { newAssignment: { possibleTasks: RemoteDataHelper.createLoaded(tasks) }});
+
+            case DeleteLearnerFromCourse(learnerId, groupId): state;
+            case DeleteLearnerFromCourseFinished(learnerId):
+                copy(state, {
+                    currentGroup: copy(state.currentGroup,
+                        {
+                            learners: { data: [for (l in state.currentGroup.learners.data) if (Std.parseFloat(Std.string(l.id)) != learnerId) l], loaded: true, loading: false}
+                        })
+                });
         }
     }
 
@@ -268,6 +277,15 @@ class Teacher
             case LoadPossibleTasks(metaTraining,filter):
                 TeacherServiceClient.instance.getAllTasksByMetaTraining(metaTraining,filter)
                     .then(function(tasks) { store.dispatch(LoadPossibleTasksFinished(tasks)); });
+                next();
+
+            case DeleteLearnerFromCourse(learnerId, groupId):
+                TeacherServiceClient.instance.deleteLearner(learnerId, groupId)
+                    .then(function (learnerId) {store.dispatch(DeleteLearnerFromCourseFinished(learnerId)); });
+                next();
+
+            case DeleteLearnerFromCourseFinished(learner):
+                UIkit.notification({ message: "Ученик удалён", timeout: 3000 });
                 next();
 
             default: next();

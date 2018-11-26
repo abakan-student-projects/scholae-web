@@ -226,4 +226,37 @@ class TeacherService {
             }
         );
     }
+
+    public function deleteLearner(learnerId: Float, groupId: Float) : ResponseMessage {
+        return ServiceHelper.authorize(Role.Teacher, function() {
+            var assignment = Assignment.manager.search($groupId == groupId);
+            var assignmentIds = [];
+            for (a in assignment) {
+                for (assign in a.learnerIds){
+                    if (assign == learnerId){
+                        assignmentIds.push(a.id);
+                    }
+                }
+            }
+            var assign = Assignment.manager.search($id in assignmentIds);
+            for (a in assign) {
+                var learnerIds = [];
+                for (id in a.learnerIds) {
+                    if (id != learnerId){
+                        learnerIds.push(id);
+                    }
+                }
+                a.learnerIds = learnerIds;
+                a.update();
+            }
+            var user = User.manager.select($id == learnerId);
+            var training = Training.manager.search($userId == user.id && $assignmentId in assignmentIds);
+            var trainingIds = [for (t in training) t.id];
+            Training.manager.delete($id in trainingIds);
+            Exercise.manager.delete($trainingId in trainingIds);
+            GroupLearner.manager.delete($groupId == groupId && $learnerId == learnerId);
+
+            return ServiceHelper.successResponse(learnerId);
+        });
+    }
 }

@@ -1,5 +1,8 @@
 package view.teacher;
 
+import js.jquery.JQuery;
+import action.TeacherAction;
+import utils.UIkit;
 import utils.DateUtils;
 import haxe.ds.StringMap;
 import messages.AssignmentMessage;
@@ -9,6 +12,8 @@ import messages.TagMessage;
 import messages.TrainingMessage;
 import react.ReactComponent;
 import react.ReactMacro.jsx;
+import react.ReactUtil.copy;
+import redux.react.IConnectedComponent;
 import utils.StringUtils;
 
 typedef TeacherAssignmentsListProps = {
@@ -19,7 +24,12 @@ typedef TeacherAssignmentsListProps = {
     tags: StringMap<TagMessage>,
 }
 
-class TeacherAssignmentsListView extends ReactComponentOfProps<TeacherAssignmentsListProps> {
+typedef TeacherAssignmentsListState = {
+    learnerId: Float,
+    groupId: Float
+}
+
+class TeacherAssignmentsListView extends ReactComponentOfProps<TeacherAssignmentsListProps> implements IConnectedComponent{
 
     public function new() { super(); }
 
@@ -30,6 +40,17 @@ class TeacherAssignmentsListView extends ReactComponentOfProps<TeacherAssignment
 
     function renderAssignment(a: AssignmentMessage) {
         var rows = [ for (l in props.learners) renderLearnerRow(l, a)];
+        var delete = jsx('<div id="deleteForm" className="teacherLearnerDelete" data-uk-modal="${true}" >
+                                    <div className="uk-modal-dialog uk-margin-auto-vertical">
+                                        <div className="uk-modal-body">
+                                            Вы действительно хотите удалить этого ученика?
+                                        </div>
+                                        <div className="uk-modal-footer uk-text-right">
+                                            <button className="uk-button uk-button-default uk-margin-left uk-modal-close" onClick=$cancelDeleteLearner>Отмена</button>
+                                            <button className="uk-button uk-button-danger uk-margin-left uk-modal-close" type="button" onClick=$deleteLearnerFromList>Удалить</button>
+                                        </div>
+                                    </div>
+                                </div>');
         return jsx('
                 <li key=${a.id} className="assignment">
                     <a className="uk-accordion-title" href="#">
@@ -45,6 +66,7 @@ class TeacherAssignmentsListView extends ReactComponentOfProps<TeacherAssignment
                         </thead>
                         <tbody>
                             $rows
+                            $delete
                         </tbody>
                     </table>
                 </li>
@@ -64,8 +86,31 @@ class TeacherAssignmentsListView extends ReactComponentOfProps<TeacherAssignment
         }
         return jsx('
                 <tr key=${learner.id}>
-                    <td>${learner.firstName} ${learner.lastName}</td>
+                    <td>
+                        ${learner.firstName} ${learner.lastName}<button data-uk-icon="trash" onClick=${startDeleteLearner.bind(learner.id,props.group )}></button>
+                    </td>
                     <TeacherTrainingCellView training=$t tags=${props.tags} group=${props.group} assignment=$a/>
                 </tr>');
+    }
+
+    function startDeleteLearner(learnerID: Float, groupId: GroupMessage){
+        UIkit.modal(".teacherLearnerDelete").show();
+        setState(copy(state, {learnerId: learnerID, groupId: groupId.id}));
+    }
+
+    override function componentWillUnmount(){
+        new js.JQuery(".teacherLearnerDelete").remove();
+    }
+
+    function cancelDeleteLearner(){
+        setState(copy(state, {learnerId: null, groupId: null}));
+    }
+
+    function deleteLearnerFromList(){
+        dispatch(TeacherAction.DeleteLearnerFromCourse(
+            Std.parseFloat(Std.string(state.learnerId)),
+            Std.parseFloat(Std.string(state.groupId))
+        ));
+        cancelDeleteLearner();
     }
 }
