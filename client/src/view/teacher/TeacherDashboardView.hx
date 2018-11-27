@@ -89,13 +89,9 @@ class TeacherDashboardView extends ReactComponentOfProps<TeacherDashboardProps> 
         dispatch(TeacherAction.HideNewGroupView);
     }
 
-/*
     override function componentWillUnmount(){
-        if (new JQuery(".deleteTeacherCourse") != null) {
             new JQuery(".deleteTeacherCourse").remove();
-        }
     }
-*/
 
     function startDeleteCourse(courseID: Float){
         UIkit.modal(".deleteTeacherCourse").show();
