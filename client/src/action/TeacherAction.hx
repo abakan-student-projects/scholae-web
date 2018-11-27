@@ -49,4 +49,7 @@ enum TeacherAction {
 
     DeleteLearnerFromCourse(learnerId: Float, groupId: Float);
     DeleteLearnerFromCourseFinished(learnerId: Float);
+
+    DeleteCourse(groupId: Float);
+    DeleteCourseFinished(groupId: Float);
 }

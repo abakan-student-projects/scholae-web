@@ -17,8 +17,8 @@ class ModelUtils {
     }
 
     public static function getExercisesTasksByUser(user: User): List<CodeforcesTask> {
-        var trainingIds = Lambda.array(Lambda.map(Training.manager.search($userId == user.id), function(t) { return t.id; }));
-        var taskIds = Lambda.map(Exercise.manager.search($trainingId in trainingIds), function(t){ return t.task; });
+        var trainingIds = Lambda.array(Lambda.map(Training.manager.search($userId == user.id && $deleted != true), function(t) { return t.id; }));
+        var taskIds = Lambda.map(Exercise.manager.search(($trainingId in trainingIds) && $deleted != true), function(t){ return t.task; });
         return Lambda.list(taskIds);
     }
 
@@ -66,7 +66,7 @@ class ModelUtils {
     }
 
     public static function createTrainingsByMetaTrainingsForGroup(groupId: Float): Bool {
-        var assignments: List<Assignment> = Assignment.manager.search($groupId == groupId);
+        var assignments: List<Assignment> = Assignment.manager.search($groupId == groupId && $deleted != true);
         var learners: Array<User> =
         Lambda.array(
             Lambda.map(
@@ -83,7 +83,7 @@ class ModelUtils {
     public static function createTrainingsByMetaTrainingsForAssignmentsAndLearner(assignments: List<Assignment>, learner: User): Bool {
         for (a in assignments) {
             if (a.learnerIds == null || Lambda.has(a.learnerIds, learner.id) ){
-                var t: Training = Training.manager.select($userId == learner.id && $assignmentId == a.id);
+                var t: Training = Training.manager.select($userId == learner.id && $assignmentId == a.id && $deleted != true);
                 if (t == null) {
                     t = new Training();
                     t.assignment = a;

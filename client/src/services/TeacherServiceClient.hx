@@ -126,4 +126,12 @@ class TeacherServiceClient extends BaseServiceClient {
             });
         });
     }
+
+    public function deleteCourse(groupId: Float): Promise<Float> {
+        return request(function(success, fail) {
+            context.TeacherService.deleteCourse.call([groupId], function(e) {
+                processResponse(e, success, fail);
+            });
+        });
+    }
 }

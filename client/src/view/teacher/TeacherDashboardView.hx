@@ -1,5 +1,7 @@
 package view.teacher;
 
+import js.jquery.JQuery;
+import utils.UIkit;
 import utils.DateUtils;
 import action.TeacherAction;
 import redux.react.IConnectedComponent;
@@ -10,12 +12,17 @@ import js.html.InputElement;
 import react.ReactComponent;
 import react.ReactMacro.jsx;
 import router.Link;
+import react.ReactUtil.copy;
 import messages.AttemptMessage;
 
 typedef TeacherDashboardProps = {
     groups: Array<GroupMessage>,
     showNewGroupView: Bool,
     lastAttempts: Array<AttemptMessage>
+}
+
+typedef TeacherDashboardState = {
+    courseId: Float
 }
 
 class TeacherDashboardView extends ReactComponentOfProps<TeacherDashboardProps> implements IConnectedComponent {
@@ -26,7 +33,7 @@ class TeacherDashboardView extends ReactComponentOfProps<TeacherDashboardProps> 
     }
 
     override function render() {
-        var list = [ for (g in props.groups) jsx('<div className="uk-margin" key=${g.id}><span data-uk-icon="users"></span> <Link className="uk-margin-small-left" to=${"/teacher/group/" + g.id}>${g.name}</Link></div>') ];
+        var list = [ for (g in props.groups) jsx('<div className="uk-margin" key=${g.id}><span data-uk-icon="users"></span> <Link className="uk-margin-small-left" to=${"/teacher/group/" + g.id}>${g.name}</Link> <button className="uk-margin-left" data-uk-icon="trash" onClick=${startDeleteCourse.bind(g.id)}></button></div>') ];
         var newGroup =
             if (props.showNewGroupView)
                 jsx('<NewGroupView dispatch=${dispatch} close=$onCloseAddGroupClick/>')
@@ -46,6 +53,17 @@ class TeacherDashboardView extends ReactComponentOfProps<TeacherDashboardProps> 
                 jsx('<div className="attempts">$a</div>');
             } else
                 jsx('<div data-uk-spinner=${true}></div>');
+        var deleteCourse = jsx('<div id="deleteCourseForm" className="deleteTeacherCourse" data-uk-modal="${true}" key="1">
+                                    <div className="uk-modal-dialog uk-margin-auto-vertical">
+                                        <div className="uk-modal-body">
+                                            Вы действительно хотите удалить этот курс?
+                                        </div>
+                                        <div className="uk-modal-footer uk-text-right">
+                                            <button className="uk-button uk-button-default uk-margin-left uk-modal-close" onClick=$cancelDeleteCourse>Отмена</button>
+                                            <button className="uk-button uk-button-danger uk-margin-left uk-modal-close" type="button" onClick=$deleteCourse>Удалить</button>
+                                        </div>
+                                    </div>
+                                </div>');
 
         return jsx('
                 <div id="teacher">
@@ -55,7 +73,7 @@ class TeacherDashboardView extends ReactComponentOfProps<TeacherDashboardProps> 
                     <h2>Курсы</h2>
 
                     $list
-
+                    $deleteCourse
                     <div className="uk-margin-top">
                         $newGroup
                     </div>
@@ -71,4 +89,23 @@ class TeacherDashboardView extends ReactComponentOfProps<TeacherDashboardProps> 
         dispatch(TeacherAction.HideNewGroupView);
     }
 
+    override function componentWillUnmount(){
+            new JQuery(".deleteTeacherCourse").remove();
+    }
+
+    function startDeleteCourse(courseID: Float){
+        UIkit.modal(".deleteTeacherCourse").show();
+        setState(copy(state, { courseId: courseID }));
+    }
+
+    function cancelDeleteCourse(){
+        setState(copy(state, { courseId: null }));
+    }
+
+    function deleteCourse(){
+        dispatch(TeacherAction.DeleteCourse(
+            Std.parseFloat(Std.string(state.courseId))
+        ));
+        cancelDeleteCourse();
+    }
 }

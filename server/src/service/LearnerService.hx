@@ -43,7 +43,7 @@ class LearnerService {
             return ServiceHelper.successResponse(
                 Lambda.array(
                     Lambda.map(
-                        Training.manager.search($userId == Authorization.instance.currentUser.id),
+                        Training.manager.search($userId == Authorization.instance.currentUser.id && $deleted != true),
                         function(t) { return t.toMessage(true); })));
             });
     }

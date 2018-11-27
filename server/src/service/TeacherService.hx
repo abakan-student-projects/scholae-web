@@ -124,7 +124,7 @@ class TeacherService {
                 return ServiceHelper.successResponse(
                     Lambda.array(
                         Lambda.map(
-                            Assignment.manager.search($groupId == groupId),
+                            Assignment.manager.search($groupId == groupId && $deleted != true),
                             function(a) { return a.toMessage(); }))
                 );
             });
@@ -257,6 +257,33 @@ class TeacherService {
             GroupLearner.manager.delete($groupId == groupId && $learnerId == learnerId);
 
             return ServiceHelper.successResponse(learnerId);
+        });
+    }
+
+    public function deleteCourse(groupId: Float): ResponseMessage {
+        return ServiceHelper.authorize(Role.Teacher, function() {
+            var group = Group.manager.select($id == groupId);
+            group.deleted = true;
+            group.update();
+            var assignments = Assignment.manager.search($groupId == groupId);
+            var assignmentIds = [for (a in assignments) a.id];
+            for (a in assignments) {
+                a.deleted = true;
+                a.update();
+            }
+            var trainings = Training.manager.search($assignmentId in assignmentIds);
+            var trainingIds = [ for (t in trainings) t.id];
+            for (t in trainings) {
+                t.deleted = true;
+                t.update();
+            }
+            var exercises = Exercise.manager.search($trainingId in trainingIds);
+            for (e in exercises) {
+                e.deleted = true;
+                e.update();
+            }
+
+            return ServiceHelper.successResponse(groupId);
         });
     }
 }
