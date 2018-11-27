@@ -262,12 +262,12 @@ class TeacherService {
 
     public function deleteCourse(groupId: Float): ResponseMessage {
         return ServiceHelper.authorize(Role.Teacher, function() {
-            var groups = Group.manager.select($id == groupId);
-            groups.deleted = true;
-            groups.update();
-            var assignment = Assignment.manager.search($groupId == groupId);
-            var assignmentIds = [for (a in assignment) a.id];
-            for (a in assignment) {
+            var group = Group.manager.select($id == groupId);
+            group.deleted = true;
+            group.update();
+            var assignments = Assignment.manager.search($groupId == groupId);
+            var assignmentIds = [for (a in assignments) a.id];
+            for (a in assignments) {
                 a.deleted = true;
                 a.update();
             }
@@ -277,8 +277,8 @@ class TeacherService {
                 t.deleted = true;
                 t.update();
             }
-            var exercise = Exercise.manager.search($trainingId in trainingIds);
-            for (e in exercise) {
+            var exercises = Exercise.manager.search($trainingId in trainingIds);
+            for (e in exercises) {
                 e.deleted = true;
                 e.update();
             }
