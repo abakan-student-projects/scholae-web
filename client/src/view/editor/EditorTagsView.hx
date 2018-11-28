@@ -73,6 +73,7 @@ class EditorTagsView extends ReactComponentOfProps<EditorTagsProps> implements I
                 [ for (l in props.links)
                         if (state.editingLinkId != null && l.id == state.editingLinkId && props.linkId != Std.string(l.id))
                             jsx('<table className="uk-container" key=${l.id}>
+                                    <tbody>
                                     <tr>
                                         <td>URL:</td>
                                         <td><input type="text" className="uk-input uk-margin-left" defaultValue=${l.url} ref="editingUrlInput"/></td>
@@ -90,6 +91,7 @@ class EditorTagsView extends ReactComponentOfProps<EditorTagsProps> implements I
                                                 options=${linkTypes}
                                                 ref="editingTypeSelected" className="uk-margin-left uk-margin-top"/></td>
                                     </tr>
+                                    </tbody>
                                 </table>')] else [jsx('<div></div>')];
             var newLink = jsx('<div id="modalForm" data-uk-modal="${true}" key="1">
                                     <div className="uk-modal-dialog uk-margin-auto-vertical">
@@ -132,7 +134,7 @@ class EditorTagsView extends ReactComponentOfProps<EditorTagsProps> implements I
                     ))
                     if (state.editingTagId != null && state.editingTagId == t.id)
                         jsx('
-                        <tr>
+                        <tr key=${t.id}>
                             <td colSpan="4">
                                 <div className="uk-flex uk-flex-wrap">
                                     <div className="uk-width-1-3 uk-margin-top">Название на английском:</div>
@@ -207,7 +209,7 @@ class EditorTagsView extends ReactComponentOfProps<EditorTagsProps> implements I
                 [for (li in props.links)
                     if(li.tag == state.editingTagId && props.linkId != Std.string(li.id))
                             jsx('
-                                <div className="uk-flex uk-flex-wrap">
+                                <div key=${li.id} className="uk-flex uk-flex-wrap">
                                     <div className="uk-margin-top"><a href=${li.url}>${li.optional}</a></div>
                                     <div className="uk-margin-top"><button className="uk-margin-left" data-uk-icon="file-edit" onClick=${startEditingLink.bind(li.id)}></button></div>
                                 </div>
