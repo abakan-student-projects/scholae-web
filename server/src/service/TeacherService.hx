@@ -229,9 +229,11 @@ class TeacherService {
             var assignment = Assignment.manager.search($groupId == groupId);
             var assignmentIds = [];
             for (a in assignment) {
-                for (assign in a.learnerIds){
-                    if (assign == learnerId){
-                        assignmentIds.push(a.id);
+                if (null != a.learnerIds) {
+                    for (l in a.learnerIds){
+                        if (l == learnerId){
+                            assignmentIds.push(a.id);
+                        }
                     }
                 }
             }
