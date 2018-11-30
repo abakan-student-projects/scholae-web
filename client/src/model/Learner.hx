@@ -19,7 +19,8 @@ class Learner
     public var initState: LearnerState = {
         trainings: RemoteDataHelper.createEmpty(),
         signup: { redirectTo: null },
-        resultsRefreshing: false
+        resultsRefreshing: false,
+        rating: RemoteDataHelper.createEmpty()
     };
 
     public var store: StoreMethods<ApplicationState>;
@@ -41,10 +42,13 @@ class Learner
                         resultsRefreshing: false,
                         trainings: RemoteDataHelper.createLoaded(trainings),
                     });
+            case LoadRating(learnerId): copy(state, { rating: RemoteDataHelper.createLoading() });
+            case LoadRatingFinished(rating): copy(state, { rating: RemoteDataHelper.createLoaded(rating) });
         }
     }
 
     public function middleware(action: LearnerAction, next:Void -> Dynamic) {
+        trace(action);
         return switch(action) {
 
             case SignUpToGroup(key):
@@ -86,6 +90,13 @@ class Learner
             case RefreshResultsFinished(trainings):
                 UIkit.notification({ message: "Результаты обновлены.", timeout: 3000 });
                 next();
+
+            case LoadRating(learnerId):
+                LearnerServiceClient.instance.getRating(learnerId)
+                    .then(function(rating) {
+                    store.dispatch(LoadRatingFinished(rating));
+                });
+            next();
 
             default: next();
         }

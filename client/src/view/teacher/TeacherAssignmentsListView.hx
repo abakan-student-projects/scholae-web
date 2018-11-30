@@ -1,5 +1,7 @@
 package view.teacher;
 
+import haxe.ds.ArraySort;
+import messages.RatingMessage;
 import js.jquery.JQuery;
 import action.TeacherAction;
 import utils.UIkit;
@@ -15,13 +17,14 @@ import react.ReactMacro.jsx;
 import react.ReactUtil.copy;
 import redux.react.IConnectedComponent;
 import utils.StringUtils;
+import router.Link;
 
 typedef TeacherAssignmentsListProps = {
     group: GroupMessage,
     learners: Array<LearnerMessage>,
     assignments: Array<AssignmentMessage>,
     trainingsByUsersAndAssignments: StringMap<StringMap<Array<TrainingMessage>>>,
-    tags: StringMap<TagMessage>,
+    tags: StringMap<TagMessage>
 }
 
 typedef TeacherAssignmentsListState = {
@@ -72,7 +75,6 @@ class TeacherAssignmentsListView extends ReactComponentOfProps<TeacherAssignment
                 </li>
             ');
     }
-
     function renderLearnerRow(learner: LearnerMessage, a: AssignmentMessage) {
         var t = null;
         if (props.trainingsByUsersAndAssignments != null) {
@@ -87,9 +89,10 @@ class TeacherAssignmentsListView extends ReactComponentOfProps<TeacherAssignment
         return jsx('
                 <tr key=${learner.id}>
                     <td>
-                        ${learner.firstName} ${learner.lastName}<button data-uk-icon="trash" onClick=${startDeleteLearner.bind(learner.id,props.group )}></button>
+                        <Link to=${"/teacher/user/" + learner.id +""}>${learner.firstName} ${learner.lastName}</Link><button data-uk-icon="trash" onClick=${startDeleteLearner.bind(learner.id,props.group )}></button>
                     </td>
                     <TeacherTrainingCellView training=$t tags=${props.tags} group=${props.group} assignment=$a/>
+
                 </tr>');
     }
 

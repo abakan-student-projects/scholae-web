@@ -1,5 +1,6 @@
 package view.teacher;
 
+import messages.RatingMessage;
 import utils.StringUtils;
 import messages.TagMessage;
 import messages.TrainingMessage;

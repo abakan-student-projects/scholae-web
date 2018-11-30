@@ -55,4 +55,17 @@ class LearnerService {
         });
     }
 
+
+    public function getRating(learnerId: Float) : ResponseMessage {
+        return ServiceHelper.authorize(Role.Learner, function() {
+            var user: User;
+            if (learnerId == null){
+                user = User.manager.select($id == Authorization.instance.currentUser.id);
+            } else {
+                user = User.manager.select($id == learnerId);
+            }
+            return ServiceHelper.successResponse(user.toRatingMessage(user.id));
+        });
+    }
+
 }

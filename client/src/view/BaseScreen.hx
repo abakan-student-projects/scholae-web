@@ -27,6 +27,11 @@ class BaseScreen
             if (state.scholae.auth.loggedIn && state.scholae.auth.roles.has(Role.Learner))
                 jsx('<li className=${if(props.location.pathname.indexOf("/learner") == 0) "uk-active" else ""}>
                         <Link to="/learner/">Ученик</Link>
+                        <div className="uk-navbar-dropdown">
+                        <ul className="uk-nav uk-navbar-dropdown-nav">
+                            <li><Link to="/learner/rating">Рейтинг</Link></li>
+                        </ul>
+                        </div>
                      </li>')
             else
                 null;
