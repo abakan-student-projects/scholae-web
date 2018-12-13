@@ -1,13 +1,9 @@
 package action;
 
 import Array;
-import Array;
-import Array;
-import Array;
 import messages.RatingMessage;
 import messages.TrainingMessage;
 import messages.GroupMessage;
-import messages.LearnerMessage;
 
 enum LearnerAction {
 
