@@ -29,7 +29,7 @@ class UserRatingScreen
 
         if (state.scholae.auth.loggedIn){
             TeacherViewsHelper.ensureTagsLoaded(state);
-            RemoteDataHelper.ensureRemoteDataLoaded(state.learner.rating, LearnerAction.LoadRating(props.params.id));
+            TeacherViewsHelper.ensureRatingLoaded(state, props.params.id);
         }
 
         return {

@@ -99,27 +99,20 @@ class User extends sys.db.Object {
         var res: Array<RatingCategory> = [];
         var attempts = Attempt.manager.search(($userId == userId) && ($solved == true));
         var tagIds = CodeforcesTag.manager.all();
-        if (attempts == null) {
-            for (t in tagIds) {
-                res.push({id: t.id, rating: 0});
+        var taskIds = [for (a in attempts) a.task.id];
+        var taskTagIds = CodeforcesTaskTag.manager.search($taskId in taskIds);
+        for (t in tagIds) {
+            for (taskTag in taskTagIds) {
+                if (taskTag.tag.id == t.id) {
+                    rating += taskTag.task.level;
+                }
             }
-        } else {
-            var taskIds = [for (a in attempts) a.task.id];
-            var tasks = CodeforcesTask.manager.search($id in taskIds);
-            var taskTagIds = CodeforcesTaskTag.manager.search($taskId in taskIds);
-            for (t in tagIds) {
-                for (taskTag in taskTagIds) {
-                    if (taskTag.tag.id == t.id) {
-                        rating += taskTag.task.level;
-                    }
-                }
-                if (rating != 0) {
-                    rating = Math.log(rating) * 1000;
-                    res.push({id: t.id, rating: Math.round(rating)});
-                    rating = 0;
-                } else {
-                    res.push({id: t.id, rating: rating});
-                }
+            if (rating != 0) {
+                rating = Math.log(rating) * 1000;
+                res.push({id: t.id, rating: Math.round(rating)});
+                rating = 0;
+            } else {
+                res.push({id: t.id, rating: rating});
             }
         }
         return res;

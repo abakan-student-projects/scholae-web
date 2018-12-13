@@ -42,7 +42,7 @@ class LearnerRatingView
                 }
             }
         }
-        ArraySort.sort(nameTags, function(x: RatingCategory, y: RatingCategory) {return if (x.rating < y.rating && x.name > y.name) 1 else -1; });
+        ArraySort.sort(nameTags, function(x: RatingCategory, y: RatingCategory) {return if ((x.rating == y.rating && x.name > y.name) || (x.rating < y.rating && x.name > y.name)) 1 else -1; });
         return nameTags;
     }
 
@@ -54,22 +54,33 @@ class LearnerRatingView
             var lastName = if (props.rating.learner.lastName != null) props.rating.learner.lastName else state.scholae.auth.lastName;
             var rating =  jsx('<h1>Рейтинг:${props.rating.rating}</h1>');
             var ratingNotNullCategory = [for (r in props.rating.ratingCategory)
-                if (r.rating != 0) { id : r.id, rating : r.rating }];
+                if (r.rating != 0) { id: r.id, rating: r.rating }];
             var ratingNotNullCategorySorted = getSortedNameTag(ratingNotNullCategory);
             var ratingResults = [for (r in ratingNotNullCategorySorted)
-                jsx('<div>${r.name}<progress className="uk-progress" value=${r.rating} max="100000"></progress>${r.rating}</div>')];
+                jsx('<tr><td>${r.name}</td><td><progress className="uk-progress" value=${r.rating} max="100000"></progress></td><td>${r.rating}</td></tr>')];
             var ratingNullCategory = [for (r in props.rating.ratingCategory)
-                if (r.rating == 0) { id : r.id, rating : r.rating }];
+                if (r.rating == 0) { id: r.id, rating: r.rating }];
             var ratingNullCategorySorted = getSortedNameTag(ratingNullCategory);
             var ratingNullResults = [for (r in ratingNullCategorySorted)
-                jsx('<div>${r.name}<progress className="uk-progress" value=${r.rating} max="100000"></progress>${r.rating}</div>')];
+                jsx('<tr><td>${r.name}</td><td><progress className="uk-progress" value=${r.rating} max="100000"></progress></td><td>${r.rating}</td></tr>')];
 
             result = jsx('
-                <div>
+                <div key="rating">
                     <span data-uk-icon="user"></span> $firstName $lastName
                     $rating
-                    $ratingResults
-                    $ratingNullResults
+                    <table className="uk-table uk-table-divider uk-table-hover">
+                        <thead>
+                            <tr>
+                                <th className="uk-width-medium">Категории</th>
+                                <th>Рейтинг</th>
+                                <th className="uk-width-small">Значение</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            $ratingResults
+                            $ratingNullResults
+                        </tbody>
+                    </table>
                 </div>
             ');
         } else {
