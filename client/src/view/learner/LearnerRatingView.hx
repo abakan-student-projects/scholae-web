@@ -57,12 +57,12 @@ class LearnerRatingView
                 if (r.rating != 0) { id: r.id, rating: r.rating }];
             var ratingNotNullCategorySorted = getSortedNameTag(ratingNotNullCategory);
             var ratingResults = [for (r in ratingNotNullCategorySorted)
-                jsx('<tr><td>${r.name}</td><td><progress className="uk-progress" value=${r.rating} max="100000"></progress></td><td>${r.rating}</td></tr>')];
+                jsx('<tr><td>${r.name}</td><td><progress className="uk-progress" value=${r.rating} max="11000"></progress></td><td>${r.rating}</td></tr>')];
             var ratingNullCategory = [for (r in props.rating.ratingCategory)
                 if (r.rating == 0) { id: r.id, rating: r.rating }];
             var ratingNullCategorySorted = getSortedNameTag(ratingNullCategory);
             var ratingNullResults = [for (r in ratingNullCategorySorted)
-                jsx('<tr><td>${r.name}</td><td><progress className="uk-progress" value=${r.rating} max="100000"></progress></td><td>${r.rating}</td></tr>')];
+                jsx('<tr><td>${r.name}</td><td><progress className="uk-progress" value=${r.rating} max="11000"></progress></td><td>${r.rating}</td></tr>')];
 
             result = jsx('
                 <div key="rating">
