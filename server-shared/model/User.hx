@@ -85,10 +85,11 @@ class User extends sys.db.Object {
 
    public static function calculateLearnerRating(userId: Float): Float {
        var rating:Float = 0;
-       var results:List<Attempt>;
-       results = Attempt.manager.search(($userId == userId) && ($solved == true));
-       for (item in results) {
-           rating += item.task.level;
+       var results = Attempt.manager.search(($userId == userId) && ($solved == true));
+       var res = [for (r in results) Std.parseFloat(Std.string(r.task.id))];
+       var tasks = CodeforcesTask.manager.search($id in res);
+       for (item in tasks) {
+           rating += item.level;
        }
        rating = Math.log(rating) * 1000;
        return Math.round(rating);
