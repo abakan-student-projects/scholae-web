@@ -9,6 +9,7 @@ import react.ReactComponent;
 import react.ReactMacro.jsx;
 import redux.react.IConnectedComponent;
 import router.RouteComponentProps;
+import router.Link;
 
 typedef LearnerRatingProps = {
     rating: RatingMessage,

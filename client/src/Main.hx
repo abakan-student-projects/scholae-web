@@ -1,5 +1,6 @@
 package;
 
+import view.teacher.ClassLearnersRatingScreen;
 import view.teacher.UserRatingScreen;
 import view.learner.LearnerRatingScreen;
 import view.editor.AdminUsersScreen;
@@ -72,6 +73,7 @@ class Main {
 					    <Route path="activation/:code" component=$EmailActivationScreen />
 					    <Route path="teacher/group/:id" component=$TeacherGroupScreen onEnter=$requireAuth />
 					    <Route path="teacher/user/:id" component=$UserRatingScreen onEnter=$requireAuth />
+					    <Route path="teacher/group/:id/learners" component=$ClassLearnersRatingScreen />
 					    <Route path="teacher/group/:id/new-assignment" component=$TeacherNewAssignmentScreen onEnter=$requireAuth />
 					    <Route path="teacher/group/:groupId/training/:trainingId" component=$TeacherTrainingScreen onEnter=$requireAuth />
 					    <Route path="teacher" component=$TeacherDashboardScreen onEnter=$requireAuth />
