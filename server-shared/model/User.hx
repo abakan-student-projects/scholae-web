@@ -1,5 +1,8 @@
 package model;
 
+import Array;
+import messages.TagMessage;
+import messages.RatingMessage;
 import messages.UserMessage;
 import messages.SessionMessage;
 import messages.LearnerMessage;
@@ -70,14 +73,54 @@ class User extends sys.db.Object {
                 sessionId: sessionId
             };
     }
+    public function toRatingMessage(userId: Float): RatingMessage {
+        var learner = manager.select($id == userId);
+        return
+        {
+            rating: calculateLearnerRating(userId),
+            ratingCategory: calculateRatingCategory(userId),
+            learner: learner.toLearnerMessage()
+        };
+    }
 
-   public function calculateLearnerRating(user:User): Float {
-       var rating:Int = 0;
-       var results:List<Attempt>;
-       results = Attempt.manager.search(($userId ==user.id) && ($solved==true));
+   public static function calculateLearnerRating(userId: Float): Float {
+       var rating:Float = 0;
+       var results = Attempt.manager.search(($userId == userId) && ($solved == true));
        for (item in results) {
-           rating += item.task.level;
+           if (item.task != null){
+               rating += item.task.level;
+           }
        }
-       return rating;
+       rating = Math.log(rating) * 1000;
+       return Math.round(rating);
    }
+
+    public static function calculateRatingCategory(userId: Float): Array<RatingCategory> {
+        var rating: Float = 0;
+        var res: Array<RatingCategory> = [];
+        var attempts = Attempt.manager.search(($userId == userId) && ($solved == true));
+        var tagIds = CodeforcesTag.manager.all();
+        var taskIds = [];
+        for (a in attempts) {
+            if (a.task != null){
+                taskIds.push(a.task.id);
+            }
+        }
+        var taskTagIds = CodeforcesTaskTag.manager.search($taskId in taskIds);
+        for (t in tagIds) {
+            for (taskTag in taskTagIds) {
+                if (taskTag.tag.id == t.id) {
+                    rating += taskTag.task.level;
+                }
+            }
+            if (rating != 0) {
+                rating = Math.log(rating) * 1000;
+                res.push({id: t.id, rating: Math.round(rating)});
+                rating = 0;
+            } else {
+                res.push({id: t.id, rating: rating});
+            }
+        }
+        return res;
+    }
 }

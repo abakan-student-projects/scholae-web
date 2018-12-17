@@ -1,5 +1,7 @@
 package model;
 
+import messages.RatingMessage;
+import utils.RemoteDataHelper;
 import haxe.ds.StringMap;
 import messages.TagMessage;
 import messages.TrainingMessage;
@@ -11,5 +13,6 @@ typedef LearnerState = {
     resultsRefreshing: Bool,
     signup: {
         redirectTo: String
-    }
+    },
+    rating: RemoteData<RatingMessage>
 }

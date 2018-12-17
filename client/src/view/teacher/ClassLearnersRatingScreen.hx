@@ -1,24 +1,24 @@
 package view.teacher;
 
-import action.LearnerAction;
-import utils.RemoteDataHelper;
+import view.teacher.ClassLearnersRatingView.ClassLearnersRatingProps;
+import view.teacher.ClassLearnersRatingView.ClassLearnersRatingProps;
+import view.teacher.ClassLearnersRatingView;
+import action.TeacherAction;
 import haxe.ds.StringMap;
 import messages.TagMessage;
 import utils.IterableUtils;
-import view.teacher.TeacherViewsHelper;
-import model.Teacher;
-import action.TeacherAction;
 import view.teacher.TeacherGroupView.TeacherGroupProps;
+import view.teacher.TeacherViewsHelper;
 import action.ScholaeAction;
 import react.ReactComponent;
 import react.ReactMacro.jsx;
 import redux.react.IConnectedComponent;
 import router.RouteComponentProps;
-import view.teacher.TeacherDashboardView;
+import utils.RemoteDataHelper;
 
 
-class TeacherGroupScreen
-    extends ReactComponentOfPropsAndState<RouteComponentProps, TeacherGroupProps>
+class ClassLearnersRatingScreen
+    extends ReactComponentOfPropsAndState<RouteComponentProps, ClassLearnersRatingProps>
     implements IConnectedComponent {
 
     public function new(props:RouteComponentProps) {
@@ -26,10 +26,10 @@ class TeacherGroupScreen
     }
 
     public override function render(): ReactElement {
-        return jsx('<TeacherGroupView {...state} dispatch=$dispatch/>');
+        return jsx('<ClassLearnersRatingView {...state} dispatch=$dispatch/>');
     }
 
-    function mapState(state: ApplicationState, props: RouteComponentProps): TeacherGroupProps {
+    function mapState(state: ApplicationState, props: RouteComponentProps): ClassLearnersRatingProps {
         TeacherViewsHelper.ensureGroupLoaded(props.params.id, state);
         TeacherViewsHelper.ensureTagsLoaded(state);
 
@@ -47,23 +47,11 @@ class TeacherGroupScreen
                 if (null != state.teacher.currentGroup)
                     state.teacher.currentGroup.trainingsByUsersAndAssignments
                 else null,
-            trainingsCreating: state.teacher.trainingsCreating,
-            createTrainings: function() {
-                if (null != state.teacher.currentGroup) {
-                    dispatch(TeacherAction.CreateTrainingsByMetaTrainings(state.teacher.currentGroup.info.id));
-                }
-            },
             tags:
-                if (state.teacher.tags != null && state.teacher.tags.loaded)
-                    IterableUtils.createStringMap(state.teacher.tags.data, function(t) { return Std.string(t.id); })
-                else
-                    new StringMap<TagMessage>(),
-            resultsRefreshing: state.teacher.resultsRefreshing,
-            refreshResults: function() {
-                if (null != state.teacher.currentGroup) {
-                    dispatch(TeacherAction.RefreshResults(state.teacher.currentGroup.info.id));
-                }
-            }
+            if (state.teacher.tags != null && state.teacher.tags.loaded)
+                IterableUtils.createStringMap(state.teacher.tags.data, function(t) { return Std.string(t.id); })
+            else
+                new StringMap<TagMessage>(),
         };
     }
 

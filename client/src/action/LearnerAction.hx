@@ -1,8 +1,9 @@
 package action;
 
+import Array;
+import messages.RatingMessage;
 import messages.TrainingMessage;
 import messages.GroupMessage;
-import messages.LearnerMessage;
 
 enum LearnerAction {
 
@@ -17,4 +18,7 @@ enum LearnerAction {
 
     RefreshResults;
     RefreshResultsFinished(trainings: Array<TrainingMessage>);
+
+    LoadRating(?learnerId: Float);
+    LoadRatingFinished(rating: Array<RatingMessage>);
 }
