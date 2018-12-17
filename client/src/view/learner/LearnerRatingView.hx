@@ -42,7 +42,7 @@ class LearnerRatingView
                 }
             }
         }
-        ArraySort.sort(nameTags, function(x: RatingCategory, y: RatingCategory) {return if ((x.rating == y.rating && x.name > y.name) || (x.rating < y.rating && x.name > y.name)) 1 else -1; });
+        ArraySort.sort(nameTags, function(x: RatingCategory, y: RatingCategory) {return if ((x.rating == y.rating && x.name > y.name) || x.rating < y.rating) 1 else -1; });
         return nameTags;
     }
 
@@ -66,6 +66,9 @@ class LearnerRatingView
 
             result = jsx('
                 <div key="rating">
+                    <div className="uk-margin">
+                        <Link to=${"/teacher/group/" + state.teacher.currentGroup.info.id + ""}><span data-uk-icon="chevron-left"></span> ${state.teacher.currentGroup.info.name} </Link>
+                    </div>
                     <span data-uk-icon="user"></span> $firstName $lastName
                     $rating
                     <table className="uk-table uk-table-divider uk-table-hover">
