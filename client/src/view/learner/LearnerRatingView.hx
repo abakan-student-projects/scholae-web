@@ -10,6 +10,7 @@ import react.ReactMacro.jsx;
 import redux.react.IConnectedComponent;
 import router.RouteComponentProps;
 
+
 typedef LearnerRatingProps = {
     rating: RatingMessage,
     tag: Array<TagMessage>
@@ -42,7 +43,7 @@ class LearnerRatingView
                 }
             }
         }
-        ArraySort.sort(nameTags, function(x: RatingCategory, y: RatingCategory) {return if ((x.rating == y.rating && x.name > y.name) || (x.rating < y.rating && x.name > y.name)) 1 else -1; });
+        ArraySort.sort(nameTags, function(x: RatingCategory, y: RatingCategory) {return if ((x.rating == y.rating && x.name > y.name) || x.rating < y.rating) 1 else -1; });
         return nameTags;
     }
 
