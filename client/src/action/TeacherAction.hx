@@ -1,5 +1,6 @@
 package action;
 
+import messages.RatingMessage;
 import model.TeacherState;
 import messages.ArrayChunk;
 import messages.TaskMessage;
@@ -52,4 +53,7 @@ enum TeacherAction {
 
     DeleteCourse(groupId: Float);
     DeleteCourseFinished(groupId: Float);
+
+    LoadAllRating(groupId: Float);
+    LoadAllRatingFinished(allRating: Array<RatingMessage>);
 }

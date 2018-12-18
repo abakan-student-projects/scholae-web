@@ -1,5 +1,6 @@
 package model;
 
+import messages.RatingMessage;
 import Lambda;
 import utils.IterableUtils;
 import messages.TagMessage;
@@ -35,7 +36,8 @@ class Teacher
         resultsRefreshing: false,
         newAssignment: {
             possibleTasks: RemoteDataHelper.createEmpty()
-        }
+        },
+        allRating: RemoteDataHelper.createEmpty()
     };
 
     public var store: StoreMethods<ApplicationState>;
@@ -207,6 +209,9 @@ class Teacher
                         loaded: true
                     }
                 });
+
+            case LoadAllRating(groupId): copy(state, { allRating: RemoteDataHelper.createLoading() });
+            case LoadAllRatingFinished(allRating): copy(state, { allRating: RemoteDataHelper.createLoaded(allRating) });
         }
     }
 
@@ -305,6 +310,16 @@ class Teacher
 
             case DeleteCourseFinished(groupId):
                 UIkit.notification({ message: "Курс удален", timeout: 3000 });
+                next();
+
+            case LoadAllRating(groupId):
+                TeacherServiceClient.instance.getAllRating(groupId)
+                    .then(function(allRating) {
+                    ArraySort.sort(allRating, function(x: RatingMessage, y:RatingMessage)
+                    { return
+                        if (x.learner.firstName > y.learner.firstName ||
+                            (x.learner.lastName > y.learner.lastName && x.learner.firstName == y.learner.firstName)) 1 else -1; });
+                    store.dispatch(LoadAllRatingFinished(allRating)); });
                 next();
 
             default: next();

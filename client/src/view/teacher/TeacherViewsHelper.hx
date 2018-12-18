@@ -57,6 +57,5 @@ class TeacherViewsHelper {
                 if (null != next) next();
             }
         });
-
     }
 }

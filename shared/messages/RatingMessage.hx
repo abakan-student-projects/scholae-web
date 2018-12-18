@@ -8,6 +8,6 @@ typedef RatingCategory = {
 
 typedef RatingMessage = {
     rating: Float,
-    ratingCategory: Array<RatingCategory>,
+    ?ratingCategory: Array<RatingCategory>,
     ?learner: LearnerMessage
 }

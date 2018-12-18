@@ -9,6 +9,7 @@ import react.ReactComponent;
 import react.ReactMacro.jsx;
 import redux.react.IConnectedComponent;
 import router.RouteComponentProps;
+import router.Link;
 
 
 typedef LearnerRatingProps = {
@@ -67,6 +68,9 @@ class LearnerRatingView
 
             result = jsx('
                 <div key="rating">
+                    <div className="uk-margin">
+                        <Link to=${"/teacher/group/" + state.teacher.currentGroup.info.id + ""}><span data-uk-icon="chevron-left"></span> ${state.teacher.currentGroup.info.name} </Link>
+                    </div>
                     <span data-uk-icon="user"></span> $firstName $lastName
                     $rating
                     <table className="uk-table uk-table-divider uk-table-hover">

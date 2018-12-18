@@ -1,5 +1,9 @@
 package view.teacher;
 
+import view.teacher.TeacherViewsHelper;
+import action.LearnerAction;
+import messages.RatingMessage;
+import Lambda;
 import view.teacher.ClassLearnersRatingView.ClassLearnersRatingProps;
 import view.teacher.ClassLearnersRatingView.ClassLearnersRatingProps;
 import view.teacher.ClassLearnersRatingView;
@@ -30,28 +34,16 @@ class ClassLearnersRatingScreen
     }
 
     function mapState(state: ApplicationState, props: RouteComponentProps): ClassLearnersRatingProps {
+        RemoteDataHelper.ensureRemoteDataLoaded(state.teacher.allRating, TeacherAction.LoadAllRating(props.params.id));
         TeacherViewsHelper.ensureGroupLoaded(props.params.id, state);
-        TeacherViewsHelper.ensureTagsLoaded(state);
 
         return {
             group: if (null != state.teacher.currentGroup) state.teacher.currentGroup.info else null,
-            learners:
-                if (null != state.teacher.currentGroup && state.teacher.currentGroup.learners.loaded)
-                    state.teacher.currentGroup.learners.data
-                else [],
-            assignments:
-                if (null != state.teacher.currentGroup && state.teacher.currentGroup.assignments.loaded)
-                    state.teacher.currentGroup.assignments.data
-                else [],
-            trainingsByUsersAndAssignments:
-                if (null != state.teacher.currentGroup)
-                    state.teacher.currentGroup.trainingsByUsersAndAssignments
-                else null,
-            tags:
-            if (state.teacher.tags != null && state.teacher.tags.loaded)
-                IterableUtils.createStringMap(state.teacher.tags.data, function(t) { return Std.string(t.id); })
-            else
-                new StringMap<TagMessage>(),
+            learners: if (null != state.teacher.currentGroup && state.teacher.currentGroup.learners.loaded)
+                        state.teacher.currentGroup.learners.data
+                    else [],
+
+            rating: if (null != state.teacher.allRating) state.teacher.allRating.data else null
         };
     }
 

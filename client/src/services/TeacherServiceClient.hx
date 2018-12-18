@@ -1,5 +1,6 @@
 package services;
 
+import messages.RatingMessage;
 import model.TeacherState;
 import messages.ArrayChunk;
 import messages.TaskMessage;
@@ -42,6 +43,14 @@ class TeacherServiceClient extends BaseServiceClient {
     public function getAllLinks(): Promise<Array<LinksForTagsMessage>> {
         return request(function(success, fail) {
             context.TeacherService.getAllLinks.call([], function(e) {
+                processResponse(e, success, fail);
+            });
+        });
+    }
+
+    public function getAllRating(groupId: Float): Promise<Array<RatingMessage>> {
+        return request(function(success, fail) {
+            context.TeacherService.getAllRating.call([groupId], function(e) {
                 processResponse(e, success, fail);
             });
         });

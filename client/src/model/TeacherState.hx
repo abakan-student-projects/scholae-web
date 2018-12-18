@@ -1,5 +1,6 @@
 package model;
 
+import messages.RatingMessage;
 import messages.ArrayChunk;
 import messages.TaskMessage;
 import messages.AttemptMessage;
@@ -28,5 +29,6 @@ typedef TeacherState = {
     resultsRefreshing: Bool,
     newAssignment: {
         possibleTasks: RemoteData<ArrayChunk<TaskMessage>>
-    }
+    },
+    allRating: RemoteData<Array<RatingMessage>>
 }
