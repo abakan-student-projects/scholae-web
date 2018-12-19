@@ -66,16 +66,6 @@ class TeacherService {
         });
     }
 
-    public function getAllRating(groupId: Float) : ResponseMessage {
-        return ServiceHelper.authorize(Role.Teacher, function() {
-            var learners = Lambda.array(Lambda.map(GroupLearner.manager.search($groupId == groupId), function(gl) { return gl.learner.id; }));
-            var user = User.manager.search($id in learners);
-            return ServiceHelper.successResponse(
-                Lambda.array(
-                    Lambda.map(user, function(u) { return u.toRatingMessage(u.id); })));
-        });
-    }
-
     public function addGroup(name: String, signUpKey: String): ResponseMessage {
         return ServiceHelper.authorize(Role.Teacher, function() {
             var g = new Group();
@@ -173,8 +163,13 @@ class TeacherService {
 
     public function refreshResultsForGroup(groupId: Float): ResponseMessage {
         return ServiceHelper.authorize(Role.Teacher, function() {
-            return ServiceHelper.successResponse(
-                    JobQueue.publishScholaeJob(ScholaeJob.RefreshResultsForGroup(groupId), Authorization.instance.session.id));
+            return ServiceHelper.authorizeGroup(Group.manager.get(groupId), Authorization.instance.currentUser, function() {
+                for (gl in GroupLearner.manager.search($groupId == groupId)) {
+                    Attempt.updateAttemptsForUser(gl.learner);
+                    Sys.sleep(0.3);
+                }
+                return getTrainingsByGroup(groupId);
+            });
         });
     }
 
@@ -241,11 +236,9 @@ class TeacherService {
             var assignment = Assignment.manager.search($groupId == groupId);
             var assignmentIds = [];
             for (a in assignment) {
-                if (null != a.learnerIds) {
-                    for (l in a.learnerIds){
-                        if (l == learnerId){
-                            assignmentIds.push(a.id);
-                        }
+                for (assign in a.learnerIds){
+                    if (assign == learnerId){
+                        assignmentIds.push(a.id);
                     }
                 }
             }
