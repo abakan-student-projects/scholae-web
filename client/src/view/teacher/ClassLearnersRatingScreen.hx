@@ -1,18 +1,10 @@
 package view.teacher;
 
 import view.teacher.TeacherViewsHelper;
-import action.LearnerAction;
 import messages.RatingMessage;
-import Lambda;
-import view.teacher.ClassLearnersRatingView.ClassLearnersRatingProps;
 import view.teacher.ClassLearnersRatingView.ClassLearnersRatingProps;
 import view.teacher.ClassLearnersRatingView;
 import action.TeacherAction;
-import haxe.ds.StringMap;
-import messages.TagMessage;
-import utils.IterableUtils;
-import view.teacher.TeacherGroupView.TeacherGroupProps;
-import view.teacher.TeacherViewsHelper;
 import action.ScholaeAction;
 import react.ReactComponent;
 import react.ReactMacro.jsx;
