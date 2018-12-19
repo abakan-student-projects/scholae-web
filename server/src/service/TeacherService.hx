@@ -1,7 +1,5 @@
 package service;
 
-import service.ServiceHelper;
-import Lambda;
 import jobs.ScholaeJob;
 import jobs.JobQueue;
 import model.LinksForTags;
@@ -68,8 +66,7 @@ class TeacherService {
 
     public function getAllRating(groupId: Float) : ResponseMessage {
         return ServiceHelper.authorize(Role.Teacher, function() {
-            var group = Group.manager.select($id == groupId);
-            var learners = Lambda.array(Lambda.map(GroupLearner.manager.search($group==group), function(gl) { return gl.learner.id; }));
+            var learners = Lambda.array(Lambda.map(GroupLearner.manager.search($groupId == groupId), function(gl) { return gl.learner.id; }));
             var user = User.manager.search($id in learners);
             return ServiceHelper.successResponse(
                 Lambda.array(
