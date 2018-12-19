@@ -1,7 +1,6 @@
 package view.teacher;
 
 import view.teacher.TeacherViewsHelper;
-import action.LearnerAction;
 import messages.RatingMessage;
 import view.teacher.ClassLearnersRatingView.ClassLearnersRatingProps;
 import view.teacher.ClassLearnersRatingView;
