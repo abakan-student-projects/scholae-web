@@ -38,21 +38,25 @@ class ClassLearnersRatingView
                         [for (r in props.rating)
                             for (l in props.learners)
                                 if (l.id == r.learner.id)
-                                    jsx('<tr key=${r.learner.id}>
+                                    jsx('<tr key="${r.learner.id}">
                                             <td><Link to=${"/teacher/user/" + r.learner.id +""}>${r.learner.firstName} ${r.learner.lastName}</Link></td>
                                             <td>${r.rating}</td>
                                         </tr>')]
-                    else [jsx('<tr></tr>')];
+                    else [jsx('<tr key="1"></tr>')];
         return jsx('
-                <div>
+                <div key="listLearners">
                     <div className="uk-margin">
                         <Link to=${"/teacher/group/" + state.teacher.currentGroup.info.id + ""}>
                         <span data-uk-icon="chevron-left"></span> ${state.teacher.currentGroup.info.name} </Link>
                     </div>
                     <table className="uk-table uk-table-divider">
+                        <thead>
+                            <tr>
+                                <th>Ученик</th>
+                                <th>Рейтинг</th>
+                            </tr>
+                        </thead>
                         <tbody>
-                            <th>Ученик</th>
-                            <th>Рейтинг</th>
                             $learner
                         </tbody>
                     </table>

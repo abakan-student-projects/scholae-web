@@ -25,10 +25,6 @@ class TeacherViewsHelper {
         RemoteDataHelper.ensureRemoteDataLoaded(state.editor.links, EditorAction.LoadLink, next);
     }
 
-    public static function ensureRatingsLoaded(state:ApplicationState, ?next: Void -> Void) {
-        RemoteDataHelper.ensureRemoteDataLoaded(state.learner.rating, LearnerAction.LoadRating(), next);
-    }
-
     public static function ensureGroupLoaded(groupId: Float, state: ApplicationState, ?next: Void -> Void) {
         ensureGroupsLoaded(state, function() {
             if(
@@ -41,18 +37,6 @@ class TeacherViewsHelper {
                             state.teacher.groups.data,
                             function(g) { return g.id == groupId; })));
                 });
-            } else {
-                if (null != next) next();
-            }
-        });
-    }
-
-    public static function ensureRatingLoaded(state: ApplicationState, learnerId, ?next: Void -> Void) {
-        ensureRatingsLoaded(state, function() {
-            if (state.learner.rating.loaded && state.learner.rating.data.learner.id != learnerId) {
-            defer(function() {
-                Main.store.dispatch(LearnerAction.LoadRating(learnerId));
-            });
             } else {
                 if (null != next) next();
             }

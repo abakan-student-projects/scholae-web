@@ -26,15 +26,15 @@ class UserRatingScreen
     }
 
     function mapState(state: ApplicationState, props: RouteComponentProps): LearnerRatingProps {
-
         if (state.scholae.auth.loggedIn){
             TeacherViewsHelper.ensureTagsLoaded(state);
-            TeacherViewsHelper.ensureRatingLoaded(state, props.params.id);
+            RemoteDataHelper.ensureRemoteDataLoaded(state.teacher.allRating, TeacherAction.LoadAllRating(state.teacher.currentGroup.info.id));
         }
 
         return {
-            rating: state.learner.rating.data,
-            tag: if (state.teacher.tags != null && state.teacher.tags.loaded) state.teacher.tags.data else []
+            tags: if (state.teacher.tags != null && state.teacher.tags.loaded) state.teacher.tags.data else [],
+            allRating: if (null != state.teacher.allRating) state.teacher.allRating.data else null,
+            learnerId: props.params.id
            }
     }
 }
