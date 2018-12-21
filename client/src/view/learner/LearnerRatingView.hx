@@ -65,12 +65,16 @@ class LearnerRatingView
             var ratingNullCategorySorted = getSortedNameTag(ratingNullCategory);
             var ratingNullResults = [for (r in ratingNullCategorySorted)
                 jsx('<tr><td>${r.name}</td><td><progress className="uk-progress" value=${r.rating} max="11000"></progress></td><td>${r.rating}</td></tr>')];
-
+            var backGroup = if (state.teacher.currentGroup != null) jsx('
+                    <div className="uk-margin">
+                        <Link to=${"/teacher/group/" + state.teacher.currentGroup.info.id + ""}>
+                            <span data-uk-icon="chevron-left"></span> ${state.teacher.currentGroup.info.name}
+                        </Link>
+                    </div>')
+                        else jsx('<div></div>');
             result = jsx('
                 <div key="rating">
-                    <div className="uk-margin">
-                        <Link to=${"/teacher/group/" + state.teacher.currentGroup.info.id + ""}><span data-uk-icon="chevron-left"></span> ${state.teacher.currentGroup.info.name} </Link>
-                    </div>
+                    $backGroup
                     <span data-uk-icon="user"></span> $firstName $lastName
                     $rating
                     <table className="uk-table uk-table-divider uk-table-hover">
