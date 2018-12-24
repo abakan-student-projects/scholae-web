@@ -1,5 +1,6 @@
 package action;
 
+import messages.RatingMessage;
 import model.TeacherState;
 import messages.ArrayChunk;
 import messages.TaskMessage;
@@ -25,6 +26,7 @@ enum TeacherAction {
     SetCurrentGroup(group: GroupMessage);
     LoadLearnersByGroupFinished(learners: Array<LearnerMessage>);
     LoadAssignmentsByGroupFinished(assignments: Array<AssignmentMessage>);
+    LoadRatingLearnersByGroupFinished(rating: Array<RatingMessage>);
 
     LoadAllTags;
     LoadAllTagsFinished(tags: Array<TagMessage>);

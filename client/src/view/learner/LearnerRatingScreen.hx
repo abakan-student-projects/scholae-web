@@ -30,11 +30,9 @@ class LearnerRatingScreen
             TeacherViewsHelper.ensureTagsLoaded(state);
             RemoteDataHelper.ensureRemoteDataLoaded(state.learner.rating, LearnerAction.LoadRating(props.params.id));
         }
-
-        trace(state);
         return {
-            rating: state.learner.rating.data,
-            tag: if (state.teacher.tags != null && state.teacher.tags.loaded) state.teacher.tags.data else []
+            rating: if (state.learner.rating != null && state.learner.rating.loaded) state.learner.rating.data else null,
+            tags: if (state.teacher.tags != null && state.teacher.tags.loaded) state.teacher.tags.data else []
            }
     }
 }

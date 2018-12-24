@@ -64,6 +64,16 @@ class TeacherService {
         });
     }
 
+    public function getAllRating(groupId: Float) : ResponseMessage {
+        return ServiceHelper.authorize(Role.Teacher, function() {
+            var learners = Lambda.array(Lambda.map(GroupLearner.manager.search($groupId == groupId), function(gl) { return gl.learner.id; }));
+            var user = User.manager.search($id in learners);
+            return ServiceHelper.successResponse(
+                Lambda.array(
+                    Lambda.map(user, function(u) { return u.toRatingMessage(u.id); })));
+        });
+    }
+
     public function addGroup(name: String, signUpKey: String): ResponseMessage {
         return ServiceHelper.authorize(Role.Teacher, function() {
             var g = new Group();

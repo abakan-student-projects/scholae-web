@@ -1,5 +1,6 @@
 package model;
 
+import messages.RatingMessage;
 import Lambda;
 import utils.IterableUtils;
 import messages.TagMessage;
@@ -85,6 +86,14 @@ class Teacher
                         learners: { data: learners, loaded: true, loading: false }
                     })
                 });
+
+            case LoadRatingLearnersByGroupFinished(rating):
+                copy(state, {
+                    currentGroup: copy(state.currentGroup, {
+                        rating: { data: rating, loaded: true, loading: false }
+                    })
+                });
+
             case LoadAllTags: copy(state, { tags: RemoteDataHelper.createLoading() });
             case LoadAllTagsFinished(tags):
                 copy(state, {
@@ -234,6 +243,13 @@ class Teacher
                     .then(function(assignments) { store.dispatch(LoadAssignmentsByGroupFinished(assignments)); });
                 TeacherServiceClient.instance.getTrainingsByGroup(group.id)
                     .then(function(trainings) { store.dispatch(LoadTrainingsFinished(trainings)); });
+                TeacherServiceClient.instance.getAllRating(group.id)
+                    .then(function(rating) {
+                        ArraySort.sort(rating, function(x: RatingMessage, y:RatingMessage)
+                        { return
+                            if (x.learner.firstName > y.learner.firstName ||
+                            (x.learner.lastName > y.learner.lastName && x.learner.firstName == y.learner.firstName)) 1 else -1; });
+                        store.dispatch(LoadRatingLearnersByGroupFinished(rating)); });
                 next();
 
             case LoadAllTags:
