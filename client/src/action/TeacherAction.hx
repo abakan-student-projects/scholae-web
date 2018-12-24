@@ -26,7 +26,7 @@ enum TeacherAction {
     SetCurrentGroup(group: GroupMessage);
     LoadLearnersByGroupFinished(learners: Array<LearnerMessage>);
     LoadAssignmentsByGroupFinished(assignments: Array<AssignmentMessage>);
-    LoadRatingByGroup(rating: Array<RatingMessage>);
+    LoadRatingLearnersByGroupFinished(rating: Array<RatingMessage>);
 
     LoadAllTags;
     LoadAllTagsFinished(tags: Array<TagMessage>);

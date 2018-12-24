@@ -87,7 +87,7 @@ class Teacher
                     })
                 });
 
-            case LoadRatingByGroup(rating):
+            case LoadRatingLearnersByGroupFinished(rating):
                 copy(state, {
                     currentGroup: copy(state.currentGroup, {
                         rating: { data: rating, loaded: true, loading: false }
@@ -249,7 +249,7 @@ class Teacher
                         { return
                             if (x.learner.firstName > y.learner.firstName ||
                             (x.learner.lastName > y.learner.lastName && x.learner.firstName == y.learner.firstName)) 1 else -1; });
-                        store.dispatch(LoadRatingByGroup(rating)); });
+                        store.dispatch(LoadRatingLearnersByGroupFinished(rating)); });
                 next();
 
             case LoadAllTags:
