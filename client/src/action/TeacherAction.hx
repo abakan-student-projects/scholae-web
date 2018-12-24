@@ -26,6 +26,7 @@ enum TeacherAction {
     SetCurrentGroup(group: GroupMessage);
     LoadLearnersByGroupFinished(learners: Array<LearnerMessage>);
     LoadAssignmentsByGroupFinished(assignments: Array<AssignmentMessage>);
+    LoadRatingByGroup(rating: Array<RatingMessage>);
 
     LoadAllTags;
     LoadAllTagsFinished(tags: Array<TagMessage>);
@@ -53,7 +54,4 @@ enum TeacherAction {
 
     DeleteCourse(groupId: Float);
     DeleteCourseFinished(groupId: Float);
-
-    LoadAllRating(groupId: Float);
-    LoadAllRatingFinished(allRating: Array<RatingMessage>);
 }

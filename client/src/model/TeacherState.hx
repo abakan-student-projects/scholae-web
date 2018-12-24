@@ -19,7 +19,8 @@ typedef TeacherState = {
         learners: RemoteData<Array<LearnerMessage>>,
         assignments: RemoteData<Array<AssignmentMessage>>,
         trainings: RemoteData<Array<TrainingMessage>>,
-        trainingsByUsersAndAssignments: StringMap<StringMap<Array<TrainingMessage>>>
+        trainingsByUsersAndAssignments: StringMap<StringMap<Array<TrainingMessage>>>,
+        rating: RemoteData<Array<RatingMessage>>
     },
     showNewGroupView: Bool,
     tags: RemoteData<Array<TagMessage>>,
@@ -29,6 +30,5 @@ typedef TeacherState = {
     resultsRefreshing: Bool,
     newAssignment: {
         possibleTasks: RemoteData<ArrayChunk<TaskMessage>>
-    },
-    allRating: RemoteData<Array<RatingMessage>>
+    }
 }

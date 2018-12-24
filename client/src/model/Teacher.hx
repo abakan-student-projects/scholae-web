@@ -36,8 +36,7 @@ class Teacher
         resultsRefreshing: false,
         newAssignment: {
             possibleTasks: RemoteDataHelper.createEmpty()
-        },
-        allRating: RemoteDataHelper.createEmpty()
+        }
     };
 
     public var store: StoreMethods<ApplicationState>;
@@ -87,6 +86,14 @@ class Teacher
                         learners: { data: learners, loaded: true, loading: false }
                     })
                 });
+
+            case LoadRatingByGroup(rating):
+                copy(state, {
+                    currentGroup: copy(state.currentGroup, {
+                        rating: { data: rating, loaded: true, loading: false }
+                    })
+                });
+
             case LoadAllTags: copy(state, { tags: RemoteDataHelper.createLoading() });
             case LoadAllTagsFinished(tags):
                 copy(state, {
@@ -209,9 +216,6 @@ class Teacher
                         loaded: true
                     }
                 });
-
-            case LoadAllRating(groupId): copy(state, { allRating: RemoteDataHelper.createLoading() });
-            case LoadAllRatingFinished(allRating): copy(state, { allRating: RemoteDataHelper.createLoaded(allRating) });
         }
     }
 
@@ -239,6 +243,13 @@ class Teacher
                     .then(function(assignments) { store.dispatch(LoadAssignmentsByGroupFinished(assignments)); });
                 TeacherServiceClient.instance.getTrainingsByGroup(group.id)
                     .then(function(trainings) { store.dispatch(LoadTrainingsFinished(trainings)); });
+                TeacherServiceClient.instance.getAllRating(group.id)
+                    .then(function(rating) {
+                        ArraySort.sort(rating, function(x: RatingMessage, y:RatingMessage)
+                        { return
+                            if (x.learner.firstName > y.learner.firstName ||
+                            (x.learner.lastName > y.learner.lastName && x.learner.firstName == y.learner.firstName)) 1 else -1; });
+                        store.dispatch(LoadRatingByGroup(rating)); });
                 next();
 
             case LoadAllTags:
@@ -310,16 +321,6 @@ class Teacher
 
             case DeleteCourseFinished(groupId):
                 UIkit.notification({ message: "Курс удален", timeout: 3000 });
-                next();
-
-            case LoadAllRating(groupId):
-                TeacherServiceClient.instance.getAllRating(groupId)
-                    .then(function(allRating) {
-                    ArraySort.sort(allRating, function(x: RatingMessage, y:RatingMessage)
-                    { return
-                        if (x.learner.firstName > y.learner.firstName ||
-                            (x.learner.lastName > y.learner.lastName && x.learner.firstName == y.learner.firstName)) 1 else -1; });
-                    store.dispatch(LoadAllRatingFinished(allRating)); });
                 next();
 
             default: next();

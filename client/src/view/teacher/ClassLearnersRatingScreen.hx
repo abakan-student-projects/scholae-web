@@ -27,7 +27,6 @@ class ClassLearnersRatingScreen
     }
 
     function mapState(state: ApplicationState, props: RouteComponentProps): ClassLearnersRatingProps {
-        RemoteDataHelper.ensureRemoteDataLoaded(state.teacher.allRating, TeacherAction.LoadAllRating(props.params.id));
         TeacherViewsHelper.ensureGroupLoaded(props.params.id, state);
 
         return {
@@ -36,7 +35,7 @@ class ClassLearnersRatingScreen
                         state.teacher.currentGroup.learners.data
                     else [],
 
-            rating: if (null != state.teacher.allRating) state.teacher.allRating.data else null
+            rating: if (null != state.teacher.currentGroup) state.teacher.currentGroup.rating.data else null
         };
     }
 
