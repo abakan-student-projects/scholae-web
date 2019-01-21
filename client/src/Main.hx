@@ -1,5 +1,6 @@
 package;
 
+import view.teacher.GraphicsRatingScreen;
 import view.teacher.ClassLearnersRatingScreen;
 import view.teacher.UserRatingScreen;
 import view.learner.LearnerRatingScreen;
@@ -77,6 +78,7 @@ class Main {
 					    <Route path="teacher/group/:id/new-assignment" component=$TeacherNewAssignmentScreen onEnter=$requireAuth />
 					    <Route path="teacher/group/:groupId/training/:trainingId" component=$TeacherTrainingScreen onEnter=$requireAuth />
 					    <Route path="teacher" component=$TeacherDashboardScreen onEnter=$requireAuth />
+                        <Route path="teacher/group/:id/graphics" component=$GraphicsRatingScreen />
 					    <Route path="forget-password" component=$ForgetLoginScreen />
 					    <Route path="learner" onEnter=$requireAuth >
 					        <IndexRoute component=$LearnerDashboardScreen />

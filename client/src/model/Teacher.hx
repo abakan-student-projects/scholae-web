@@ -216,6 +216,18 @@ class Teacher
                         loaded: true
                     }
                 });
+            case LoadGraphic(userIds,startDate,endDate):
+                copy(state, {
+                    currentGroup: copy(state.currentGroup, {
+                        rating:  RemoteDataHelper.createLoading()
+                    })
+                });
+            case LoadGraphicFinished(rating):
+                copy(state, {
+                    currentGroup: copy(state.currentGroup, {
+                        rating: RemoteDataHelper.createLoaded(rating)
+                    })
+                });
         }
     }
 
@@ -321,6 +333,11 @@ class Teacher
 
             case DeleteCourseFinished(groupId):
                 UIkit.notification({ message: "Курс удален", timeout: 3000 });
+                next();
+
+            case LoadGraphic(userIds,startDate,endDate):
+                TeacherServiceClient.instance.getRatingLine(userIds,startDate, endDate)
+                    .then(function(rating) { store.dispatch(LoadGraphicFinished(rating)); });
                 next();
 
             default: next();

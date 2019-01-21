@@ -1,5 +1,9 @@
 package model;
 
+import Std;
+import messages.AttemptMessage;
+import haxe.ds.ArraySort;
+import DateTools;
 import Array;
 import messages.TagMessage;
 import messages.RatingMessage;
@@ -73,14 +77,74 @@ class User extends sys.db.Object {
                 sessionId: sessionId
             };
     }
-    public function toRatingMessage(userId: Float): RatingMessage {
+    public function toRatingMessage(userId: Float, ?startDate: Date, ?endDate: Date): RatingMessage {
         var learner = manager.select($id == userId);
         return
         {
-            rating: calculateLearnerRating(userId),
-            ratingCategory: calculateRatingCategory(userId),
-            learner: learner.toLearnerMessage()
+            rating: if (startDate != null && endDate != null) 0 else calculateLearnerRating(userId),
+            ratingCategory: if (startDate != null && endDate != null) [] else calculateRatingCategory(userId),
+            learner: learner.toLearnerMessage(),
+            ratingDate: if (startDate != null && endDate != null) calculateLearnerRatingForLine(userId, startDate, endDate) else []
         };
+    }
+
+    public static function calculateLearnerRatingForLine(userId: Float, startDate: Date, endDate: Date) : Array<RatingDate> {
+        var rating:Float = 0;
+        var ratingDate: Array<RatingDate> = [];
+        var prevDay: Date = Date.fromString("01.01.2000");
+        var ratingDate2: Array<RatingDate> = [];
+        var prevData:RatingDate = null;
+        var i = 1;
+        var j = 1;
+        var results = Attempt.manager.search(($userId == userId) && ($solved == true) && ($datetime >= startDate && $datetime <= endDate));
+        var res = [for (r in results) r];
+        ArraySort.sort(res, function(x: Attempt, y:Attempt) { return if (DateTools.format(x.datetime,"%d.%m.%Y") > DateTools.format(y.datetime,"%d.%m.%Y")) 1 else -1; });
+
+        for (item in res) {
+            if (item.task != null){
+                var prevDayString = prevDay.toString().split(" ");
+                var dateTime = Std.string(item.datetime).split(" ");
+                if (prevDayString[0] == dateTime[0]){
+                    rating += item.task.level;
+                } else {
+                    rating = 0;
+                }
+                rating += item.task.level;
+                rating = Math.log(rating) * 1000;
+                rating = Math.round(rating);
+                ratingDate.push({ id: item.user.id, rating: rating, date: item.datetime });
+                prevDay = item.datetime;
+            }
+        }
+        var length = ratingDate.length;
+        for (r in ratingDate) {
+            if (length == 1) {
+                ratingDate2.push(r);
+            } else {
+                if (i == 1) {
+                    prevData = r;
+                    i = 2;
+                } else {
+                    if (DateTools.format(prevData.date,"%d.%m.%Y") != DateTools.format(r.date,"%d.%m.%Y")) {
+                        if (j == length) {
+                            ratingDate2.push(prevData);
+                            ratingDate2.push(r);
+                        } else {
+                            ratingDate2.push(prevData);
+                            prevData = r;
+                        }
+                    } else {
+                        if (j == length) {
+                            ratingDate2.push(r);
+                        } else {
+                            prevData = r;
+                        }
+                    }
+                }
+                j++;
+            }
+        }
+        return ratingDate2;
     }
 
    public static function calculateLearnerRating(userId: Float): Float {

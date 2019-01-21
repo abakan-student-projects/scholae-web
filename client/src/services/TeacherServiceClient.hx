@@ -1,5 +1,6 @@
 package services;
 
+import Array;
 import messages.RatingMessage;
 import model.TeacherState;
 import messages.ArrayChunk;
@@ -139,6 +140,14 @@ class TeacherServiceClient extends BaseServiceClient {
     public function deleteCourse(groupId: Float): Promise<Float> {
         return request(function(success, fail) {
             context.TeacherService.deleteCourse.call([groupId], function(e) {
+                processResponse(e, success, fail);
+            });
+        });
+    }
+
+    public function getRatingLine(userIds: Array<Float>, startDate: Date, endDate: Date): Promise<Array<RatingMessage>> {
+        return request(function(success,fail) {
+            context.TeacherService.getRatingLine.call([userIds,startDate,endDate], function(e) {
                 processResponse(e, success, fail);
             });
         });
