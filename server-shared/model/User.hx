@@ -98,16 +98,14 @@ class User extends sys.db.Object {
         var j = 1;
         var results = Attempt.manager.search(($userId == userId) && ($solved == true) && ($datetime >= startDate && $datetime <= endDate));
         var res = [for (r in results) r];
-        ArraySort.sort(res, function(x: Attempt, y:Attempt) { return if (DateTools.format(x.datetime,"%d.%m.%Y") > DateTools.format(y.datetime,"%d.%m.%Y")) 1 else -1; });
-
+        ArraySort.sort(res, function(x: Attempt, y:Attempt) { return if
+        ((x.datetime.getDate() > y.datetime.getDate()) && (x.datetime.getMonth() == y.datetime.getMonth()) || x.datetime.getMonth() > y.datetime.getMonth()) 1 else -1; });
         for (item in res) {
             if (item.task != null){
                 var prevDayString = prevDay.toString().split(" ");
                 var dateTime = Std.string(item.datetime).split(" ");
                 if (prevDayString[0] == dateTime[0]){
                     rating += item.task.level;
-                } else {
-                    rating = 0;
                 }
                 rating += item.task.level;
                 rating = Math.log(rating) * 1000;
@@ -116,6 +114,7 @@ class User extends sys.db.Object {
                 prevDay = item.datetime;
             }
         }
+
         var length = ratingDate.length;
         for (r in ratingDate) {
             if (length == 1) {

@@ -65,7 +65,6 @@ class GraphicsRatingView
                 }
             }
         }
-        ArraySort.sort(sortedDates, function(x: RatingDate, y: RatingDate){return if (DateTools.format(x.date,"%d.%m.%Y") > DateTools.format(y.date,"%d.%m.%Y")) 1 else -1;});
         var length = sortedDates.length;
         var sortDatesFinished: Array<RatingDate> = [];
         for (s in sortedDates) {
