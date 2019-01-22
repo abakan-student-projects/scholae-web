@@ -1,5 +1,6 @@
 package model;
 
+import messages.SessionMessage;
 import utils.UIkit;
 import model.Role.Roles;
 import services.TeacherServiceClient;
@@ -32,6 +33,7 @@ class Scholae
             email: null,
             sessionId: null,
             returnPath: null,
+            codeforcesHandle: null,
             firstName: null,
             lastName: null,
             roles: new Roles()
@@ -69,6 +71,7 @@ class Scholae
                         loggedIn: true,
                         email: sessionMessage.email,
                         sessionId: sessionMessage.sessionId,
+                        codeforcesHandle: sessionMessage.codeforcesHandle,
                         firstName: sessionMessage.firstName,
                         lastName: sessionMessage.lastName,
                         roles: sessionMessage.roles
@@ -89,6 +92,7 @@ class Scholae
                         loggedIn: true,
                         email: sessionMessage.email,
                         sessionId: sessionMessage.sessionId,
+                        codeforcesHandle: sessionMessage.codeforcesHandle,
                         firstName: sessionMessage.firstName,
                         lastName: sessionMessage.lastName,
                         roles: sessionMessage.roles
@@ -122,12 +126,24 @@ class Scholae
             case EmailActivationCodeFinished(check): copy(state, {
                 activetedEmail: check
             });
+            case UpdateProfile(codeforcesHandle, firstName, lastName): state;
+            case ProfileUpdated(sessionMessage): copy(state,
+            {
+                auth: copy(state.auth, {
+                    loggedIn: true,
+                    email: sessionMessage.email,
+                    sessionId: sessionMessage.sessionId,
+                    codeforcesHandle: sessionMessage.codeforcesHandle,
+                    firstName: sessionMessage.firstName,
+                    lastName: sessionMessage.lastName,
+                    roles: sessionMessage.roles
+                })
+            });
         }
     }
 
     public function middleware(action: ScholaeAction, next:Void -> Dynamic) {
         return switch(action) {
-
             case Authenticate(email, password):
                 Session.login(email, password)
                     .then(
@@ -139,6 +155,7 @@ class Scholae
                         }
                     );
                 next();
+
             case AuthenticationFailed(failMessage):
                 UIkit.notification({ message: Std.string(failMessage), timeout: 3000 });
                 next();
@@ -180,6 +197,17 @@ class Scholae
             case RegistrationFailed(message):
                 UIkit.notification({ message: "Ошибка при регистрации: " + message + ".", timeout: 5000, status: "warning" });
                 next();
+
+            case UpdateProfile(codeforcesHandle, firstName, lastName):
+                AuthServiceClient.instance.updateProfile(codeforcesHandle, firstName, lastName).then(
+                    function(sessionMessage) {
+                        UIkit.notification({ message: "Профиль обновляется", timeout: 5000, status: "success" });
+                        store.dispatch(ProfileUpdated(sessionMessage));
+                    },
+                    function(e) {
+                        UIkit.notification({ message: "Ошибка обновления профиля: " + e + ".", timeout: 5000, status: "warning" });
+                    });
+                next;
 
             default: next();
         }

@@ -7,6 +7,7 @@ typedef AuthState = {
     email: String,
     sessionId: String,
     returnPath: String,
+    codeforcesHandle: String,
     firstName: String,
     lastName: String,
     roles: Roles

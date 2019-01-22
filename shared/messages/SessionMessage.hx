@@ -7,6 +7,7 @@ typedef SessionMessage = {
     email: String,
     firstName: String,
     lastName: String,
+    codeforcesHandle: String,
     roles: Roles,
     sessionId: String
 }

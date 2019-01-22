@@ -66,4 +66,11 @@ class AuthServiceClient extends BaseServiceClient {
         });
     }
 
+    public function updateProfile(codeforcesHandle: String, firstName: String, lastName: String) : Promise<SessionMessage> {
+        return request(function(success, fail) {
+           context.AuthService.updateProfile.call([codeforcesHandle, firstName, lastName], function(e) {
+               processResponse(e, success, fail);
+           });
+        });
+    }
 }

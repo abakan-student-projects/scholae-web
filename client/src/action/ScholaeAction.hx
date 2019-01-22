@@ -22,6 +22,8 @@ enum ScholaeAction {
     PreventRegistrationRedirection;
 
     RenewPassword(email: String);
+    UpdateProfile(codeforcesHandle: String,  firstName: String, lastName: String);
+    ProfileUpdated(sessionMessage: SessionMessage);
 
     EmailActivationCode(code: String);
     EmailActivationCodeFinished(check: Bool);

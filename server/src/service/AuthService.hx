@@ -137,4 +137,22 @@ Scholae';
 
         return false;
     }
+
+    public function updateProfile(codeforces: String, firstName: String, lastName: String): ResponseMessage {
+        var user: User = User.manager.select($id == Session.current.user.id, true);
+        if (user != null) {
+            if (codeforces != user.codeforcesHandle && codeforces != "") {
+                user.codeforcesHandle = codeforces;
+            }
+            if (firstName != user.firstName && firstName != "") {
+                user.firstName = firstName;
+            }
+            if (lastName != user.lastName && lastName != "") {
+                user.lastName = lastName;
+            }
+            user.update();
+            return ServiceHelper.successResponse(user.toSessionMessage(Session.current.id));
+        }
+        return ServiceHelper.failResponse("Profile update failed");
+    }
 }
