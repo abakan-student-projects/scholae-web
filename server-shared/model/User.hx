@@ -92,7 +92,7 @@ class User extends sys.db.Object {
         var rating:Float = 0;
         var ratingDate: Array<RatingDate> = [];
         var prevDay: Date = Date.fromString("01.01.2000");
-        var ratingDate2: Array<RatingDate> = [];
+        var finishedResult: Array<RatingDate> = [];
         var prevData:RatingDate = null;
         var i = 1;
         var j = 1;
@@ -119,7 +119,7 @@ class User extends sys.db.Object {
         var length = ratingDate.length;
         for (r in ratingDate) {
             if (length == 1) {
-                ratingDate2.push(r);
+                finishedResult.push(r);
             } else {
                 if (i == 1) {
                     prevData = r;
@@ -127,15 +127,15 @@ class User extends sys.db.Object {
                 } else {
                     if (DateTools.format(prevData.date,"%d.%m.%Y") != DateTools.format(r.date,"%d.%m.%Y")) {
                         if (j == length) {
-                            ratingDate2.push(prevData);
-                            ratingDate2.push(r);
+                            finishedResult.push(prevData);
+                            finishedResult.push(r);
                         } else {
-                            ratingDate2.push(prevData);
+                            finishedResult.push(prevData);
                             prevData = r;
                         }
                     } else {
                         if (j == length) {
-                            ratingDate2.push(r);
+                            finishedResult.push(r);
                         } else {
                             prevData = r;
                         }
@@ -144,7 +144,7 @@ class User extends sys.db.Object {
                 j++;
             }
         }
-        return ratingDate2;
+        return finishedResult;
     }
 
    public static function calculateLearnerRating(userId: Float): Float {

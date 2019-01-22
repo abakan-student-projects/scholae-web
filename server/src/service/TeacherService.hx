@@ -75,7 +75,7 @@ class TeacherService {
         });
     }
 
-    public function getRatingLine(userIds: Array<Float>, startDate: Date, endDate: Date) : ResponseMessage {
+    public function getRatingsForUsers(userIds: Array<Float>, startDate: Date, endDate: Date) : ResponseMessage {
         return ServiceHelper.authorize(Role.Teacher, function() {
             var user = User.manager.search($id in userIds);
             return ServiceHelper.successResponse(

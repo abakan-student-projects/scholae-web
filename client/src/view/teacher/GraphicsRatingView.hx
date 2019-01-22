@@ -164,7 +164,7 @@ class GraphicsRatingView
     function renderChart(){
         var startDate: Date = Date.fromTime(state.startDate.utc());
         var finishDate: Date = Date.fromTime(state.finishDate.utc());
-        dispatch(TeacherAction.LoadGraphic(Learners,
+        dispatch(TeacherAction.LoadRatingsForCourse(Learners,
         new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), 0 , 0, 0),
         new Date(finishDate.getFullYear(), finishDate.getMonth(), finishDate.getDate(), 23 , 59, 59)));
     }

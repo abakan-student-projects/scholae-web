@@ -216,13 +216,13 @@ class Teacher
                         loaded: true
                     }
                 });
-            case LoadGraphic(userIds,startDate,endDate):
+            case LoadRatingsForCourse(userIds,startDate,endDate):
                 copy(state, {
                     currentGroup: copy(state.currentGroup, {
                         rating:  RemoteDataHelper.createLoading()
                     })
                 });
-            case LoadGraphicFinished(rating):
+            case LoadRatingsForCourseFinished(rating):
                 copy(state, {
                     currentGroup: copy(state.currentGroup, {
                         rating: RemoteDataHelper.createLoaded(rating)
@@ -335,9 +335,9 @@ class Teacher
                 UIkit.notification({ message: "Курс удален", timeout: 3000 });
                 next();
 
-            case LoadGraphic(userIds,startDate,endDate):
-                TeacherServiceClient.instance.getRatingLine(userIds,startDate, endDate)
-                    .then(function(rating) { store.dispatch(LoadGraphicFinished(rating)); });
+            case LoadRatingsForCourse(userIds,startDate,endDate):
+                TeacherServiceClient.instance.getRatingsForUsers(userIds,startDate, endDate)
+                    .then(function(rating) { store.dispatch(LoadRatingsForCourseFinished(rating)); });
                 next();
 
             default: next();
