@@ -3,7 +3,6 @@ package view;
 import js.html.Console;
 import utils.RemoteDataHelper;
 import view.UserProfileView.UserProfileViewProps;
-import view.UserProfileView.UserProfileViewProps;
 import action.ScholaeAction;
 import react.ReactComponent.ReactComponentOfPropsAndState;
 import react.ReactComponent.ReactElement;
@@ -25,6 +24,9 @@ class UserProfileScreen
     }
 
     function mapState(state: ApplicationState, props: RouteComponentProps): UserProfileViewProps {
+        if (state.scholae.auth.loggedIn) {
+            Main.store.dispatch(ScholaeAction.GetProfile);
+        }
         return
             {
                 codeforcesId: state.scholae.auth.codeforcesHandle,
@@ -36,6 +38,6 @@ class UserProfileScreen
                 cancel: function() {
                     props.router.goBack();
                 }
-            };
+            }
     }
 }

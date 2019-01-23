@@ -1,6 +1,7 @@
 package model;
 
 import messages.SessionMessage;
+import messages.ProfileMessage;
 import utils.UIkit;
 import model.Role.Roles;
 import services.TeacherServiceClient;
@@ -71,7 +72,6 @@ class Scholae
                         loggedIn: true,
                         email: sessionMessage.email,
                         sessionId: sessionMessage.sessionId,
-                        codeforcesHandle: sessionMessage.codeforcesHandle,
                         firstName: sessionMessage.firstName,
                         lastName: sessionMessage.lastName,
                         roles: sessionMessage.roles
@@ -92,7 +92,6 @@ class Scholae
                         loggedIn: true,
                         email: sessionMessage.email,
                         sessionId: sessionMessage.sessionId,
-                        codeforcesHandle: sessionMessage.codeforcesHandle,
                         firstName: sessionMessage.firstName,
                         lastName: sessionMessage.lastName,
                         roles: sessionMessage.roles
@@ -126,17 +125,16 @@ class Scholae
             case EmailActivationCodeFinished(check): copy(state, {
                 activetedEmail: check
             });
+            case GetProfile: state;
             case UpdateProfile(codeforcesHandle, firstName, lastName): state;
-            case ProfileUpdated(sessionMessage): copy(state,
+            case UpdateProfileFinished(profileMessage): copy(state,
             {
                 auth: copy(state.auth, {
                     loggedIn: true,
-                    email: sessionMessage.email,
-                    sessionId: sessionMessage.sessionId,
-                    codeforcesHandle: sessionMessage.codeforcesHandle,
-                    firstName: sessionMessage.firstName,
-                    lastName: sessionMessage.lastName,
-                    roles: sessionMessage.roles
+                    email: profileMessage.email,
+                    codeforcesHandle: profileMessage.codeforcesHandle,
+                    firstName: profileMessage.firstName,
+                    lastName: profileMessage.lastName
                 })
             });
         }
@@ -198,11 +196,21 @@ class Scholae
                 UIkit.notification({ message: "Ошибка при регистрации: " + message + ".", timeout: 5000, status: "warning" });
                 next();
 
+            case GetProfile:
+                AuthServiceClient.instance.getProfile().then(
+                    function(profileMessage) {
+                        store.dispatch(UpdateProfileFinished(profileMessage));
+                    },
+                    function(e) {
+                        UIkit.notification({ message: "Ошибка загрузки профиля: " + e + ".", timeout: 5000, status: "warning" });
+                    });
+                next;
+
             case UpdateProfile(codeforcesHandle, firstName, lastName):
                 AuthServiceClient.instance.updateProfile(codeforcesHandle, firstName, lastName).then(
-                    function(sessionMessage) {
-                        UIkit.notification({ message: "Профиль обновляется", timeout: 5000, status: "success" });
-                        store.dispatch(ProfileUpdated(sessionMessage));
+                    function(profileMessage) {
+                        UIkit.notification({ message: "Профиль обновлён", timeout: 5000, status: "success" });
+                        store.dispatch(UpdateProfileFinished(profileMessage));
                     },
                     function(e) {
                         UIkit.notification({ message: "Ошибка обновления профиля: " + e + ".", timeout: 5000, status: "warning" });

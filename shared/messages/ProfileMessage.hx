@@ -1,12 +1,9 @@
 package messages;
 
-import model.Role.Roles;
-
-typedef SessionMessage = {
+typedef ProfileMessage = {
     userId: Float,
     email: String,
     firstName: String,
     lastName: String,
-    roles: Roles,
-    sessionId: String
+    codeforcesHandle: String
 }

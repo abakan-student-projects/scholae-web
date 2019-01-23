@@ -138,6 +138,14 @@ Scholae';
         return false;
     }
 
+    public function getProfile(): ResponseMessage {
+        var user: User = User.manager.select($id == Session.current.user.id, true);
+        if (user != null) {
+            return ServiceHelper.successResponse(user.toProfileMessage());
+        }
+        return ServiceHelper.failResponse("Getting profile data failed");
+    }
+
     public function updateProfile(codeforces: String, firstName: String, lastName: String): ResponseMessage {
         var user: User = User.manager.select($id == Session.current.user.id, true);
         if (user != null) {
@@ -151,7 +159,7 @@ Scholae';
                 user.lastName = lastName;
             }
             user.update();
-            return ServiceHelper.successResponse(user.toSessionMessage(Session.current.id));
+            return ServiceHelper.successResponse(user.toProfileMessage());
         }
         return ServiceHelper.failResponse("Profile update failed");
     }

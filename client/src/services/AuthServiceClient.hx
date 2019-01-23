@@ -1,5 +1,6 @@
 package services;
 
+import messages.ProfileMessage;
 import messages.UserMessage;
 import messages.SessionMessage;
 import messages.ResponseMessage;
@@ -66,7 +67,15 @@ class AuthServiceClient extends BaseServiceClient {
         });
     }
 
-    public function updateProfile(codeforcesHandle: String, firstName: String, lastName: String) : Promise<SessionMessage> {
+    public function getProfile() : Promise<ProfileMessage> {
+        return request(function(success, fail) {
+            context.AuthService.getProfile.call([], function(e) {
+                processResponse(e, success, fail);
+            });
+        });
+    }
+
+    public function updateProfile(codeforcesHandle: String, firstName: String, lastName: String) : Promise<ProfileMessage> {
         return request(function(success, fail) {
            context.AuthService.updateProfile.call([codeforcesHandle, firstName, lastName], function(e) {
                processResponse(e, success, fail);
