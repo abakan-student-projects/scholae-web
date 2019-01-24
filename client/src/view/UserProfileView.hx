@@ -24,10 +24,16 @@ class UserProfileView extends ReactComponentOfPropsAndRefs<UserProfileViewProps,
         super();
     }
 
+    override function componentDidMount() {
+        if(props.profile != null) {
+            updateRefsValue(props.profile);
+        }
+    }
+
     override function componentWillReceiveProps(nextProps) {
-        refs.codeforcesId.value = nextProps.profile.codeforcesHandle;
-        refs.firstName.value = nextProps.profile.firstName;
-        refs.lastName.value = nextProps.profile.lastName;
+        if(nextProps.profile != null) {
+            updateRefsValue(nextProps.profile);
+        }
     }
 
     override function render(): ReactElement {
@@ -66,6 +72,12 @@ class UserProfileView extends ReactComponentOfPropsAndRefs<UserProfileViewProps,
                     </fieldset>
                 </div>
             ');
+    }
+
+    private function updateRefsValue(profile: ProfileMessage) {
+        refs.codeforcesId.value = profile.codeforcesHandle;
+        refs.firstName.value = profile.firstName;
+        refs.lastName.value = profile.lastName;
     }
 
     function onUpdateClick(e) {
