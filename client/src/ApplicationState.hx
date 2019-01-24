@@ -1,5 +1,6 @@
 package ;
 
+import model.Profile.ProfileState;
 import model.AdminState;
 import model.EditorState;
 import model.LearnerState;
@@ -11,5 +12,6 @@ typedef ApplicationState = {
     teacher: TeacherState,
     learner: LearnerState,
     editor: EditorState,
-    admin: AdminState
+    admin: AdminState,
+    profile: ProfileState
 }

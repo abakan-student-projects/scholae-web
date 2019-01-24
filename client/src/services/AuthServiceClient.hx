@@ -67,6 +67,14 @@ class AuthServiceClient extends BaseServiceClient {
         });
     }
 
+    public function getAuthenticationData() : Promise<SessionMessage> {
+        return request(function(success, fail) {
+            context.AuthService.getAuthenticationData.call([], function(e) {
+                processResponse(e, success, fail);
+            });
+        });
+    }
+
     public function getProfile() : Promise<ProfileMessage> {
         return request(function(success, fail) {
             context.AuthService.getProfile.call([], function(e) {

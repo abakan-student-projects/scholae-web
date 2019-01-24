@@ -1,14 +1,14 @@
 package view;
 
+import messages.ProfileMessage;
 import js.Browser;
 import js.html.InputElement;
 import react.ReactComponent;
+import react.ReactComponent.ReactElement;
 import react.ReactMacro.jsx;
 
 typedef UserProfileViewProps = {
-    codeforcesId: String,
-    firstName: String,
-    lastName: String,
+    profile: ProfileMessage,
     update: String -> String -> String  -> Void,
     cancel: Void -> Void
 }
@@ -24,6 +24,12 @@ class UserProfileView extends ReactComponentOfPropsAndRefs<UserProfileViewProps,
         super();
     }
 
+    override function componentWillReceiveProps(nextProps) {
+        refs.codeforcesId.value = nextProps.profile.codeforcesHandle;
+        refs.firstName.value = nextProps.profile.firstName;
+        refs.lastName.value = nextProps.profile.lastName;
+    }
+
     override function render(): ReactElement {
         return jsx('
                 <div>
@@ -31,13 +37,25 @@ class UserProfileView extends ReactComponentOfPropsAndRefs<UserProfileViewProps,
                         <legend className="uk-legend">Редактирование профиля</legend>
 
                         <div className="uk-margin">
-                            <input className="uk-form-width-large uk-input" type="text" placeholder="Codeforces" defaultValue="${props.codeforcesId}" ref="codeforcesId"/>
+                            <input
+                                className="uk-form-width-large uk-input"
+                                type="text"
+                                placeholder= "Codeforces"
+                                ref="codeforcesId"/>
                         </div>
                         <div className="uk-margin">
-                            <input className="uk-form-width-large uk-input" type="text" placeholder="Имя" defaultValue="${props.firstName}" ref="firstName"/>
+                            <input
+                                className="uk-form-width-large uk-input"
+                                type="text"
+                                placeholder="Имя"
+                                ref="firstName"/>
                         </div>
                         <div className="uk-margin">
-                            <input className="uk-form-width-large uk-input" type="text" placeholder="Фамилия" defaultValue="${props.lastName}"  ref="lastName"/>
+                            <input
+                                className="uk-form-width-large uk-input"
+                                type="text"
+                                placeholder="Фамилия"
+                                ref="lastName"/>
                         </div>
                         <div className="uk-margin ">
                             <button className="uk-form-width-large uk-button uk-button-primary" onClick=$onUpdateClick>Обновить</button>

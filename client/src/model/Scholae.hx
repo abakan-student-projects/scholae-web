@@ -125,16 +125,15 @@ class Scholae
             case EmailActivationCodeFinished(check): copy(state, {
                 activetedEmail: check
             });
-            case GetProfile: state;
-            case UpdateProfile(codeforcesHandle, firstName, lastName): state;
-            case UpdateProfileFinished(profileMessage): copy(state,
+            case UpdateAutenticationData: state;
+            case UpdateAutenticationDataFinished(sessionMessage): copy(state,
             {
                 auth: copy(state.auth, {
                     loggedIn: true,
-                    email: profileMessage.email,
-                    codeforcesHandle: profileMessage.codeforcesHandle,
-                    firstName: profileMessage.firstName,
-                    lastName: profileMessage.lastName
+                    email: sessionMessage.email,
+                    sessionId: sessionMessage.sessionId,
+                    firstName: sessionMessage.firstName,
+                    lastName: sessionMessage.lastName,
                 })
             });
         }
@@ -195,26 +194,17 @@ class Scholae
             case RegistrationFailed(message):
                 UIkit.notification({ message: "Ошибка при регистрации: " + message + ".", timeout: 5000, status: "warning" });
                 next();
-
-            case GetProfile:
-                AuthServiceClient.instance.getProfile().then(
-                    function(profileMessage) {
-                        store.dispatch(UpdateProfileFinished(profileMessage));
-                    },
-                    function(e) {
-                        UIkit.notification({ message: "Ошибка загрузки профиля: " + e + ".", timeout: 5000, status: "warning" });
+            
+            case UpdateAutenticationData:
+                AuthServiceClient.instance.getAuthenticationData().then(
+                function(profileMessage) {
+                    store.dispatch(UpdateAutenticationDataFinished(profileMessage));
+                },
+                function(e) {
+                    UIkit.notification({
+                        message: "Ошибка загрузки данных: " + e + ".", timeout: 5000, status: "warning"
                     });
-                next;
-
-            case UpdateProfile(codeforcesHandle, firstName, lastName):
-                AuthServiceClient.instance.updateProfile(codeforcesHandle, firstName, lastName).then(
-                    function(profileMessage) {
-                        UIkit.notification({ message: "Профиль обновлён", timeout: 5000, status: "success" });
-                        store.dispatch(UpdateProfileFinished(profileMessage));
-                    },
-                    function(e) {
-                        UIkit.notification({ message: "Ошибка обновления профиля: " + e + ".", timeout: 5000, status: "warning" });
-                    });
+                });
                 next;
 
             default: next();

@@ -24,9 +24,8 @@ enum ScholaeAction {
 
     RenewPassword(email: String);
 
-    GetProfile;
-    UpdateProfile(codeforcesHandle: String,  firstName: String, lastName: String);
-    UpdateProfileFinished(profileMessage: ProfileMessage);
+    UpdateAutenticationData;
+    UpdateAutenticationDataFinished(sessionMessage: SessionMessage);
 
     EmailActivationCode(code: String);
     EmailActivationCodeFinished(check: Bool);

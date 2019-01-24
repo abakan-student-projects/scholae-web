@@ -138,6 +138,14 @@ Scholae';
         return false;
     }
 
+    public function getAuthenticationData(): ResponseMessage {
+        var user: User = User.manager.select($id == Session.current.user.id, true);
+        if (user != null) {
+            return ServiceHelper.successResponse(user.toSessionMessage(Session.current.id));
+        }
+        return ServiceHelper.failResponse("Getting authentication data failed");
+    }
+
     public function getProfile(): ResponseMessage {
         var user: User = User.manager.select($id == Session.current.user.id, true);
         if (user != null) {
