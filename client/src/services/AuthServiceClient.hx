@@ -1,5 +1,6 @@
 package services;
 
+import messages.ProfileMessage;
 import messages.UserMessage;
 import messages.SessionMessage;
 import messages.ResponseMessage;
@@ -66,4 +67,19 @@ class AuthServiceClient extends BaseServiceClient {
         });
     }
 
+    public function getProfile() : Promise<ProfileMessage> {
+        return request(function(success, fail) {
+            context.AuthService.getProfile.call([], function(e) {
+                processResponse(e, success, fail);
+            });
+        });
+    }
+
+    public function updateProfile(profileMessage: ProfileMessage) : Promise<ProfileMessage> {
+        return request(function(success, fail) {
+           context.AuthService.updateProfile.call([profileMessage], function(e) {
+               processResponse(e, success, fail);
+           });
+        });
+    }
 }

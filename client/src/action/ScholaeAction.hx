@@ -1,5 +1,6 @@
 package action;
 
+import messages.ProfileMessage;
 import messages.SessionMessage;
 import messages.LearnerMessage;
 import messages.GroupMessage;
@@ -22,6 +23,10 @@ enum ScholaeAction {
     PreventRegistrationRedirection;
 
     RenewPassword(email: String);
+
+    GetProfile;
+    UpdateProfile(profileMessage: ProfileMessage);
+    UpdateProfileFinished(profileMessage: ProfileMessage);
 
     EmailActivationCode(code: String);
     EmailActivationCodeFinished(check: Bool);

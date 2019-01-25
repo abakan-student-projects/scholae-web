@@ -1,5 +1,9 @@
 package model;
 
+import utils.RemoteData;
+import utils.RemoteDataHelper;
+import messages.SessionMessage;
+import messages.ProfileMessage;
 import utils.UIkit;
 import model.Role.Roles;
 import services.TeacherServiceClient;
@@ -19,7 +23,8 @@ typedef ScholaeState = {
     auth: AuthState,
     loading: Bool,
     activetedEmail: Bool,
-    registration: RegistrationState
+    registration: RegistrationState,
+    profile: RemoteData<ProfileMessage>
 }
 
 class Scholae
@@ -32,6 +37,7 @@ class Scholae
             email: null,
             sessionId: null,
             returnPath: null,
+            codeforcesHandle: null,
             firstName: null,
             lastName: null,
             roles: new Roles()
@@ -47,7 +53,8 @@ class Scholae
             errorMessage: null
         },
         activetedEmail: false,
-        loading: false
+        loading: false,
+        profile: RemoteDataHelper.createEmpty()
     };
 
     public var store: StoreMethods<ApplicationState>;
@@ -122,12 +129,22 @@ class Scholae
             case EmailActivationCodeFinished(check): copy(state, {
                 activetedEmail: check
             });
+            case GetProfile: copy(state, { profile: RemoteDataHelper.createLoading() });
+            case UpdateProfile(profileMessage): copy(state, {
+                profile: RemoteDataHelper.createLoading()
+            });
+            case UpdateProfileFinished(profileMessage): copy(state, {
+                profile: RemoteDataHelper.createLoaded(profileMessage),
+                auth: copy(state.auth, {
+                    firstName: profileMessage.firstName,
+                    lastName: profileMessage.lastName,
+                })
+            });
         }
     }
 
     public function middleware(action: ScholaeAction, next:Void -> Dynamic) {
         return switch(action) {
-
             case Authenticate(email, password):
                 Session.login(email, password)
                     .then(
@@ -139,6 +156,7 @@ class Scholae
                         }
                     );
                 next();
+
             case AuthenticationFailed(failMessage):
                 UIkit.notification({ message: Std.string(failMessage), timeout: 3000 });
                 next();
@@ -180,6 +198,31 @@ class Scholae
             case RegistrationFailed(message):
                 UIkit.notification({ message: "Ошибка при регистрации: " + message + ".", timeout: 5000, status: "warning" });
                 next();
+
+            case GetProfile:
+                AuthServiceClient.instance.getProfile().then(
+                    function(profileMessage) {
+                        store.dispatch(UpdateProfileFinished(profileMessage));
+                    },
+                    function(e) {
+                        UIkit.notification({
+                            message: "Ошибка загрузки профиля: " + e + ".", timeout: 5000, status: "warning"
+                        });
+                    });
+                next;
+
+            case UpdateProfile(profileMessage):
+                AuthServiceClient.instance.updateProfile(profileMessage).then(
+                    function(profileMessage) {
+                        UIkit.notification({ message: "Профиль обновлён", timeout: 5000, status: "success" });
+                        store.dispatch(UpdateProfileFinished(profileMessage));
+                    },
+                    function(e) {
+                        UIkit.notification({
+                            message: "Ошибка обновления профиля: " + e + ".", timeout: 5000, status: "warning"
+                        });
+                    });
+                next;
 
             default: next();
         }

@@ -1,5 +1,7 @@
 package service;
 
+import sys.db.Manager;
+import messages.ProfileMessage;
 import service.ServiceHelper;
 import service.ServiceHelper;
 import service.ServiceHelper;
@@ -136,5 +138,40 @@ Scholae';
         }
 
         return false;
+    }
+
+    public function getAuthenticationData(): ResponseMessage {
+        var user: User = Authorization.instance.currentUser;
+        if (user != null) {
+            return ServiceHelper.successResponse(user.toSessionMessage(Session.current.id));
+        }
+        return ServiceHelper.failResponse("Getting authentication data failed");
+    }
+
+    public function getProfile(): ResponseMessage {
+        var user: User = Authorization.instance.currentUser;
+        if (user != null) {
+            return ServiceHelper.successResponse(user.toProfileMessage());
+        }
+        return ServiceHelper.failResponse("Getting profile data failed");
+    }
+
+    public function updateProfile(profileMessage: ProfileMessage): ResponseMessage {
+        var user: User = User.manager.select($id == Session.current.user.id, true);
+        if (user != null) {
+            if (profileMessage.codeforcesHandle != user.codeforcesHandle && profileMessage.codeforcesHandle != "") {
+                user.codeforcesHandle = profileMessage.codeforcesHandle;
+            }
+            if (profileMessage.firstName != user.firstName && profileMessage.firstName != "") {
+                user.firstName = profileMessage.firstName;
+            }
+            if (profileMessage.lastName != user.lastName && profileMessage.lastName != "") {
+                user.lastName = profileMessage.lastName;
+            }
+            user.update();
+
+            return ServiceHelper.successResponse(user.toProfileMessage());
+        }
+        return ServiceHelper.failResponse("Profile update failed");
     }
 }

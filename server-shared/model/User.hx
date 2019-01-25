@@ -1,5 +1,6 @@
 package model;
 
+import messages.ProfileMessage;
 import Array;
 import messages.TagMessage;
 import messages.RatingMessage;
@@ -73,6 +74,18 @@ class User extends sys.db.Object {
                 sessionId: sessionId
             };
     }
+
+    public function toProfileMessage(): ProfileMessage {
+        return
+            {
+                userId: id,
+                email: email,
+                firstName: firstName,
+                lastName: lastName,
+                codeforcesHandle: codeforcesHandle
+            };
+    }
+
     public function toRatingMessage(userId: Float): RatingMessage {
         var learner = manager.select($id == userId);
         return
