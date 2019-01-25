@@ -9,7 +9,7 @@ import react.ReactMacro.jsx;
 
 typedef UserProfileViewProps = {
     profile: ProfileMessage,
-    update: String -> String -> String  -> Void,
+    update: ProfileMessage -> Void,
     cancel: Void -> Void
 }
 
@@ -81,7 +81,13 @@ class UserProfileView extends ReactComponentOfPropsAndRefs<UserProfileViewProps,
     }
 
     function onUpdateClick(e) {
-        props.update(refs.codeforcesId.value, refs.firstName.value, refs.lastName.value);
+        props.update({
+            userId: null,
+            email: null,
+            firstName: refs.firstName.value,
+            lastName: refs.lastName.value,
+            codeforcesHandle: refs.codeforcesId.value
+        });
     }
 
     function onCancelClick(e) {

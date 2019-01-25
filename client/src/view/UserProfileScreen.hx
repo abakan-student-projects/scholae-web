@@ -1,6 +1,6 @@
 package view;
 
-import action.ProfileAction;
+import messages.ProfileMessage;
 import js.html.Console;
 import utils.RemoteDataHelper;
 import view.UserProfileView.UserProfileViewProps;
@@ -26,14 +26,13 @@ class UserProfileScreen
 
     function mapState(state: ApplicationState, props: RouteComponentProps): UserProfileViewProps {
         if (state.scholae.auth.loggedIn) {
-            RemoteDataHelper.ensureRemoteDataLoaded(state.profile.data, ProfileAction.GetProfile);
+            RemoteDataHelper.ensureRemoteDataLoaded(state.scholae.profile, ScholaeAction.GetProfile);
         }
         return
             {
-                profile:  state.profile.data.data,
-                update: function(codeforcesId, name, lastname) {
-                    dispatch(ProfileAction.UpdateProfile(codeforcesId, name, lastname));
-                    dispatch(ScholaeAction.UpdateAutenticationData);
+                profile:  state.scholae.profile.data,
+                update: function(profileMessage: ProfileMessage) {
+                    dispatch(ScholaeAction.UpdateProfile(profileMessage));
                 },
                 cancel: function() {
                     props.router.goBack();

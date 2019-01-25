@@ -1,5 +1,7 @@
 package service;
 
+import sys.db.Manager;
+import messages.ProfileMessage;
 import service.ServiceHelper;
 import service.ServiceHelper;
 import service.ServiceHelper;
@@ -139,7 +141,7 @@ Scholae';
     }
 
     public function getAuthenticationData(): ResponseMessage {
-        var user: User = User.manager.select($id == Session.current.user.id, true);
+        var user: User = Authorization.instance.currentUser;
         if (user != null) {
             return ServiceHelper.successResponse(user.toSessionMessage(Session.current.id));
         }
@@ -147,26 +149,27 @@ Scholae';
     }
 
     public function getProfile(): ResponseMessage {
-        var user: User = User.manager.select($id == Session.current.user.id, true);
+        var user: User = Authorization.instance.currentUser;
         if (user != null) {
             return ServiceHelper.successResponse(user.toProfileMessage());
         }
         return ServiceHelper.failResponse("Getting profile data failed");
     }
 
-    public function updateProfile(codeforces: String, firstName: String, lastName: String): ResponseMessage {
+    public function updateProfile(profileMessage: ProfileMessage): ResponseMessage {
         var user: User = User.manager.select($id == Session.current.user.id, true);
         if (user != null) {
-            if (codeforces != user.codeforcesHandle && codeforces != "") {
-                user.codeforcesHandle = codeforces;
+            if (profileMessage.codeforcesHandle != user.codeforcesHandle && profileMessage.codeforcesHandle != "") {
+                user.codeforcesHandle = profileMessage.codeforcesHandle;
             }
-            if (firstName != user.firstName && firstName != "") {
-                user.firstName = firstName;
+            if (profileMessage.firstName != user.firstName && profileMessage.firstName != "") {
+                user.firstName = profileMessage.firstName;
             }
-            if (lastName != user.lastName && lastName != "") {
-                user.lastName = lastName;
+            if (profileMessage.lastName != user.lastName && profileMessage.lastName != "") {
+                user.lastName = profileMessage.lastName;
             }
             user.update();
+
             return ServiceHelper.successResponse(user.toProfileMessage());
         }
         return ServiceHelper.failResponse("Profile update failed");

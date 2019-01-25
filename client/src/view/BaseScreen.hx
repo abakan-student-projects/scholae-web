@@ -1,6 +1,5 @@
 package view;
 
-import action.ProfileAction;
 import action.AdminAction;
 import model.Role;
 import action.LearnerAction;
@@ -103,7 +102,6 @@ class BaseScreen
         dispatch(TeacherAction.Clear);
         dispatch(LearnerAction.Clear);
         dispatch(AdminAction.Clear);
-        dispatch(ProfileAction.Clear);
     }
 
     function renderUserInfo() {

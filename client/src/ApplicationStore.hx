@@ -1,7 +1,5 @@
 package ;
 
-import action.ProfileAction;
-import model.Profile;
 import action.AdminAction;
 import model.Admin;
 import action.EditorAction;
@@ -25,7 +23,6 @@ class ApplicationStore {
         var learner = new Learner();
         var editor = new Editor();
         var admin = new Admin();
-        var profile = new Profile();
 
         // create root reducer normally, excepted you must use
         // 'StoreBuilder.mapReducer' to wrap the Enum-based reducer
@@ -34,8 +31,7 @@ class ApplicationStore {
             teacher: mapReducer(TeacherAction, teacher),
             learner: mapReducer(LearnerAction, learner),
             editor: mapReducer(EditorAction, editor),
-            admin: mapReducer(AdminAction, admin),
-            profile: mapReducer(ProfileAction, profile)
+            admin: mapReducer(AdminAction, admin)
         });
 
         // create middleware normally, excepted you must use
@@ -45,8 +41,7 @@ class ApplicationStore {
             mapMiddleware(TeacherAction, teacher),
             mapMiddleware(LearnerAction, learner),
             mapMiddleware(EditorAction, editor),
-            mapMiddleware(AdminAction, admin),
-            mapMiddleware(ProfileAction, profile)
+            mapMiddleware(AdminAction, admin)
         );
 
         // user 'StoreBuilder.createStore' helper to automatically wire

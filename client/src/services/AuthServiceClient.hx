@@ -67,14 +67,6 @@ class AuthServiceClient extends BaseServiceClient {
         });
     }
 
-    public function getAuthenticationData() : Promise<SessionMessage> {
-        return request(function(success, fail) {
-            context.AuthService.getAuthenticationData.call([], function(e) {
-                processResponse(e, success, fail);
-            });
-        });
-    }
-
     public function getProfile() : Promise<ProfileMessage> {
         return request(function(success, fail) {
             context.AuthService.getProfile.call([], function(e) {
@@ -83,9 +75,9 @@ class AuthServiceClient extends BaseServiceClient {
         });
     }
 
-    public function updateProfile(codeforcesHandle: String, firstName: String, lastName: String) : Promise<ProfileMessage> {
+    public function updateProfile(profileMessage: ProfileMessage) : Promise<ProfileMessage> {
         return request(function(success, fail) {
-           context.AuthService.updateProfile.call([codeforcesHandle, firstName, lastName], function(e) {
+           context.AuthService.updateProfile.call([profileMessage], function(e) {
                processResponse(e, success, fail);
            });
         });

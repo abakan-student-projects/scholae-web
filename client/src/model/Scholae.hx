@@ -1,5 +1,7 @@
 package model;
 
+import utils.RemoteData;
+import utils.RemoteDataHelper;
 import messages.SessionMessage;
 import messages.ProfileMessage;
 import utils.UIkit;
@@ -21,7 +23,8 @@ typedef ScholaeState = {
     auth: AuthState,
     loading: Bool,
     activetedEmail: Bool,
-    registration: RegistrationState
+    registration: RegistrationState,
+    profile: RemoteData<ProfileMessage>
 }
 
 class Scholae
@@ -50,7 +53,8 @@ class Scholae
             errorMessage: null
         },
         activetedEmail: false,
-        loading: false
+        loading: false,
+        profile: RemoteDataHelper.createEmpty()
     };
 
     public var store: StoreMethods<ApplicationState>;
@@ -125,15 +129,15 @@ class Scholae
             case EmailActivationCodeFinished(check): copy(state, {
                 activetedEmail: check
             });
-            case UpdateAutenticationData: state;
-            case UpdateAutenticationDataFinished(sessionMessage): copy(state,
-            {
+            case GetProfile: copy(state, { profile: RemoteDataHelper.createLoading() });
+            case UpdateProfile(profileMessage): copy(state, {
+                profile: RemoteDataHelper.createLoading()
+            });
+            case UpdateProfileFinished(profileMessage): copy(state, {
+                profile: RemoteDataHelper.createLoaded(profileMessage),
                 auth: copy(state.auth, {
-                    loggedIn: true,
-                    email: sessionMessage.email,
-                    sessionId: sessionMessage.sessionId,
-                    firstName: sessionMessage.firstName,
-                    lastName: sessionMessage.lastName,
+                    firstName: profileMessage.firstName,
+                    lastName: profileMessage.lastName,
                 })
             });
         }
@@ -194,17 +198,30 @@ class Scholae
             case RegistrationFailed(message):
                 UIkit.notification({ message: "Ошибка при регистрации: " + message + ".", timeout: 5000, status: "warning" });
                 next();
-            
-            case UpdateAutenticationData:
-                AuthServiceClient.instance.getAuthenticationData().then(
-                function(profileMessage) {
-                    store.dispatch(UpdateAutenticationDataFinished(profileMessage));
-                },
-                function(e) {
-                    UIkit.notification({
-                        message: "Ошибка загрузки данных: " + e + ".", timeout: 5000, status: "warning"
+
+            case GetProfile:
+                AuthServiceClient.instance.getProfile().then(
+                    function(profileMessage) {
+                        store.dispatch(UpdateProfileFinished(profileMessage));
+                    },
+                    function(e) {
+                        UIkit.notification({
+                            message: "Ошибка загрузки профиля: " + e + ".", timeout: 5000, status: "warning"
+                        });
                     });
-                });
+                next;
+
+            case UpdateProfile(profileMessage):
+                AuthServiceClient.instance.updateProfile(profileMessage).then(
+                    function(profileMessage) {
+                        UIkit.notification({ message: "Профиль обновлён", timeout: 5000, status: "success" });
+                        store.dispatch(UpdateProfileFinished(profileMessage));
+                    },
+                    function(e) {
+                        UIkit.notification({
+                            message: "Ошибка обновления профиля: " + e + ".", timeout: 5000, status: "warning"
+                        });
+                    });
                 next;
 
             default: next();
