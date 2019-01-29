@@ -185,6 +185,7 @@ Scholae';
             if(!doesEmailExist(profileMessage.email)) {
                 user.email = profileMessage.email;
                 var date = Date.now();
+                user.registrationDate = date;
                 user.emailActivationCode = Md5.encode(Std.string(date));
                 user.update();
                 sendActivationEmail();
