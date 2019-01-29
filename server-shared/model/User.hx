@@ -82,7 +82,8 @@ class User extends sys.db.Object {
                 email: email,
                 firstName: firstName,
                 lastName: lastName,
-                codeforcesHandle: codeforcesHandle
+                codeforcesHandle: codeforcesHandle,
+                emailActivated: emailActivated
             };
     }
 

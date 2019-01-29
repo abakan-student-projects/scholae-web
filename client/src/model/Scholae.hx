@@ -129,6 +129,7 @@ class Scholae
             case EmailActivationCodeFinished(check): copy(state, {
                 activetedEmail: check
             });
+            case SendActivationEmail: state;
             case GetProfile: copy(state, { profile: RemoteDataHelper.createLoading() });
             case UpdateProfile(profileMessage): copy(state, {
                 profile: RemoteDataHelper.createLoading()
@@ -140,6 +141,16 @@ class Scholae
                     lastName: profileMessage.lastName,
                 })
             });
+            case UpdateEmail(profileMessage): copy(state, {
+                profile: RemoteDataHelper.createLoading()
+            });
+            case UpdateEmailFinished(profileMessage): copy(state, {
+                profile: RemoteDataHelper.createLoaded(profileMessage),
+                auth: copy(state.auth, {
+                    email: profileMessage.email
+                })
+            });
+            case UpdatePassword(passwordMessage): state;
         }
     }
 
@@ -199,6 +210,26 @@ class Scholae
                 UIkit.notification({ message: "Ошибка при регистрации: " + message + ".", timeout: 5000, status: "warning" });
                 next();
 
+            case SendActivationEmail:
+                AuthServiceClient.instance.sendActivationEmail().then(
+                    function(check) {
+                        if(check) {
+                            UIkit.notification({
+                                message: "Письмо успешно отправлено", timeout: 5000, status: "success"
+                            });
+                        } else {
+                            UIkit.notification({
+                                message: "Письмо не отправлено", timeout: 5000, status: "warning"
+                            });
+                        }
+                    },
+                    function(e) {
+                        UIkit.notification({
+                            message: "Письмо не отправлено", timeout: 5000, status: "warning"
+                        });
+                    });
+                next;
+
             case GetProfile:
                 AuthServiceClient.instance.getProfile().then(
                     function(profileMessage) {
@@ -220,6 +251,33 @@ class Scholae
                     function(e) {
                         UIkit.notification({
                             message: "Ошибка обновления профиля: " + e + ".", timeout: 5000, status: "warning"
+                        });
+                    });
+                next;
+
+            case UpdateEmail(profileMessage):
+                AuthServiceClient.instance.updateEmail(profileMessage).then(
+                    function(profileMessage) {
+                        UIkit.notification({ message: "Email обновлён", timeout: 5000, status: "success" });
+                        store.dispatch(UpdateEmailFinished(profileMessage));
+                    },
+                    function(e) {
+                        UIkit.notification({
+                            message: "Ошибка обновления email: " + e + ".", timeout: 5000, status: "warning"
+                        });
+                    });
+                next;
+
+            case UpdatePassword(passwordMessage):
+                AuthServiceClient.instance.updatePassword(passwordMessage).then(
+                    function(check) {
+                        UIkit.notification({
+                            message: "Пароль успешно изменен", timeout: 5000, status: "success"
+                        });
+                    },
+                    function(e) {
+                        UIkit.notification({
+                            message: e, timeout: 5000, status: "warning"
                         });
                     });
                 next;

@@ -1,5 +1,6 @@
 package services;
 
+import messages.PasswordMessage;
 import messages.ProfileMessage;
 import messages.UserMessage;
 import messages.SessionMessage;
@@ -67,6 +68,14 @@ class AuthServiceClient extends BaseServiceClient {
         });
     }
 
+    public function sendActivationEmail() : Promise<Bool> {
+        return new Promise(function(success, fail) {
+            context.AuthService.sendActivationEmail.call([], function(e) {
+                processResponse(e, success, fail);
+            });
+        });
+    }
+
     public function getProfile() : Promise<ProfileMessage> {
         return request(function(success, fail) {
             context.AuthService.getProfile.call([], function(e) {
@@ -82,4 +91,21 @@ class AuthServiceClient extends BaseServiceClient {
            });
         });
     }
+
+    public function updateEmail(profileMessage: ProfileMessage) : Promise<ProfileMessage> {
+        return request(function(success, fail) {
+           context.AuthService.updateEmail.call([profileMessage], function(e) {
+              processResponse(e, success, fail);
+           });
+        });
+    }
+
+    public function updatePassword(passwordMessage: PasswordMessage) : Promise<Bool> {
+        return new Promise(function(success, fail) {
+            context.AuthService.updatePassword.call([passwordMessage], function(e) {
+                processResponse(e, success, fail);
+            });
+        });
+    }
+
 }

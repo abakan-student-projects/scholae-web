@@ -5,5 +5,6 @@ typedef ProfileMessage = {
     email: String,
     firstName: String,
     lastName: String,
-    codeforcesHandle: String
+    codeforcesHandle: String,
+    emailActivated: Bool
 }

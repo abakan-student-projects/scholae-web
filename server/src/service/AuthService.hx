@@ -1,5 +1,6 @@
 package service;
 
+import messages.PasswordMessage;
 import sys.db.Manager;
 import messages.ProfileMessage;
 import service.ServiceHelper;
@@ -159,19 +160,71 @@ Scholae';
     public function updateProfile(profileMessage: ProfileMessage): ResponseMessage {
         var user: User = User.manager.select($id == Session.current.user.id, true);
         if (user != null) {
-            if (profileMessage.codeforcesHandle != user.codeforcesHandle && profileMessage.codeforcesHandle != "") {
-                user.codeforcesHandle = profileMessage.codeforcesHandle;
+            if (profileMessage.codeforcesHandle != null) {
+                if(!doesCodeforcesHandleExist(profileMessage.codeforcesHandle)) {
+                    user.codeforcesHandle = profileMessage.codeforcesHandle;
+                } else {
+                    return ServiceHelper.failResponse("Codeforces Handle already exists.");
+                }
             }
-            if (profileMessage.firstName != user.firstName && profileMessage.firstName != "") {
+            if (profileMessage.firstName != null) {
                 user.firstName = profileMessage.firstName;
             }
-            if (profileMessage.lastName != user.lastName && profileMessage.lastName != "") {
+            if (profileMessage.lastName != null) {
                 user.lastName = profileMessage.lastName;
             }
             user.update();
-
             return ServiceHelper.successResponse(user.toProfileMessage());
         }
         return ServiceHelper.failResponse("Profile update failed");
+    }
+
+    public function updateEmail(profileMessage: ProfileMessage): ResponseMessage {
+        var user: User = User.manager.select($id == Session.current.user.id, true);
+        if (user != null) {
+            if(!doesEmailExist(profileMessage.email)) {
+                user.email = profileMessage.email;
+                var date = Date.now();
+                user.emailActivationCode = Md5.encode(Std.string(date));
+                user.update();
+                sendActivationEmail();
+                return ServiceHelper.successResponse(user.toProfileMessage());
+            } else {
+                return ServiceHelper.failResponse("Email already exists");
+            }
+        }
+        return ServiceHelper.failResponse("Email update failed");
+    }
+
+    public function sendActivationEmail(): ResponseMessage {
+        var user: User = Authorization.instance.currentUser;
+        if (null != user) {
+            var subjectForUser ='Scholae: подтверждение почты!';
+            var message = 'Здравствуйте, для подтверждения электронной почты
+            перейдите по ссылке - http://scholae.lambda-calculus.ru/activation/${user.emailActivationCode}
+
+            Удачи в тренировках!
+
+            С уважением,
+            Scholae';
+            var from = 'From: no-reply@scholae.lambda-calculus.ru';
+            var res = mail(user.email, subjectForUser, message, from);
+            return ServiceHelper.successResponse(res);
+        }
+        else return ServiceHelper.successResponse(false);
+    }
+
+    public function updatePassword(passwordMessage: PasswordMessage): ResponseMessage {
+        var user: User = User.manager.select($id == Session.current.user.id, true);
+        if (null != user) {
+            if(passwordMessage.oldPassword == user.passwordHash) {
+                user.passwordHash = passwordMessage.newPassword;
+                user.update();
+                return ServiceHelper.successResponse(true);
+            } else {
+                return ServiceHelper.failResponse("Не правильный текущий пароль");
+            }
+        }
+        else return ServiceHelper.failResponse("Не удалось изменить пароль");
     }
 }
