@@ -1,5 +1,6 @@
 package action;
 
+import messages.PasswordMessage;
 import messages.ProfileMessage;
 import messages.SessionMessage;
 import messages.LearnerMessage;
@@ -27,7 +28,11 @@ enum ScholaeAction {
     GetProfile;
     UpdateProfile(profileMessage: ProfileMessage);
     UpdateProfileFinished(profileMessage: ProfileMessage);
+    UpdateEmail(profileMessage: ProfileMessage);
+    UpdateEmailFinished(profileMessage: ProfileMessage);
+    UpdatePassword(passwordMessage: PasswordMessage);
 
     EmailActivationCode(code: String);
     EmailActivationCodeFinished(check: Bool);
+    SendActivationEmail;
 }

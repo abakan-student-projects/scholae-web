@@ -1,5 +1,6 @@
 package view;
 
+import messages.PasswordMessage;
 import messages.ProfileMessage;
 import js.html.Console;
 import utils.RemoteDataHelper;
@@ -31,7 +32,16 @@ class UserProfileScreen
         return
             {
                 profile:  state.scholae.profile.data,
-                update: function(profileMessage: ProfileMessage) {
+                sendActivationEmail: function() {
+                    dispatch(ScholaeAction.SendActivationEmail);
+                },
+                updateEmail: function(profileMessage: ProfileMessage) {
+                    dispatch(ScholaeAction.UpdateEmail(profileMessage));
+                },
+                updatePassword: function(passwordMessage: PasswordMessage) {
+                    dispatch(ScholaeAction.UpdatePassword(passwordMessage));
+                },
+                updateProfile: function(profileMessage: ProfileMessage) {
                     dispatch(ScholaeAction.UpdateProfile(profileMessage));
                 },
                 cancel: function() {
