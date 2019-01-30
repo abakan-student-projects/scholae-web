@@ -31,7 +31,7 @@ class AuthService {
     public function authenticate(email: String, password: String): ResponseMessage {
         var user = User.getUserByEmailAndPassword(email, password);
         if (null != user) {
-            if (canAuth(user.registrationDate, user.emailActivated)) {
+            if (canAuth(user.activationDate, user.emailActivated)) {
                 var session = Session.getSessionByUser(user);
                 if (null != session && null != Session.manager.search({ id: session.id }).first()) session.update() else session.insert();
                 return ServiceHelper.successResponse(user.toSessionMessage(session.id));
@@ -75,12 +75,8 @@ class AuthService {
         var user: User = User.manager.select($email == email, true);
         var subjectForUser ='Scholae: измение пароля';
         var password = StringUtils.getRandomString(StringUtils.alphaNumeric, 8);
-        var message = 'Здравствуйте,
-
-ваш новый пароль: $password.
-
-С уважением,
-Scholae';
+        var template = new haxe.Template(haxe.Resource.getString("renewPasswordEmail"));
+        var message = template.execute({password: password});
         var from = 'From: no-reply@scholae.lambda-calculus.ru';
         if (null != user) {
             var res = mail(user.email, subjectForUser, message, from);
@@ -93,15 +89,8 @@ Scholae';
 
     private function greetUser(user: User) {
         var subjectForUser ='Scholae: здравствуйте!';
-        var message = 'Здравствуйте,
-мы рады, что вы зарегистрировались в Scholae!
-Перейдите по ссылке для подтверждения электронной почты - http://scholae.lambda-calculus.ru/activation/${user.emailActivationCode}
-Вы можете входить в систему без подтверждения электронной почты в течении 7 дней.
-
-Удачи в тренировках!
-
-С уважением,
-Scholae';
+        var template = new haxe.Template(haxe.Resource.getString("activationEmail"));
+        var message = template.execute({isRegistration: true, activationCode: user.emailActivationCode});
         var from = 'From: no-reply@scholae.lambda-calculus.ru';
         mail(user.email, subjectForUser, message, from);
     }
@@ -118,6 +107,7 @@ Scholae';
             u.lastName = user.lastName;
             u.passwordHash = Md5.encode(user.password);
             u.registrationDate = Date.now();
+            u.activationDate = Date.now();
             u.roles.set(Role.Learner);
             u.codeforcesHandle = user.codeforcesHandle;
             u.emailActivationCode = Md5.encode(Std.string(u.registrationDate));
@@ -185,8 +175,9 @@ Scholae';
             if(!doesEmailExist(profileMessage.email)) {
                 user.email = profileMessage.email;
                 var date = Date.now();
-                user.registrationDate = date;
+                user.activationDate = date;
                 user.emailActivationCode = Md5.encode(Std.string(date));
+                user.emailActivated = false;
                 user.update();
                 sendActivationEmail();
                 return ServiceHelper.successResponse(user.toProfileMessage());
@@ -201,13 +192,8 @@ Scholae';
         var user: User = Authorization.instance.currentUser;
         if (null != user) {
             var subjectForUser ='Scholae: подтверждение почты!';
-            var message = 'Здравствуйте, для подтверждения электронной почты
-            перейдите по ссылке - http://scholae.lambda-calculus.ru/activation/${user.emailActivationCode}
-
-            Удачи в тренировках!
-
-            С уважением,
-            Scholae';
+            var template = new haxe.Template(haxe.Resource.getString("activationEmail"));
+            var message = template.execute({isRegistration: false, activationCode: user.emailActivationCode});
             var from = 'From: no-reply@scholae.lambda-calculus.ru';
             var res = mail(user.email, subjectForUser, message, from);
             return ServiceHelper.successResponse(res);

@@ -4,4 +4,6 @@
 -cp ../shared
 -cp ../server-shared
 -cp ../lib/haxe-htmlparser/library
+-resource src/templates/ActivationEmail.txt@activationEmail
+-resource src/templates/RenewPasswordEmail.txt@renewPasswordEmail
 -lib record-macros

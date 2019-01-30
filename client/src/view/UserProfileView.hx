@@ -198,7 +198,7 @@ class UserProfileView extends ReactComponentOfPropsAndRefs<UserProfileViewProps,
             else null;
         var codeforcesHandleValue =
             if(refs.codeforcesId.value != props.profile.codeforcesHandle && refs.codeforcesId.value != "")
-                refs.firstName.value
+                refs.codeforcesId.value
             else null;
         props.updateProfile({
             userId: null,

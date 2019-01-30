@@ -225,7 +225,7 @@ class Scholae
                     },
                     function(e) {
                         UIkit.notification({
-                            message: "Письмо не отправлено", timeout: 5000, status: "warning"
+                            message: "Ошибка при отправлении письма: "+ e, timeout: 5000, status: "warning"
                         });
                     });
                 next;
