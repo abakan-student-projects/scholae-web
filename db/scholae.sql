@@ -186,7 +186,6 @@ create table users
   lastCodeforcesSubmissionId bigint null,
   emailActivationCode varchar(128) null,
   registrationDate datetime null,
-  activationDate datetime null,
   emailActivated tinyint default '0' not null
 )
 ;
