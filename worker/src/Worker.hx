@@ -87,6 +87,19 @@ class Worker {
                         job.modificationDateTime = Date.now();
                         job.update();
                     }
+
+                case RefreshResultsForUser(user):
+                    Attempt.updateAttemptsForUser(user);
+                    var job: Job = Job.manager.get(msg.id);
+                    if (null != job) {
+                        job.response = MessagesHelper.successResponse(
+                            Lambda.array(
+                                Lambda.map(
+                                    Training.manager.search($userId == user.id && $deleted != true),
+                                    function(t) { return t.toMessage(true); })));
+                        job.modificationDateTime = Date.now();
+                        job.update();
+                    };
             }
         }
 

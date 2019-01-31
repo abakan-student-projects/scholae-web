@@ -1,5 +1,7 @@
 package service;
 
+import jobs.ScholaeJob;
+import jobs.JobQueue;
 import model.ModelUtils;
 import model.Assignment;
 import model.ModelUtils;
@@ -50,8 +52,10 @@ class LearnerService {
 
     public function refreshResults(): ResponseMessage {
         return ServiceHelper.authorize(Role.Learner, function() {
-            Attempt.updateAttemptsForUser(Authorization.instance.currentUser);
-            return getMyTrainings();
+            /*Attempt.updateAttemptsForUser(Authorization.instance.currentUser);
+            return getMyTrainings();*/
+            return ServiceHelper.successResponse(
+                JobQueue.publishScholaeJob(ScholaeJob.RefreshResultsForUser(Authorization.instance.currentUser), Authorization.instance.session.id));
         });
     }
 
