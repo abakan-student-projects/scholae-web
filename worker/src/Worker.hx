@@ -1,5 +1,6 @@
 package ;
 
+import model.User;
 import messages.MessagesHelper;
 import model.Training;
 import messages.ResponseStatus;
@@ -72,7 +73,22 @@ class Worker {
         if (msg != null) {
             trace(EnumValueTools.getName(msg.job));
             switch(msg.job) {
-                case RefreshResultsForGroup(groupId):
+                case RefreshResultsForUser(userId): {
+                    var user: User = User.manager.get(userId);
+                    Attempt.updateAttemptsForUser(user);
+                    var job: Job = Job.manager.get(msg.id);
+                    if (null != job) {
+                        job.response = MessagesHelper.successResponse(
+                            Lambda.array(
+                                Lambda.map(
+                                    Training.manager.search($userId == userId && $deleted != true),
+                                    function(t) { return t.toMessage(true); })));
+                        job.modificationDateTime = Date.now();
+                        job.update();
+                    };
+                };
+
+                case RefreshResultsForGroup(groupId): {
                     for (gl in GroupLearner.manager.search($groupId == groupId)) {
                         Sys.sleep(0.4);
                         Attempt.updateAttemptsForUser(gl.learner);
@@ -86,20 +102,8 @@ class Worker {
                                     function(t) { return t.toMessage(); })));
                         job.modificationDateTime = Date.now();
                         job.update();
-                    }
-
-                case RefreshResultsForUser(user):
-                    Attempt.updateAttemptsForUser(user);
-                    var job: Job = Job.manager.get(msg.id);
-                    if (null != job) {
-                        job.response = MessagesHelper.successResponse(
-                            Lambda.array(
-                                Lambda.map(
-                                    Training.manager.search($userId == user.id && $deleted != true),
-                                    function(t) { return t.toMessage(true); })));
-                        job.modificationDateTime = Date.now();
-                        job.update();
                     };
+                };
             }
         }
 

@@ -47,14 +47,10 @@ class Teacher
         trace(action);
         return switch(action) {
             case Clear: initState;
-            case LoadGroups: copy(state, { groups: copy(state.groups, { data: null, loaded: false, loading: true }) });
+            case LoadGroups: copy(state, { groups: copy(state.groups, RemoteDataHelper.createLoading()) });
             case LoadGroupsFinished(groups):
                 copy(state, {
-                    groups: {
-                        data: groups,
-                        loading: false,
-                        loaded: true
-                    },
+                    groups: RemoteDataHelper.createLoaded(groups),
                     showNewGroupView: false
                 });
             case ShowNewGroupView:
@@ -77,41 +73,33 @@ class Teacher
             case SetCurrentGroup(group):
                 copy(state, { currentGroup: {
                     info: group,
-                    learners: { data: null, loaded: false, loading: true },
-                    assignments: { data: null, loaded: false, loading: true }
+                    learners: RemoteDataHelper.createLoading(),
+                    assignments: RemoteDataHelper.createLoading()
                 }});
             case LoadLearnersByGroupFinished(learners):
                 copy(state, {
                     currentGroup: copy(state.currentGroup, {
-                        learners: { data: learners, loaded: true, loading: false }
+                        learners: RemoteDataHelper.createLoaded(learners)
                     })
                 });
 
             case LoadRatingLearnersByGroupFinished(rating):
                 copy(state, {
                     currentGroup: copy(state.currentGroup, {
-                        rating: { data: rating, loaded: true, loading: false }
+                        rating: RemoteDataHelper.createLoaded(rating)
                     })
                 });
 
             case LoadAllTags: copy(state, { tags: RemoteDataHelper.createLoading() });
             case LoadAllTagsFinished(tags):
                 copy(state, {
-                    tags: {
-                        data: tags,
-                        loading: false,
-                        loaded: true
-                    }
+                    tags: RemoteDataHelper.createLoaded(tags)
                 });
 
             case LoadLastLearnerAttempts: copy(state, { lastLearnerAttempts : RemoteDataHelper.createLoading() });
             case LoadLastLearnerAttemptsFinished(attempts):
                 copy(state, {
-                    lastLearnerAttempts: {
-                        data: attempts,
-                        loading: false,
-                        loaded: true
-                    }
+                    lastLearnerAttempts: RemoteDataHelper.createLoaded(attempts)
                 });
 
             case CreateAssignment(group, assignment): copy(state, { assignmentCreating: true });
@@ -119,11 +107,9 @@ class Teacher
                 if (state.currentGroup != null && state.currentGroup.info.id == assignment.groupId) {
                     copy(state, {
                         currentGroup: copy(state.currentGroup, {
-                            assignments: {
-                                data: state.currentGroup.assignments.data.concat([assignment]),
-                                loading: false,
-                                loaded: true
-                            }
+                            assignments: RemoteDataHelper.createLoaded(
+                                state.currentGroup.assignments.data.concat([assignment])
+                            )
                         }),
                         assignmentCreating: false
                     });
@@ -133,7 +119,7 @@ class Teacher
             case LoadAssignmentsByGroupFinished(assignments):
                 copy(state, {
                     currentGroup: copy(state.currentGroup, {
-                        assignments: { data: assignments, loaded: true, loading: false }
+                        assignments:  RemoteDataHelper.createLoaded(assignments)
                     })
                 });
 
@@ -152,7 +138,7 @@ class Teacher
                 {
                     currentGroup: copy(state.currentGroup,
                         {
-                            trainings: { data: null, loaded: false, loading: true },
+                            trainings: RemoteDataHelper.createLoading(),
                             trainingsByAssignments: null
                         }
                     )
@@ -163,7 +149,7 @@ class Teacher
                     {
                         currentGroup: copy(state.currentGroup,
                             {
-                                trainings: { data: trainings, loaded: true, loading: false },
+                                trainings: RemoteDataHelper.createLoaded(trainings),
                                 trainingsByUsersAndAssignments:
                                     IterableUtils.createStringMapOfArrays2(trainings,
                                                         function(t) { return Std.string(t.userId); },
@@ -184,7 +170,7 @@ class Teacher
                         resultsRefreshing: false,
                         currentGroup: copy(state.currentGroup,
                             {
-                                trainings: { data: trainings, loaded: true, loading: false },
+                                trainings: RemoteDataHelper.createLoaded(trainings),
                                 trainingsByUsersAndAssignments:
                                     IterableUtils.createStringMapOfArrays2(trainings,
                                         function(t) { return Std.string(t.userId); },

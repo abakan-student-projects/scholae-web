@@ -27,18 +27,10 @@ class LearnerServiceClient extends BaseServiceClient {
         });
     }
 
-    public function getMyTrainings(): Promise<Array<TrainingMessage>> {
-        return request(function(success, fail) {
-            context.LearnerService.getMyTrainings.call([], function(e) {
-                processResponse(e, success, fail);
-            });
-        });
-    }
-
-    public function refreshResults(): Promise<Array<TrainingMessage>> {
+    public function getTrainingResults(): Promise<Array<TrainingMessage>> {
         return request(function(success, fail) {
             context.LearnerService.refreshResults.call([], function(e) {
-                processResponse(e, success, fail);
+                processAsyncJobResponse(e, success, fail);
             });
         });
     }

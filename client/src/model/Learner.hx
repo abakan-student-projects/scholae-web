@@ -1,5 +1,7 @@
 package model;
 
+import haxe.Log;
+import js.html.Console;
 import haxe.ds.ArraySort;
 import messages.TrainingMessage;
 import services.LearnerServiceClient;
@@ -33,15 +35,10 @@ class Learner
             case SignUpToGroup(key): state;
             case SignUpToGroupFinished(group): state;
             case SignUpRedirect(to): copy(state, { signup: { redirectTo: to } });
-            case LoadTrainings: copy(state, { trainings: RemoteDataHelper.createLoading() });
-            case LoadTrainingsFinished(trainings): copy(state, { trainings: RemoteDataHelper.createLoaded(trainings) });
+            case LoadTrainings: copy(state, { trainings: RemoteDataHelper.createLoading()});
+            case LoadTrainingsFinished(trainings): copy(state, { trainings: RemoteDataHelper.createLoaded(trainings)});
             case RefreshResults: copy(state, { resultsRefreshing: true });
-            case RefreshResultsFinished(trainings):
-                copy(state,
-                    {
-                        resultsRefreshing: false,
-                        trainings: RemoteDataHelper.createLoaded(trainings),
-                    });
+            case RefreshResultsFinished(trainings): copy(state, { resultsRefreshing: false, trainings: RemoteDataHelper.createLoaded(trainings)});
             case LoadRating(learnerId): copy(state, { rating: RemoteDataHelper.createLoading() });
             case LoadRatingFinished(rating): copy(state, { rating: RemoteDataHelper.createLoaded(rating) });
         }
@@ -64,7 +61,7 @@ class Learner
                 next();
 
             case LoadTrainings:
-                LearnerServiceClient.instance.getMyTrainings()
+                LearnerServiceClient.instance.getTrainingResults()
                     .then(function(trainings) {
                         ArraySort.sort(
                             trainings,
@@ -76,7 +73,7 @@ class Learner
                 next();
 
             case RefreshResults:
-                LearnerServiceClient.instance.refreshResults()
+                LearnerServiceClient.instance.getTrainingResults()
                     .then(function(trainings) {
                         ArraySort.sort(
                             trainings,
