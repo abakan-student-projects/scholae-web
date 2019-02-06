@@ -18,6 +18,10 @@
 - Learn about RabbitMQ: https://www.rabbitmq.com/documentation.html
 - Install and run RabbitMQ
 - Enable Managment UI: rabbitmq-plugins enable rabbitmq_management
+- In Windows:
+    1. install python and add it to PATH
+    2. create system enviroment variable with name `SCHOLAE_RABBIT_PATH` and value `python.exe : C:/Program Files/RabbitMQ Server/rabbitmq_server-3.7.9/sbin/rabbitmqadmin`
+    3. reboot
 
 ```bash
 rabbitmqadmin declare vhost name=scholae
