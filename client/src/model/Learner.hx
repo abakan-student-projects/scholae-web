@@ -37,6 +37,7 @@ class Learner
             case SignUpRedirect(to): copy(state, { signup: { redirectTo: to } });
             case LoadTrainings: copy(state, { trainings: RemoteDataHelper.createLoading()});
             case LoadTrainingsFinished(trainings): copy(state, { trainings: RemoteDataHelper.createLoaded(trainings)});
+            case LoadTrainingsFailed: copy(state, {trainings: copy(state.trainings, {loaded: false, loading: false})});
             case RefreshResults: copy(state, { resultsRefreshing: true });
             case RefreshResultsFinished(trainings): copy(state, { resultsRefreshing: false, trainings: RemoteDataHelper.createLoaded(trainings)});
             case LoadRating(learnerId): copy(state, { rating: RemoteDataHelper.createLoading() });
@@ -61,16 +62,20 @@ class Learner
                 next();
 
             case LoadTrainings:
-                trace("Start load trainings");
                 LearnerServiceClient.instance.getMyTrainings()
-                    .then(function(trainings) {
-                        ArraySort.sort(
-                            trainings,
-                            function(x: TrainingMessage, y: TrainingMessage) {
-                                return if (x.assignment.finishDate.getTime() > y.assignment.finishDate.getTime()) 1 else -1;
-                            });
-                        store.dispatch(LoadTrainingsFinished(trainings));
-                    });
+                    .then(
+                        function(trainings) {
+                            ArraySort.sort(
+                                trainings,
+                                function(x: TrainingMessage, y: TrainingMessage) {
+                                    return if (x.assignment.finishDate.getTime() > y.assignment.finishDate.getTime()) 1 else -1;
+                                });
+                            store.dispatch(LoadTrainingsFinished(trainings));
+                        },
+                        function(e) {
+                            store.dispatch(LoadTrainingsFailed);
+                        }
+                    );
                 next();
 
             case RefreshResults:
