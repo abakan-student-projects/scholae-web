@@ -46,10 +46,7 @@ class LearnerService {
                 Lambda.array(
                     Lambda.map(
                         Training.manager.search($userId == Authorization.instance.currentUser.id && $deleted != true),
-                        function(t) {
-                            trace(t.toMessage(true));
-                            return t.toMessage(true);
-                        })));
+                        function(t) {return t.toMessage(true);})));
         });
     }
 
