@@ -1,5 +1,6 @@
 package service;
 
+import codeforces.Codeforces;
 import messages.PasswordMessage;
 import sys.db.Manager;
 import messages.ProfileMessage;
@@ -66,9 +67,7 @@ class AuthService {
     }
 
     public function isCodeforcesHandleValid(codeforcesHandle: String): Bool {
-        //TODO: implement
-        //use https://codeforces.com/api/help/methods#user.info to check if user exists
-        return true;
+        return(Codeforces.getCodeForcesHandle(codeforcesHandle) == "error" );
     }
 
     public function renewPassword(email: String): ResponseMessage {
@@ -100,6 +99,8 @@ class AuthService {
             return ServiceHelper.failResponse("Email already exists.");
         } else if (doesCodeforcesHandleExist(user.codeforcesHandle)) {
             return ServiceHelper.failResponse("Codeforces Handle already exists.");
+        } else if (isCodeforcesHandleValid(user.codeforcesHandle)) {
+            return ServiceHelper.failResponse("Codeforces user with handle " + user.codeforcesHandle + " not found");
         } else {
             var u: User = new User();
             u.email = user.email;
