@@ -5,11 +5,11 @@ import haxe.io.Bytes;
 
 class MessageQueue {
     public static function publish(routingKey: String, exchange: String, payload: Bytes, vhost: String = "/") {
-        var rabbit_path_args = Sys.getEnv("SCHOLAE_RABBIT_PATH");
-        var processName = if(rabbit_path_args != null) "python.exe"
-            else "/usr/local/sbin/rabbitmqadmin";
-        var args = [rabbit_path_args,"--user=scholae", "--password=scholae", "--vhost="+vhost, "publish", "routing_key="+routingKey, "exchange="+exchange];
-        var p = new Process(processName, args);
+        var scholaeRabbitPath = Sys.getEnv("SCHOLAE_RABBIT_PATH");
+        var envArgs: Array<String> = scholaeRabbitPath.split(" : ");
+        var processName = if(scholaeRabbitPath != null) envArgs.shift() else "/usr/local/sbin/rabbitmqadmin";
+        var args = ["--user=scholae", "--password=scholae", "--vhost="+vhost, "publish", "routing_key="+routingKey, "exchange="+exchange];
+        var p = new Process(processName, envArgs.concat(args));
         p.stdin.write(payload);
         p.stdin.close();
         if(p.exitCode(true) != 0) {

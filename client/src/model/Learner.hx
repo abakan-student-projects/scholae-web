@@ -61,7 +61,8 @@ class Learner
                 next();
 
             case LoadTrainings:
-                LearnerServiceClient.instance.getTrainingResults()
+                trace("Start load trainings");
+                LearnerServiceClient.instance.getMyTrainings()
                     .then(function(trainings) {
                         ArraySort.sort(
                             trainings,
@@ -73,7 +74,7 @@ class Learner
                 next();
 
             case RefreshResults:
-                LearnerServiceClient.instance.getTrainingResults()
+                LearnerServiceClient.instance.refreshResults()
                     .then(function(trainings) {
                         ArraySort.sort(
                             trainings,

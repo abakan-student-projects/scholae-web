@@ -40,7 +40,17 @@ class LearnerService {
         });
     }
 
-    public function getTrainingResults(): ResponseMessage {
+    public function getMyTrainings(): ResponseMessage {
+        return ServiceHelper.authorize(Role.Learner, function() {
+            return ServiceHelper.successResponse(
+                Lambda.array(
+                    Lambda.map(
+                        Training.manager.search($userId == Authorization.instance.currentUser.id && $deleted != true),
+                        function(t) { return t.toMessage(true); })));
+        });
+    }
+
+    public function refreshResults(): ResponseMessage {
         return ServiceHelper.authorize(Role.Learner, function() {
             return ServiceHelper.successResponse(
                 JobQueue.publishScholaeJob(ScholaeJob.RefreshResultsForUser(Authorization.instance.currentUser.id), Authorization.instance.session.id));
