@@ -9,7 +9,7 @@ class MessageQueue {
         var envArgs: Array<String> = if(null != scholaeRabbitPath) scholaeRabbitPath.split(" : ") else [];
         var processName = if(scholaeRabbitPath != null) envArgs.shift() else "/usr/local/sbin/rabbitmqadmin";
         var args = envArgs.concat(["--user=scholae", "--password=scholae", "--vhost="+vhost, "publish", "routing_key="+routingKey, "exchange="+exchange]);
-        trace(processName + " " + args);
+//        trace(processName + " " + args);
         var p = new Process(processName, args);
         p.stdin.write(payload);
         p.stdin.close();
