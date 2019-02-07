@@ -104,7 +104,7 @@ class User extends sys.db.Object {
     }
 
     public static function calculateLearnerRatingsForUsers(userId: Float, startDate: Date, finishDate: Date) : Array<RatingDate> {
-        var attempts = [for (a in Attempt.manager.search(($userId == userId) && ($solved == true))) a];
+        var attempts = [for (a in Attempt.manager.search(($userId == userId) && ($solved == true))) a].filter(function(a) { return a.task != null; });
         ArraySort.sort(attempts, function(x: Attempt, y: Attempt){ return
             if ((x.datetime.getDate() > y.datetime.getDate()) && (x.datetime.getMonth() == y.datetime.getMonth()) && (x.datetime.getFullYear() == y.datetime.getFullYear())
             || (x.datetime.getMonth() > y.datetime.getMonth()) || (x.datetime.getFullYear() > y.datetime.getFullYear())) 1 else -1;});
