@@ -67,7 +67,7 @@ class AuthService {
     }
 
     public function isCodeforcesHandleValid(codeforcesHandle: String): Bool {
-        return(Codeforces.getCodeForcesHandle(codeforcesHandle) == "error" );
+        return(Codeforces.getCodeForcesHandle(codeforcesHandle) == null );
     }
 
     public function renewPassword(email: String): ResponseMessage {

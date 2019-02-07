@@ -89,21 +89,18 @@ class Codeforces {
     }
 
     public static function getCodeForcesHandle(userHandle: String): String {
-        var a : String;
+        var result : String;
         var req = new haxe.Http(baseApiUrl + "user.info?handles=" + userHandle);
         req.onData =  function(data) {
-            a = data;
+            result = data;
         }
         req.onError = function(err) {
-            a = ("error");
+            result = null;
         }
         req.request(false);
-        return a;
+        return result;
     }
 
-    public function isCodeforcesHandleValid(codeforcesHandle: String): Bool {
-        return(Codeforces.getCodeForcesHandle(codeforcesHandle) == "error" );
-    }
     public static function getProblemUrl(contestId: Int, index: String): String {
         return '${baseUrl}problemset/problem/$contestId/$index';
     }
