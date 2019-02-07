@@ -88,6 +88,19 @@ class Codeforces {
         return { problems: problems, problemStatistics: problemStatistics};
     }
 
+    public static function getCodeForcesHandle(userHandle: String): String {
+        var result : String;
+        var req = new haxe.Http(baseApiUrl + "user.info?handles=" + userHandle);
+        req.onData =  function(data) {
+            result = data;
+        }
+        req.onError = function(err) {
+            result = null;
+        }
+        req.request(false);
+        return result;
+    }
+
     public static function getProblemUrl(contestId: Int, index: String): String {
         return '${baseUrl}problemset/problem/$contestId/$index';
     }
