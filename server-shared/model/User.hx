@@ -1,5 +1,6 @@
 package model;
 
+import messages.ProfileMessage;
 import Std;
 import messages.AttemptMessage;
 import haxe.ds.ArraySort;
@@ -26,6 +27,7 @@ class User extends sys.db.Object {
     public var codeforcesHandle: SString<512>;
     public var lastCodeforcesSubmissionId: Float;
     public var registrationDate: SDateTime;
+    public var activationDate: SDateTime;
     public var emailActivationCode: SString<128>;
     public var emailActivated: SBool;
 
@@ -77,6 +79,19 @@ class User extends sys.db.Object {
                 sessionId: sessionId
             };
     }
+
+    public function toProfileMessage(): ProfileMessage {
+        return
+            {
+                userId: id,
+                email: email,
+                firstName: firstName,
+                lastName: lastName,
+                codeforcesHandle: codeforcesHandle,
+                emailActivated: emailActivated
+            };
+    }
+
     public function toRatingMessage(userId: Float, ?startDate: Date, ?finishDate: Date): RatingMessage {
         var learner = manager.select($id == userId);
         return

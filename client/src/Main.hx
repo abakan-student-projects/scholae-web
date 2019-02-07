@@ -1,5 +1,6 @@
 package;
 
+import view.UserProfileScreen;
 import view.teacher.GraphicsRatingScreen;
 import view.teacher.ClassLearnersRatingScreen;
 import view.teacher.UserRatingScreen;
@@ -94,6 +95,7 @@ class Main {
 					    <Route path="administrator" component=$AdminUsersScreen onEnter=$requireAuth />
 					    <Route path="renew-password-response" component=$RenewPasswordResponseView/>
 					    <Route path="student-project" component=$StudentProjectScreen />
+					    <Route path="profile" component=$UserProfileScreen />
 					</Route>
 				</Router>
 			</Provider>
