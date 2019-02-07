@@ -11,6 +11,7 @@
 		<antcall target="build.server"/>
 		<antcall target="build.client"/>
 		<antcall target="build.static"/>
+		<antcall target="build.worker"/>
 	</target>
 
 	<target name="build.server">
