@@ -56,6 +56,6 @@ enum TeacherAction {
     DeleteCourse(groupId: Float);
     DeleteCourseFinished(groupId: Float);
 
-    LoadRatingsForCourse(userIds: Array<Float>, startDate: Date, endDate: Date);
+    LoadRatingsForCourse(userIds: Array<Float>, startDate: Date, finishDate: Date);
     LoadRatingsForCourseFinished(rating: Array<RatingMessage>);
 }

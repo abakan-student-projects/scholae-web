@@ -32,8 +32,8 @@ class GraphicsRatingScreen
             var learners = Lambda.array(Lambda.map(state.teacher.currentGroup.learners.data, function(l){return l.id;}));
             RemoteDataHelper.ensureRemoteDataLoaded(
                 state.teacher.currentGroup.rating, TeacherAction.LoadRatingsForCourse(learners,
-                    new Date(startDate.getFullYear(),startDate.getMonth(), startDate.getDate(), 0, 0, 0),
-                    new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), 23, 59, 59)));
+                new Date(startDate.getFullYear(),startDate.getMonth(), startDate.getDate(), 0, 0, 0),
+                new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), 23, 59, 59)));
         }
         return {
                 learners: if (state.teacher.currentGroup != null) state.teacher.currentGroup.learners.data else [],

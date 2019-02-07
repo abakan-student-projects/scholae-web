@@ -77,73 +77,121 @@ class User extends sys.db.Object {
                 sessionId: sessionId
             };
     }
-    public function toRatingMessage(userId: Float, ?startDate: Date, ?endDate: Date): RatingMessage {
+    public function toRatingMessage(userId: Float, ?startDate: Date, ?finishDate: Date): RatingMessage {
         var learner = manager.select($id == userId);
         return
         {
-            rating: if (startDate != null && endDate != null) 0 else calculateLearnerRating(userId),
-            ratingCategory: if (startDate != null && endDate != null) [] else calculateRatingCategory(userId),
+            rating: if (startDate != null && finishDate != null) 0 else calculateLearnerRating(userId),
+            ratingCategory: if (startDate != null && finishDate != null) [] else calculateRatingCategory(userId),
             learner: learner.toLearnerMessage(),
-            ratingDate: if (startDate != null && endDate != null) calculateLearnerRatingForLine(userId, startDate, endDate) else []
+            ratingDate: if (startDate != null && finishDate != null) calculateLearnerRatingsForUsers(userId, startDate, finishDate) else []
         };
     }
 
-    public static function calculateLearnerRatingForLine(userId: Float, startDate: Date, endDate: Date) : Array<RatingDate> {
-        var rating:Float = 0;
-        var ratingDate: Array<RatingDate> = [];
-        var prevDay: Date = Date.fromString("01.01.2000");
-        var finishedResult: Array<RatingDate> = [];
-        var prevData:RatingDate = null;
+    public static function calculateLearnerRatingsForUsers(userId: Float, startDate: Date, finishDate: Date) : Array<RatingDate> {
+        var attempts = [for (a in Attempt.manager.search(($userId == userId) && ($solved == true))) a];
+        ArraySort.sort(attempts, function(x: Attempt, y: Attempt){ return
+            if ((x.datetime.getDate() > y.datetime.getDate()) && (x.datetime.getMonth() == y.datetime.getMonth()) && (x.datetime.getFullYear() == y.datetime.getFullYear())
+            || (x.datetime.getMonth() > y.datetime.getMonth()) || (x.datetime.getFullYear() > y.datetime.getFullYear())) 1 else -1;});
+        var ratingData: Array<RatingDate> = [];
+        var rating = 0;
+        var prevData: Attempt = null;
+        var prevRating = 0;
         var i = 1;
-        var j = 1;
-        var results = Attempt.manager.search(($userId == userId) && ($solved == true) && ($datetime >= startDate && $datetime <= endDate));
-        var res = [for (r in results) r];
-        ArraySort.sort(res, function(x: Attempt, y:Attempt) { return if
-        ((x.datetime.getDate() > y.datetime.getDate()) && (x.datetime.getMonth() == y.datetime.getMonth()) || x.datetime.getMonth() > y.datetime.getMonth()) 1 else -1; });
-        for (item in res) {
-            if (item.task != null){
-                var prevDayString = prevDay.toString().split(" ");
-                var dateTime = Std.string(item.datetime).split(" ");
-                if (prevDayString[0] == dateTime[0]){
-                    rating += item.task.level;
-                }
-                rating += item.task.level;
-                rating = Math.log(rating) * 1000;
-                rating = Math.round(rating);
-                ratingDate.push({ id: item.user.id, rating: rating, date: item.datetime });
-                prevDay = item.datetime;
-            }
-        }
-
-        var length = ratingDate.length;
-        for (r in ratingDate) {
-            if (length == 1) {
-                finishedResult.push(r);
-            } else {
-                if (i == 1) {
-                    prevData = r;
-                    i = 2;
+        var length = attempts.length;
+        for (a in attempts) {
+            if (a.task != null) {
+                if(i == 1) {
+                    prevData = a;
+                    prevRating = a.task.level;
                 } else {
-                    if (DateTools.format(prevData.date,"%d.%m.%Y") != DateTools.format(r.date,"%d.%m.%Y")) {
-                        if (j == length) {
-                            finishedResult.push(prevData);
-                            finishedResult.push(r);
+                    if (prevData.datetime.getDate() == a.datetime.getDate() && prevData.datetime.getMonth() == a.datetime.getMonth() && prevData.datetime.getFullYear() == a.datetime.getFullYear()) {
+                        if (i == length) {
+                            ratingData.push({id: a.user.id, rating: Math.round(Math.log(a.task.level + prevRating)*1000), date: a.datetime});
                         } else {
-                            finishedResult.push(prevData);
-                            prevData = r;
+                            prevData = a;
+                            prevRating += a.task.level;
                         }
                     } else {
-                        if (j == length) {
-                            finishedResult.push(r);
+                        if (i == length) {
+                            ratingData.push({id: a.user.id, rating:Math.round(Math.log(prevRating)*1000), date: prevData.datetime});
+                            ratingData.push({id: a.user.id, rating: Math.round(Math.log(prevRating+a.task.level)*1000), date: a.datetime});
                         } else {
-                            prevData = r;
+                            ratingData.push({id: a.user.id, rating:Math.round(Math.log(prevRating)*1000), date: prevData.datetime});
+                            prevData = a;
+                            prevRating += a.task.level;
                         }
                     }
                 }
-                j++;
+            }
+            i++;
+        }
+        var result: Array<RatingDate> = [];
+        var prevResult: RatingDate = null;
+        var startD = ((startDate.getFullYear() - 2010 - 1) * 12 + startDate.getMonth()) * 31 + startDate.getDate() + 1;
+        var endDate = ((finishDate.getFullYear() - 2010 - 1) * 12 + finishDate.getMonth()) * 31 + finishDate.getDate();
+        var prevDay = null;
+        i = 1;
+        if (ratingData.length == 0) {
+            result.push({id: userId, date: startDate, rating:0});
+        } else {
+            for (r in ratingData) {
+                var day = ((r.date.getFullYear() - 2010 - 1) * 12 + r.date.getMonth()) * 31 + r.date.getDate();
+                if (i == 1) {
+                    prevResult = r;
+                } else {
+                    var prevDay = ((prevResult.date.getFullYear() - 2010 - 1) * 12 + prevResult.date.getMonth()) * 31 + prevResult.date.getDate();
+
+                    if (result.length == 0 && day != startD) {
+                        if (prevDay == startD) {
+                            result.push(prevResult);
+                            if (i == ratingData.length && day <= endDate) {
+                                result.push(r);
+                            }
+                        } else if (prevDay > startD){
+                            result.push({id: prevResult.id, date: startDate, rating: 0});
+                            result.push(prevResult);
+                            if (i == ratingData.length && day <= endDate) {
+                                result.push(r);
+                            }
+                        } else if (prevDay < startD && day > startD) {
+                            result.push({id: prevResult.id, date: startDate, rating: prevResult.rating});
+                            if (i == ratingData.length && day <= endDate) {
+                                result.push(r);
+                            }
+                        } else if (i == ratingData.length && day < endDate) {
+                            result.push({id: r.id, date: startDate, rating: r.rating});
+                        }
+                        prevResult = r;
+                    } else {
+                        if (prevDay >= startD && prevDay <= endDate) {
+                            result.push(prevResult);
+                            prevResult = r;
+                            if (i == ratingData.length && day >= startD && day <= endDate) {
+                                result.push(r);
+                            }
+                        } else if (day >=startD && day <= endDate)
+                        {
+                            result.push(r);
+                            prevResult = r;
+
+                        } else break;
+                    }
+                }
+                i++;
             }
         }
-        return finishedResult;
+        if (result.length != 0) {
+            var lastElement = result.pop();
+            var day = ((lastElement.date.getFullYear() - 2010 - 1) * 12 + lastElement.date.getMonth()) * 31 + lastElement.date.getDate();
+            if (day == endDate) {
+                result.push(lastElement);
+            } else if (day < endDate) {
+                result.push(lastElement);
+                result.push({id: lastElement.id, date: finishDate, rating: lastElement.rating});
+            }
+        }
+        return result;
     }
 
    public static function calculateLearnerRating(userId: Float): Float {

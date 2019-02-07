@@ -56,54 +56,61 @@ class GraphicsRatingView
 
     function sortDates() {
         var sortedDates: Array<RatingDate> = [];
-        var prevValue: RatingDate = null;
-        var i = 1;
+        var endDate: Date = null;
+        if (state.finishDate != null) {
+            endDate = Date.fromTime(state.finishDate.utc());
+            endDate = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), 23 , 59, 59);
+        }
         if (props.ratingForLine != null) {
             for (r in props.ratingForLine) {
                 for (r2 in r.ratingDate){
-                    sortedDates.push({id: r2.id, date: r2.date, rating: r2.rating});
+                    var day = ((r2.date.getFullYear() - 2010 - 1) * 12 + r2.date.getMonth()) * 31 + r2.date.getDate();
+                    var finishDay = ((endDate.getFullYear() - 2010 - 1) * 12 + endDate.getMonth()) * 31 + endDate.getDate();
+                    if (day != finishDay) {
+                        sortedDates.push({id: r2.id, date: r2.date, rating: r2.rating});
+                    }
                 }
             }
         }
-        var length = sortedDates.length;
-        var sortDatesFinished: Array<RatingDate> = [];
+        sortedDates.push({id:0, date: endDate, rating: 0});
+        ArraySort.sort(sortedDates, function(x: RatingDate, y: RatingDate) { return if
+        ((x.date.getDate() > y.date.getDate()) && (x.date.getMonth() == y.date.getMonth()) && (x.date.getFullYear() == y.date.getFullYear())
+        || (x.date.getMonth() > y.date.getMonth()) || (x.date.getFullYear() > y.date.getFullYear())) 1 else -1;});
+        var sortedDatesFinished: Array<Date> = [];
+        var prevData: RatingDate = null;
+        var i = 1;
         for (s in sortedDates) {
             if (i == 1) {
-                prevValue = s;
+                prevData = s;
             } else {
-                if (DateTools.format(prevValue.date,"%d.%m.%Y") == DateTools.format(s.date,"%d.%m.%Y")) {
-                    if (i == length) {
-                        sortDatesFinished.push(s);
-                    } else {
-                        prevValue = s;
-                    }
+                if (DateTools.format(prevData.date, "%d.%m.%Y") == DateTools.format(s.date, "%d.%m.%Y")){
+                    prevData = s;
+                    if (i == sortedDates.length)
+                        sortedDatesFinished.push(prevData.date);
                 } else {
-                    if (i == length) {
-                        sortDatesFinished.push(prevValue);
-                        sortDatesFinished.push(s);
-                    } else {
-                        sortDatesFinished.push(prevValue);
-                        prevValue = s;
-                    }
+                    sortedDatesFinished.push(prevData.date);
+                    prevData = s;
+                    if (i == sortedDates.length)
+                        sortedDatesFinished.push(s.date);
                 }
             }
             i++;
         }
-        return sortDatesFinished;
+        return sortedDatesFinished;
     }
 
     override function render() {
-        var colours = ['rgb(247, 17, 17)','rgb(232, 109, 166)',
-                        'rgb(222, 88, 232)','rgb(167, 88, 232)',
-                        'rgb(70, 62, 214)','rgb(62, 207, 214)',
-                        'rgb(40, 247, 81)','rgb(237, 247, 40)',
-                        'rgb(247, 154, 40)','rgb(242, 161, 138)'];
+        var colours = ['rgb(0, 250, 154)','rgb(102, 205, 170)',
+                        'rgb(0, 139, 139)','rgb(0, 206, 209)',
+                        'rgb(123, 104, 238)','rgb(65, 105, 225)',
+                        'rgb(147, 112, 219)','rgb(153, 50, 204)',
+                        'rgb(106, 90, 205)','rgb(188, 143, 143)'];
         var learners = getLearnersForSelect();
         var datesForChart = sortDates();
         var coloursMap: Map<Int,String> = if (props.ratingForLine != null) [for (r in props.ratingForLine)
                                             Std.parseInt(Std.string(r.learner.id)) => colours.shift()] else [0 => 'null'];
         var data = {
-            labels: [ for (d in datesForChart) DateTools.format(d.date,"%d.%m.%Y")],
+            labels: [ for (d in datesForChart) DateTools.format(d, "%d.%m.%Y") ],
             datasets: if (props.ratingForLine != null) [for (l in props.ratingForLine)
                 {
                     label: l.learner.firstName+" "+l.learner.lastName,
@@ -120,7 +127,7 @@ class GraphicsRatingView
                     pointHoverBorderWidth: 2,
                     pointRadius: 3,
                     pointHitRadius: 10,
-                    data: [for (r in l.ratingDate) {x: DateTools.format(r.date,"%d.%m.%Y"), y:r.rating}]}]
+                    data: [for (r in l.ratingDate) {x: DateTools.format(r.date, "%d.%m.%Y"), y: r.rating} ]}]
             else []
         };
         return jsx('

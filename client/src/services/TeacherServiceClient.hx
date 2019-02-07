@@ -145,9 +145,9 @@ class TeacherServiceClient extends BaseServiceClient {
         });
     }
 
-    public function getRatingsForUsers(userIds: Array<Float>, startDate: Date, endDate: Date): Promise<Array<RatingMessage>> {
+    public function getRatingsForUsers(userIds: Array<Float>, startDate: Date, finishDate: Date): Promise<Array<RatingMessage>> {
         return request(function(success,fail) {
-            context.TeacherService.getRatingsForUsers.call([userIds,startDate,endDate], function(e) {
+            context.TeacherService.getRatingsForUsers.call([userIds, startDate, finishDate], function(e) {
                 processResponse(e, success, fail);
             });
         });
