@@ -1,5 +1,6 @@
 package service;
 
+import Array;
 import jobs.ScholaeJob;
 import jobs.JobQueue;
 import model.LinksForTags;
@@ -71,6 +72,15 @@ class TeacherService {
             return ServiceHelper.successResponse(
                 Lambda.array(
                     Lambda.map(user, function(u) { return u.toRatingMessage(u.id); })));
+        });
+    }
+
+    public function getRatingsForUsers(userIds: Array<Float>, startDate: Date, finishDate: Date) : ResponseMessage {
+        return ServiceHelper.authorize(Role.Teacher, function() {
+            var user = User.manager.search($id in userIds);
+            return ServiceHelper.successResponse(
+                Lambda.array(
+                    Lambda.map(user, function(u) {return u.toRatingMessage(u.id, startDate, finishDate);})));
         });
     }
 

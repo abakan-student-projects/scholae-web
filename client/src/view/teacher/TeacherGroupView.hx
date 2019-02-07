@@ -104,6 +104,11 @@ class TeacherGroupView extends ReactComponentOfPropsAndState<TeacherGroupProps, 
                                             Список учеников
                                         </Link>
                                     </li>
+                                    <li>
+                                        <Link className="uk-button uk-button-default uk-margin uk-width-1-1 uk-link-reset" to=${"/teacher/group/" + props.group.id + "/graphics"}>
+                                            Построение графика
+                                        </Link>
+                                    </li>
                                 </ul>
                             </div>
                             $gridModeButton
