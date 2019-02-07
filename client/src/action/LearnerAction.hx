@@ -15,6 +15,7 @@ enum LearnerAction {
 
     LoadTrainings;
     LoadTrainingsFinished(trainings: Array<TrainingMessage>);
+    LoadTrainingsFailed;
 
     RefreshResults;
     RefreshResultsFinished(trainings: Array<TrainingMessage>);

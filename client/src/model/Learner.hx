@@ -1,5 +1,7 @@
 package model;
 
+import haxe.Log;
+import js.html.Console;
 import haxe.ds.ArraySort;
 import messages.TrainingMessage;
 import services.LearnerServiceClient;
@@ -33,15 +35,11 @@ class Learner
             case SignUpToGroup(key): state;
             case SignUpToGroupFinished(group): state;
             case SignUpRedirect(to): copy(state, { signup: { redirectTo: to } });
-            case LoadTrainings: copy(state, { trainings: RemoteDataHelper.createLoading() });
-            case LoadTrainingsFinished(trainings): copy(state, { trainings: RemoteDataHelper.createLoaded(trainings) });
+            case LoadTrainings: copy(state, { trainings: RemoteDataHelper.createLoading()});
+            case LoadTrainingsFinished(trainings): copy(state, { trainings: RemoteDataHelper.createLoaded(trainings)});
+            case LoadTrainingsFailed: copy(state, {trainings: copy(state.trainings, {loaded: false, loading: false})});
             case RefreshResults: copy(state, { resultsRefreshing: true });
-            case RefreshResultsFinished(trainings):
-                copy(state,
-                    {
-                        resultsRefreshing: false,
-                        trainings: RemoteDataHelper.createLoaded(trainings),
-                    });
+            case RefreshResultsFinished(trainings): copy(state, { resultsRefreshing: false, trainings: RemoteDataHelper.createLoaded(trainings)});
             case LoadRating(learnerId): copy(state, { rating: RemoteDataHelper.createLoading() });
             case LoadRatingFinished(rating): copy(state, { rating: RemoteDataHelper.createLoaded(rating) });
         }
@@ -65,14 +63,19 @@ class Learner
 
             case LoadTrainings:
                 LearnerServiceClient.instance.getMyTrainings()
-                    .then(function(trainings) {
-                        ArraySort.sort(
-                            trainings,
-                            function(x: TrainingMessage, y: TrainingMessage) {
-                                return if (x.assignment.finishDate.getTime() > y.assignment.finishDate.getTime()) 1 else -1;
-                            });
-                        store.dispatch(LoadTrainingsFinished(trainings));
-                    });
+                    .then(
+                        function(trainings) {
+                            ArraySort.sort(
+                                trainings,
+                                function(x: TrainingMessage, y: TrainingMessage) {
+                                    return if (x.assignment.finishDate.getTime() > y.assignment.finishDate.getTime()) 1 else -1;
+                                });
+                            store.dispatch(LoadTrainingsFinished(trainings));
+                        },
+                        function(e) {
+                            store.dispatch(LoadTrainingsFailed);
+                        }
+                    );
                 next();
 
             case RefreshResults:
