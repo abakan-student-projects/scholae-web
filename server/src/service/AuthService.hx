@@ -152,10 +152,13 @@ class AuthService {
         var user: User = User.manager.select($id == Session.current.user.id, true);
         if (user != null) {
             if (profileMessage.codeforcesHandle != null) {
-                if(!doesCodeforcesHandleExist(profileMessage.codeforcesHandle)) {
+                if(isCodeforcesHandleValid(profileMessage.codeforcesHandle)) {
+                    return ServiceHelper.failResponse("Codeforces user with handle " + profileMessage.codeforcesHandle + " not found");
+                }
+                else if(!doesCodeforcesHandleExist(profileMessage.codeforcesHandle)) {
                     user.codeforcesHandle = profileMessage.codeforcesHandle;
                 } else {
-                    return ServiceHelper.failResponse("Codeforces Handle already exists.");
+                    return ServiceHelper.failResponse("Codeforces Handle already exists");
                 }
             }
             if (profileMessage.firstName != null) {
