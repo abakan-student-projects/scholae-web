@@ -3,6 +3,7 @@
 -cp src
 -cp ../shared
 -cp ../lib/hxargs
+-cp ../lib/hxamqp
 -cp ../lib/haxe-htmlparser/library
 -cp ../shared
 -cp ../server-shared

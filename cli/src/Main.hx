@@ -1,5 +1,7 @@
 package ;
 
+import haxe.io.Bytes;
+import haxe.Serializer;
 import model.Job;
 import jobs.ScholaeJob;
 import jobs.JobQueue;
@@ -20,6 +22,11 @@ import codeforces.Codeforces;
 import haxe.EnumTools;
 import haxe.EnumTools.EnumValueTools;
 import haxe.Json;
+import haxe.Unserializer;
+import org.amqp.fast.FastImport.Delivery;
+import org.amqp.fast.FastImport.Channel;
+import org.amqp.ConnectionParameters;
+import org.amqp.fast.neko.AmqpConnection;
 
 
 enum Action {
@@ -231,6 +238,8 @@ class Main {
     }
 
     public static function updateUsersResults() {
+        var mq: AmqpConnection = new AmqpConnection(getConnectionParams());
+        var channel = mq.channel();
         var users: List<User> = User.manager.all();
         var timeNow = Date.now();
         for (user in users) {
@@ -247,9 +256,38 @@ class Main {
                         86400 * 1000
                     ).getTime() < timeNow.getTime()
                 ) {
-                    JobQueue.publishScholaeJob(ScholaeJob.UpdateUserResults(user.id), "Update user results : " + user.id);
+                    //JobQueue.publishScholaeJob(ScholaeJob.UpdateUserResults(user.id), "Update user results : " + user.id);
+                    publishScholaeJob(channel, ScholaeJob.UpdateUserResults(user.id), "Update user results : " + user.id);
                 }
             }
         }
+        channel.close();
+        mq.close();
+    }
+
+    private static function publishScholaeJob(channel: Channel, job: ScholaeJob, sessionId: String): Float {
+        var jobModel = new Job();
+        jobModel.sessionId  = sessionId;
+        jobModel.request = job;
+        jobModel.progress = 0.0;
+        jobModel.creationDateTime = Date.now();
+        jobModel.modificationDateTime = jobModel.creationDateTime;
+        jobModel.insert();
+
+        channel.publish(Bytes.ofString(Serializer.run({
+            id: jobModel.id,
+            job: job
+        })),"jobs" ,"common");
+
+        return jobModel.id;
+    }
+
+    private static function getConnectionParams(): ConnectionParameters {
+        var params:ConnectionParameters = new ConnectionParameters();
+        params.username = "scholae";
+        params.password = "scholae";
+        params.vhostpath = "scholae";
+        params.serverhost = "127.0.0.1";
+        return params;
     }
 }

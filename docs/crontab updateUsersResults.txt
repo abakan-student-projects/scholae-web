@@ -1,1 +1,1 @@
-* * * * * neko /localbuild/scholae.n -updateUsersResults
+* * * * * neko /localbuild/scholae.n -a updateUsersResults
