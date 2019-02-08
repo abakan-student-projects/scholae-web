@@ -1,5 +1,12 @@
 package ;
 
+import haxe.io.Bytes;
+import haxe.Serializer;
+import model.Job;
+import jobs.ScholaeJob;
+import jobs.JobQueue;
+import jobs.JobMessage;
+import model.User;
 import sys.db.Types.SBigInt;
 import model.Attempt;
 import model.CodeforcesTaskTag;
@@ -15,6 +22,11 @@ import codeforces.Codeforces;
 import haxe.EnumTools;
 import haxe.EnumTools.EnumValueTools;
 import haxe.Json;
+import haxe.Unserializer;
+import org.amqp.fast.FastImport.Delivery;
+import org.amqp.fast.FastImport.Channel;
+import org.amqp.ConnectionParameters;
+import org.amqp.fast.neko.AmqpConnection;
 
 
 enum Action {
@@ -23,6 +35,7 @@ enum Action {
     updateGymTasks;
     updateTags;
     updateTaskIdsOnAttempts;
+    updateUsersResults;
 }
 
 typedef Config = {
@@ -55,7 +68,7 @@ class Main {
 
         var args = Sys.args();
         var argHandler = hxargs.Args.generate([
-            @doc("Action: updateCodeforcesTasks, updateCodeforcesTasksLevelsAndTypes, updateGymTasks, updateTags, updateTaskIdsOnAttempts")
+            @doc("Action: updateCodeforcesTasks, updateCodeforcesTasksLevelsAndTypes, updateGymTasks, updateTags, updateTaskIdsOnAttempts, updateUsersResults")
             ["-a", "--action"] => function(action:String) cfg.action = EnumTools.createByName(Action, action),
 
             @doc("Limit number of processing items. Works only for updateGymTasks")
@@ -81,6 +94,7 @@ class Main {
             case Action.updateGymTasks: updateGymTasks(cfg);
             case Action.updateTags: updateTags();
             case Action.updateTaskIdsOnAttempts: updateTaskIdsOnAttempts();
+            case Action.updateUsersResults: updateUsersResults();
         }
 
         sys.db.Manager.cleanup();
@@ -221,5 +235,59 @@ class Main {
                 }
             }
         }
+    }
+
+    public static function updateUsersResults() {
+        var mq: AmqpConnection = new AmqpConnection(getConnectionParams());
+        var channel = mq.channel();
+        var users: List<User> = User.manager.all();
+        var timeNow = Date.now();
+        for (user in users) {
+            var jobsByUser: Job = Job.manager.search($sessionId == "Update user results : " + user.id).first();
+            if (jobsByUser == null ||
+                timeNow.getTime() > DateTools.delta(
+                    if (jobsByUser != null) jobsByUser.creationDateTime else Date.fromTime(0),
+                    86400 * 500
+                ).getTime()
+            ) {
+                if (user.lastResultsUpdateDate == null ||
+                    DateTools.delta(
+                        if (user.lastResultsUpdateDate != null) user.lastResultsUpdateDate else Date.fromTime(0),
+                        86400 * 1000
+                    ).getTime() < timeNow.getTime()
+                ) {
+                    //JobQueue.publishScholaeJob(ScholaeJob.UpdateUserResults(user.id), "Update user results : " + user.id);
+                    publishScholaeJob(channel, ScholaeJob.UpdateUserResults(user.id), "Update user results : " + user.id);
+                }
+            }
+        }
+        channel.close();
+        mq.close();
+    }
+
+    private static function publishScholaeJob(channel: Channel, job: ScholaeJob, sessionId: String): Float {
+        var jobModel = new Job();
+        jobModel.sessionId  = sessionId;
+        jobModel.request = job;
+        jobModel.progress = 0.0;
+        jobModel.creationDateTime = Date.now();
+        jobModel.modificationDateTime = jobModel.creationDateTime;
+        jobModel.insert();
+
+        channel.publish(Bytes.ofString(Serializer.run({
+            id: jobModel.id,
+            job: job
+        })),"jobs" ,"common");
+
+        return jobModel.id;
+    }
+
+    private static function getConnectionParams(): ConnectionParameters {
+        var params:ConnectionParameters = new ConnectionParameters();
+        params.username = "scholae";
+        params.password = "scholae";
+        params.vhostpath = "scholae";
+        params.serverhost = "127.0.0.1";
+        return params;
     }
 }

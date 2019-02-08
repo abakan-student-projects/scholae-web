@@ -73,8 +73,18 @@ class Worker {
         if (msg != null) {
             trace(EnumValueTools.getName(msg.job));
             switch(msg.job) {
+                case UpdateUserResults(userId): {
+                    var user: User = User.manager.get(userId);
+                    Sys.sleep(0.4);
+                    Attempt.updateAttemptsForUser(user);
+                    var job: Job = Job.manager.get(msg.id);
+                    if (null != job) {
+                        job.delete();
+                    };
+                };
                 case RefreshResultsForUser(userId): {
                     var user: User = User.manager.get(userId);
+                    Sys.sleep(0.4);
                     Attempt.updateAttemptsForUser(user);
                     var job: Job = Job.manager.get(msg.id);
                     if (null != job) {
