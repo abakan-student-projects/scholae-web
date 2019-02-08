@@ -6,8 +6,15 @@ typedef RatingCategory = {
     ?name: String
 }
 
+typedef RatingDate = {
+    id: Float,
+    rating: Float,
+    date: Date
+}
+
 typedef RatingMessage = {
     rating: Float,
     ?ratingCategory: Array<RatingCategory>,
-    ?learner: LearnerMessage
+    ?learner: LearnerMessage,
+    ?ratingDate: Array<RatingDate>
 }
