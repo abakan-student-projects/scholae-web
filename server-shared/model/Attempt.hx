@@ -51,6 +51,7 @@ class Attempt extends sys.db.Object {
 
         user.lock();
         user.lastCodeforcesSubmissionId = lastSubmissionId;
+        user.lastResultsUpdateDate = Date.now();
         user.update();
     }
 

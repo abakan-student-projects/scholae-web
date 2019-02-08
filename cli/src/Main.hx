@@ -1,5 +1,10 @@
 package ;
 
+import model.Job;
+import jobs.ScholaeJob;
+import jobs.JobQueue;
+import jobs.JobMessage;
+import model.User;
 import sys.db.Types.SBigInt;
 import model.Attempt;
 import model.CodeforcesTaskTag;
@@ -23,6 +28,7 @@ enum Action {
     updateGymTasks;
     updateTags;
     updateTaskIdsOnAttempts;
+    updateUsersResults;
 }
 
 typedef Config = {
@@ -55,7 +61,7 @@ class Main {
 
         var args = Sys.args();
         var argHandler = hxargs.Args.generate([
-            @doc("Action: updateCodeforcesTasks, updateCodeforcesTasksLevelsAndTypes, updateGymTasks, updateTags, updateTaskIdsOnAttempts")
+            @doc("Action: updateCodeforcesTasks, updateCodeforcesTasksLevelsAndTypes, updateGymTasks, updateTags, updateTaskIdsOnAttempts, updateUsersResults")
             ["-a", "--action"] => function(action:String) cfg.action = EnumTools.createByName(Action, action),
 
             @doc("Limit number of processing items. Works only for updateGymTasks")
@@ -81,6 +87,7 @@ class Main {
             case Action.updateGymTasks: updateGymTasks(cfg);
             case Action.updateTags: updateTags();
             case Action.updateTaskIdsOnAttempts: updateTaskIdsOnAttempts();
+            case Action.updateUsersResults: updateUsersResults();
         }
 
         sys.db.Manager.cleanup();
@@ -218,6 +225,29 @@ class Main {
                         relation.tag = tag;
                         relation.insert();
                     }
+                }
+            }
+        }
+    }
+
+    public static function updateUsersResults() {
+        var users: List<User> = User.manager.all();
+        var timeNow = Date.now();
+        for (user in users) {
+            var jobsByUser: Job = Job.manager.search($sessionId == "Update user results : " + user.id).first();
+            if (jobsByUser == null ||
+                timeNow.getTime() > DateTools.delta(
+                    if (jobsByUser != null) jobsByUser.creationDateTime else Date.fromTime(0),
+                    86400 * 500
+                ).getTime()
+            ) {
+                if (user.lastResultsUpdateDate == null ||
+                    DateTools.delta(
+                        if (user.lastResultsUpdateDate != null) user.lastResultsUpdateDate else Date.fromTime(0),
+                        86400 * 1000
+                    ).getTime() < timeNow.getTime()
+                ) {
+                    JobQueue.publishScholaeJob(ScholaeJob.UpdateUserResults(user.id), "Update user results : " + user.id);
                 }
             }
         }

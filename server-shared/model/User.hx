@@ -26,6 +26,7 @@ class User extends sys.db.Object {
     public var activationDate: SDateTime;
     public var emailActivationCode: SString<128>;
     public var emailActivated: SBool;
+    public var lastResultsUpdateDate: SDateTime;
 
     public function new() {
         super();
