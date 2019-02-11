@@ -1,6 +1,5 @@
 package model;
 
-import php.Web;
 import utils.StringUtils;
 import sys.db.Manager;
 import sys.db.Types;
@@ -26,7 +25,6 @@ class Session extends sys.db.Object {
 
         this.id = id;
         this.user = user;
-        updateClientInfo();
     }
 
     private static function generateId(): String {
@@ -43,23 +41,14 @@ class Session extends sys.db.Object {
     public static function getSessionByUser(user: User): Session {
         var sessions = manager.search( { userId : user.id }, true );
         var s = if (sessions.length > 0) sessions.first() else new Session(user);
-        s.updateClientInfo();
         return s;
     }
 
-    public static var current(get, null): Session;
     private static var _current: Session;
-    private static function get_current() {
-        var sessionId = Web.getParams().get("sid");
+    public static function getCurrent(sessionId: String): Session {
         if (null == _current || _current.id != sessionId) {
             _current = if (null != sessionId) findSession(sessionId) else null;
         }
         return _current;
     }
-
-    private function updateClientInfo() {
-        this.clientIP = Web.getClientIP();
-        this.lastRequestTime = Date.now();
-    }
-
 }

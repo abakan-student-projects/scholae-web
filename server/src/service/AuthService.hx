@@ -1,5 +1,6 @@
 package service;
 
+import php.Web;
 import codeforces.Codeforces;
 import messages.PasswordMessage;
 import sys.db.Manager;
@@ -34,7 +35,13 @@ class AuthService {
         if (null != user) {
             if (canAuth(user.activationDate, user.emailActivated)) {
                 var session = Session.getSessionByUser(user);
-                if (null != session && null != Session.manager.search({ id: session.id }).first()) session.update() else session.insert();
+                if (null != session && null != Session.manager.search({ id: session.id }).first()){
+                    updateClientInfo(session);
+                } else {
+                    session.clientIP = Web.getClientIP();
+                    session.lastRequestTime = Date.now();
+                    session.insert();
+                }
                 return ServiceHelper.successResponse(user.toSessionMessage(session.id));
             } else return ServiceHelper.failResponse("You can't sign in. The email activation period has expired.");
         }
@@ -49,13 +56,20 @@ class AuthService {
             else false;
     }
 
+    private function updateClientInfo(session: Session): Void {
+        session.clientIP = Web.getClientIP();
+        session.lastRequestTime = Date.now();
+        session.update();
+    }
+
     public function checkSession(sessionId: String): ResponseMessage {
         var session: Session = Session.findSession(sessionId);
-        return
-            if (null != session)
-                ServiceHelper.successResponse(session.user.toSessionMessage(session.id))
-            else
-                ServiceHelper.failResponse("Session not found.");
+        if (null != session){
+            updateClientInfo(session);
+            return ServiceHelper.successResponse(session.user.toSessionMessage(session.id));
+        } else {
+            return ServiceHelper.failResponse("Session not found.");
+        }
     }
 
     public function doesEmailExist(email: String): Bool {
@@ -135,7 +149,9 @@ class AuthService {
     public function getAuthenticationData(): ResponseMessage {
         var user: User = Authorization.instance.currentUser;
         if (user != null) {
-            return ServiceHelper.successResponse(user.toSessionMessage(Session.current.id));
+            var sessionId = Web.getParams().get("sid");
+            var session = Session.getCurrent(sessionId);
+            return ServiceHelper.successResponse(user.toSessionMessage(session.id));
         }
         return ServiceHelper.failResponse("Getting authentication data failed");
     }
@@ -149,7 +165,8 @@ class AuthService {
     }
 
     public function updateProfile(profileMessage: ProfileMessage): ResponseMessage {
-        var user: User = User.manager.select($id == Session.current.user.id, true);
+        var sessionId = Web.getParams().get("sid");
+        var user: User = User.manager.select($id == Session.getCurrent(sessionId).user.id, true);
         if (user != null) {
             if (profileMessage.codeforcesHandle != null) {
                 if(isCodeforcesHandleValid(profileMessage.codeforcesHandle)) {
@@ -174,7 +191,8 @@ class AuthService {
     }
 
     public function updateEmail(profileMessage: ProfileMessage): ResponseMessage {
-        var user: User = User.manager.select($id == Session.current.user.id, true);
+        var sessionId = Web.getParams().get("sid");
+        var user: User = User.manager.select($id == Session.getCurrent(sessionId).user.id, true);
         if (user != null) {
             if(!doesEmailExist(profileMessage.email)) {
                 user.email = profileMessage.email;
@@ -206,7 +224,8 @@ class AuthService {
     }
 
     public function updatePassword(passwordMessage: PasswordMessage): ResponseMessage {
-        var user: User = User.manager.select($id == Session.current.user.id, true);
+        var sessionId = Web.getParams().get("sid");
+        var user: User = User.manager.select($id == Session.getCurrent(sessionId).user.id, true);
         if (null != user) {
             if(passwordMessage.oldPassword == user.passwordHash) {
                 user.passwordHash = passwordMessage.newPassword;
