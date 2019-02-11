@@ -106,9 +106,10 @@ class User extends sys.db.Object {
 
     public static function calculateLearnerRatingsForUsers(userId: Float, startDate: Date, finishDate: Date) : Array<RatingDate> {
         var attempts = [for (a in Attempt.manager.search(($userId == userId) && ($solved == true))) a];
-        ArraySort.sort(attempts, function(x: Attempt, y: Attempt){ return
-            if ((x.datetime.getDate() > y.datetime.getDate()) && (x.datetime.getMonth() == y.datetime.getMonth()) && (x.datetime.getFullYear() == y.datetime.getFullYear())
-            || (x.datetime.getMonth() > y.datetime.getMonth()) || (x.datetime.getFullYear() > y.datetime.getFullYear())) 1 else -1;});
+        ArraySort.sort(attempts, function(x:Attempt, y: Attempt) { var x2 = ((x.datetime.getFullYear() - 2010 - 1) * 12 + x.datetime.getMonth()) * 31 + x.datetime.getDate();
+                                                                    var y2 = ((y.datetime.getFullYear() - 2010 - 1) * 12 + y.datetime.getMonth()) * 31 + y.datetime.getDate();
+                                                                    return if (x2 > y2) 1 else -1;});
+
         var ratingData: Array<RatingDate> = [];
         var rating = 0;
         var prevData: Attempt = null;
