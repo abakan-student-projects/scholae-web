@@ -1,5 +1,6 @@
 package model;
 
+import utils.RemoteDataHelper;
 import messages.RatingMessage;
 import Lambda;
 import utils.IterableUtils;
@@ -212,6 +213,32 @@ class Teacher
                 copy(state, {
                     currentGroup: copy(state.currentGroup, {
                         rating: RemoteDataHelper.createLoaded(rating)
+                    })
+                });
+
+            case SortDeltaRatingByPeriod:
+                ArraySort.sort(state.currentGroup.rating.data, function(x: RatingMessage, y:RatingMessage){ return if(x.ratingByPeriod < y.ratingByPeriod) 1 else -1; });
+                copy(state, {
+                    currentGroup: copy(state.currentGroup, {
+                        rating:{data: [for (r in state.currentGroup.rating.data) r], loaded: true, loading: false }
+                    })
+                });
+
+            case SortSolvedTasksByPeriod:
+                ArraySort.sort(state.currentGroup.rating.data, function(x:RatingMessage, y:RatingMessage) { return if (x.solvedTasks < y.solvedTasks) 1 else -1; });
+                copy(state, {
+                   currentGroup: copy(state.currentGroup, {
+                       rating: { data: [for (r in state.currentGroup.rating.data) r], loaded: true, loading: false }
+                   })
+                });
+
+            case SortLearnersByPeriod:
+                ArraySort.sort(state.currentGroup.rating.data, function(x:RatingMessage, y: RatingMessage)
+                    { return if (x.learner.firstName > y.learner.firstName ||
+                    (x.learner.lastName > y.learner.lastName && x.learner.firstName == y.learner.firstName)) 1 else -1; });
+                copy(state, {
+                    currentGroup: copy(state.currentGroup, {
+                        rating: { data: [for (r in state.currentGroup.rating.data) r], loaded: true, loading: false }
                     })
                 });
         }
