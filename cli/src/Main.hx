@@ -1,5 +1,6 @@
 package ;
 
+import model.Config;
 import model.Session;
 import haxe.io.Bytes;
 import haxe.Serializer;
@@ -29,23 +30,6 @@ import org.amqp.fast.FastImport.Channel;
 import org.amqp.ConnectionParameters;
 import org.amqp.fast.neko.AmqpConnection;
 
-
-enum Action {
-    updateCodeforcesTasks;
-    updateCodeforcesTasksLevelsAndTypes;
-    updateGymTasks;
-    updateTags;
-    updateTaskIdsOnAttempts;
-    updateUsersResults;
-}
-
-typedef Config = {
-    action: Action,
-    batchCount: Int,
-    verbose: Bool
-}
-
-
 class Main {
 
     private static var cfg: Config;
@@ -69,8 +53,9 @@ class Main {
 
         var args = Sys.args();
         var argHandler = hxargs.Args.generate([
-            @doc("Action: updateCodeforcesTasks, updateCodeforcesTasksLevelsAndTypes, updateGymTasks, updateTags, updateTaskIdsOnAttempts, updateUsersResults")
-            ["-a", "--action"] => function(action:String) cfg.action = EnumTools.createByName(Action, action),
+            @doc("model.Action: updateCodeforcesTasks, updateCodeforcesTasksLevelsAndTypes, updateGymTasks,
+            updateTags, updateTaskIdsOnAttempts, updateUsersResults, updateCodeforcesData")
+            ["-a", "--action"] => function(action:String) cfg.action = EnumTools.createByName(model.Action, action),
 
             @doc("Limit number of processing items. Works only for updateGymTasks")
             ["-c", "--count"] => function(count:String) cfg.batchCount = Std.parseInt(count),
@@ -90,12 +75,13 @@ class Main {
         }
 
         switch (cfg.action) {
-            case Action.updateCodeforcesTasks: updateCodeforcesTasks();
-            case Action.updateCodeforcesTasksLevelsAndTypes: updateCodeforcesTasksLevelsAndTypes();
-            case Action.updateGymTasks: updateGymTasks(cfg);
-            case Action.updateTags: updateTags();
-            case Action.updateTaskIdsOnAttempts: updateTaskIdsOnAttempts();
-            case Action.updateUsersResults: updateUsersResults();
+            case model.Action.updateCodeforcesTasks: updateCodeforcesTasks();//1
+            case model.Action.updateCodeforcesTasksLevelsAndTypes: updateCodeforcesTasksLevelsAndTypes();//3
+            case model.Action.updateGymTasks: updateGymTasks(cfg);//2
+            case model.Action.updateTags: updateTags();//0
+            case model.Action.updateTaskIdsOnAttempts: updateTaskIdsOnAttempts();//4
+            case model.Action.updateUsersResults: updateUsersResults();
+            case model.Action.updateCodeforcesData: updateCodeforcesData();
         }
 
         sys.db.Manager.cleanup();
@@ -243,9 +229,7 @@ class Main {
         var channel = mq.channel();
         var users: List<User> = User.manager.all();
         var timeNow = Date.now();
-        trace("start");
         for (user in users) {
-            trace("user - " + user.firstName + " " + user.lastName);
             var jobsByUser: Job = Job.manager.search($sessionId == "Update user results : " + user.id).first();
             if (jobsByUser == null ||
                 timeNow.getTime() > DateTools.delta(
@@ -258,7 +242,7 @@ class Main {
                     if (user.lastResultsUpdateDate != null) user.lastResultsUpdateDate else Date.fromTime(0),
                     86400 * 1000
                 ).getTime() < timeNow.getTime();
-                var isOnlineUserShouldUpdate = DateTools.delta(
+                var isOnlineUserShouldUpdate: Bool = DateTools.delta(
                     if(session != null) session.lastRequestTime else Date.fromTime(0),
                     1800 * 1000
                 ).getTime() > timeNow.getTime() &&
@@ -271,7 +255,6 @@ class Main {
                 }
             }
         }
-        trace("finish");
         channel.close();
         mq.close();
     }
@@ -300,5 +283,18 @@ class Main {
         })),"jobs" ,"common");
 
         return jobModel.id;
+    }
+
+    public static function updateCodeforcesData() {
+        var mq: AmqpConnection = new AmqpConnection(getConnectionParams());
+        var channel = mq.channel();
+        trace("start update");
+        var job: Job = Job.manager.search($sessionId == "updateCodeforcesData").first();
+        if(job == null) {
+            trace("send job");
+            publishScholaeJob(channel, ScholaeJob.UpdateCodeforcesData(cfg), "updateCodeforcesData");
+        }
+        channel.close();
+        mq.close();
     }
 }
