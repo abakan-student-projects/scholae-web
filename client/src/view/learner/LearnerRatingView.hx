@@ -108,7 +108,9 @@ class LearnerRatingView
         } else {
             result = jsx('<div></div>');
         }
-        return result = jsx('
+        return
+            if (props.allRating!= null)
+            jsx('
                 <div key="rating">
                     $backGroup
                     <span data-uk-icon="user"></span> $firstName $lastName
@@ -128,5 +130,26 @@ class LearnerRatingView
                     </table>
                 </div>
             ');
+         else
+                jsx('
+                <div key="rating">
+                    <span data-uk-icon="user"></span> $firstName $lastName
+                    $rating
+                    <table className="uk-table uk-table-divider uk-table-hover">
+                        <thead>
+                            <tr>
+                                <th className="uk-width-medium">Категория</th>
+                                <th>Рейтинг</th>
+                                <th className="uk-width-small">Значение</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            $ratingResults
+                            $ratingNullResults
+                        </tbody>
+                    </table>
+                </div>
+            ');
+
     }
 }
