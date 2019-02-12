@@ -18,8 +18,8 @@ import sys.db.Types.SBigInt;
 class CodeforcesRunner {
     public var config: RunnerConfig;
 
-    public function new(cfg: RunnerConfig) {
-        this.config = cfg;
+    public function new(config: RunnerConfig) {
+        this.config = config;
     }
 
     public function runUpdateCodeforces(action: RunnerAction) {
@@ -86,13 +86,13 @@ class CodeforcesRunner {
         updateCodeforcesTasksByResponse(Codeforces.getAllProblemsResponse());
     }
 
-    private function updateGymTasks(cfg: RunnerConfig) {
+    private function updateGymTasks(config: RunnerConfig) {
         var processed = 0;
         for (c in Codeforces.getGymContests()) {
             if (!CodeforcesTask.doTasksExistForContest(c.id)) {
                 updateCodeforcesTasksByResponse(Codeforces.getGymProblemsByContest(c));
                 processed += 1;
-                if (processed >= cfg.batchCount) {
+                if (processed >= config.batchCount) {
                     break;
                 }
             }
@@ -115,7 +115,7 @@ class CodeforcesRunner {
         }
     }
 
-    private function updateCodeforcesTasksLevelsAndTypes(cfg: RunnerConfig) {
+    private function updateCodeforcesTasksLevelsAndTypes(config: RunnerConfig) {
         var contests: IntMap<Contest> = new IntMap<Contest>();
         for (c in Codeforces.getAllContests()) {
             contests.set(c.id, c);
@@ -131,7 +131,7 @@ class CodeforcesRunner {
         }
 
         for (t in tasks) {
-            if (cfg.verbose) neko.Lib.println("Task: " + t.toMessage());
+            if (config.verbose) neko.Lib.println("Task: " + t.toMessage());
 
             var contest = contests.get(t.contestId);
 
@@ -142,7 +142,7 @@ class CodeforcesRunner {
                 continue;
             }
 
-            if (cfg.verbose) neko.Lib.println("Task contest: " + contest);
+            if (config.verbose) neko.Lib.println("Task contest: " + contest);
 
             t.type = contest.type;
 
