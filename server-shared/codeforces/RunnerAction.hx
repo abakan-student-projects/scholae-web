@@ -1,6 +1,6 @@
-package codeforces_runner;
+package codeforces;
 
-enum Action {
+enum RunnerAction {
     updateCodeforcesTasks;
     updateCodeforcesTasksLevelsAndTypes;
     updateGymTasks;

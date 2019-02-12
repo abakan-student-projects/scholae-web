@@ -1,11 +1,11 @@
-package codeforces_runner;
+package codeforces;
 
 import codeforces.Contest;
 import codeforces.ProblemsResponse;
 import codeforces.ProblemStatistics;
 import codeforces.Problem;
 import codeforces.Codeforces;
-import codeforces_runner.Action;
+import codeforces.RunnerAction;
 import haxe.Json;
 import model.Attempt;
 import model.CodeforcesTaskTag;
@@ -16,28 +16,19 @@ import haxe.ds.IntMap;
 import sys.db.Types.SBigInt;
 
 class CodeforcesRunner {
-    private var _cfg: Config;
-    public var cfg(get, set): Config;
+    public var config: RunnerConfig;
 
-    function get_cfg():Config {
-        return _cfg;
+    public function new(cfg: RunnerConfig) {
+        this.config = cfg;
     }
 
-    function set_cfg(value:Config):Config {
-        return this._cfg = value;
-    }
-
-    public function new(cfg: Config) {
-        this._cfg = cfg;
-    }
-
-    public function runUpdateCodeforces(action: Action) {
-        switch (_cfg.action) {
-            case Action.updateCodeforcesTasks: updateCodeforcesTasks();//1
-            case Action.updateCodeforcesTasksLevelsAndTypes: updateCodeforcesTasksLevelsAndTypes(cfg);//3
-            case Action.updateGymTasks: updateGymTasks(cfg);//2
-            case Action.updateTags: updateTags();//0
-            case Action.updateTaskIdsOnAttempts: updateTaskIdsOnAttempts();//4
+    public function runUpdateCodeforces(action: RunnerAction) {
+        switch (config.action) {
+            case RunnerAction.updateCodeforcesTasks: updateCodeforcesTasks();//1
+            case RunnerAction.updateCodeforcesTasksLevelsAndTypes: updateCodeforcesTasksLevelsAndTypes(config);//3
+            case RunnerAction.updateGymTasks: updateGymTasks(config);//2
+            case RunnerAction.updateTags: updateTags();//0
+            case RunnerAction.updateTaskIdsOnAttempts: updateTaskIdsOnAttempts();//4
             default: null;
         }
     }
@@ -51,10 +42,10 @@ class CodeforcesRunner {
         updateCodeforcesTasks();
         Sys.sleep(0.4);
         trace("Start update gym tasks");
-        updateGymTasks(cfg);
+        updateGymTasks(config);
         Sys.sleep(0.4);
         trace("Start update codeforces tasks levels and types");
-        updateCodeforcesTasksLevelsAndTypes(cfg);
+        updateCodeforcesTasksLevelsAndTypes(config);
         Sys.sleep(0.4);
         trace("Start update task ids on attempts");
         updateTaskIdsOnAttempts();
@@ -95,7 +86,7 @@ class CodeforcesRunner {
         updateCodeforcesTasksByResponse(Codeforces.getAllProblemsResponse());
     }
 
-    private function updateGymTasks(cfg: Config) {
+    private function updateGymTasks(cfg: RunnerConfig) {
         var processed = 0;
         for (c in Codeforces.getGymContests()) {
             if (!CodeforcesTask.doTasksExistForContest(c.id)) {
@@ -124,7 +115,7 @@ class CodeforcesRunner {
         }
     }
 
-    private function updateCodeforcesTasksLevelsAndTypes(cfg: Config) {
+    private function updateCodeforcesTasksLevelsAndTypes(cfg: RunnerConfig) {
         var contests: IntMap<Contest> = new IntMap<Contest>();
         for (c in Codeforces.getAllContests()) {
             contests.set(c.id, c);

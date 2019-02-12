@@ -1,8 +1,8 @@
 package ;
 
-import codeforces_runner.CodeforcesRunner;
-import codeforces_runner.Config;
-import codeforces_runner.Action;
+import codeforces.CodeforcesRunner;
+import codeforces.RunnerConfig;
+import codeforces.RunnerAction;
 import model.Session;
 import haxe.io.Bytes;
 import haxe.Serializer;
@@ -54,15 +54,15 @@ class Main {
 
         var args = Sys.args();
         var argHandler = hxargs.Args.generate([
-            @doc("codeforces.Action: updateCodeforcesTasks, updateCodeforcesTasksLevelsAndTypes, updateGymTasks,
+            @doc("Action: updateCodeforcesTasks, updateCodeforcesTasksLevelsAndTypes, updateGymTasks,
             updateTags, updateTaskIdsOnAttempts, updateUsersResults, updateCodeforcesData")
-            ["-a", "--action"] => function(action:String) codeforcesRunner.cfg.action = EnumTools.createByName(Action, action),
+            ["-a", "--action"] => function(action:String) codeforcesRunner.config.action = EnumTools.createByName(RunnerAction, action),
 
             @doc("Limit number of processing items. Works only for updateGymTasks")
-            ["-c", "--count"] => function(count:String) codeforcesRunner.cfg.batchCount = Std.parseInt(count),
+            ["-c", "--count"] => function(count:String) codeforcesRunner.config.batchCount = Std.parseInt(count),
 
             @doc("Enable the verbose mode")
-            ["-v", "--verbose"] => function() codeforcesRunner.cfg.verbose=true,
+            ["-v", "--verbose"] => function() codeforcesRunner.config.verbose=true,
 
             _ => function(arg:String) throw "Unknown command: " +arg
         ]);
@@ -75,14 +75,14 @@ class Main {
             Sys.exit(0);
         }
 
-        switch (codeforcesRunner.cfg.action) {
-            case Action.updateCodeforcesTasks: updateCodeforcesTasks();//1
-            case Action.updateCodeforcesTasksLevelsAndTypes: updateCodeforcesTasksLevelsAndTypes();//3
-            case Action.updateGymTasks: updateGymTasks();//2
-            case Action.updateTags: updateTags();//0
-            case Action.updateTaskIdsOnAttempts: updateTaskIdsOnAttempts();//4
-            case Action.updateUsersResults: updateUsersResults();
-            case Action.updateCodeforcesData: updateCodeforcesData();
+        switch (codeforcesRunner.config.action) {
+            case RunnerAction.updateCodeforcesTasks: updateCodeforcesTasks();//1
+            case RunnerAction.updateCodeforcesTasksLevelsAndTypes: updateCodeforcesTasksLevelsAndTypes();//3
+            case RunnerAction.updateGymTasks: updateGymTasks();//2
+            case RunnerAction.updateTags: updateTags();//0
+            case RunnerAction.updateTaskIdsOnAttempts: updateTaskIdsOnAttempts();//4
+            case RunnerAction.updateUsersResults: updateUsersResults();
+            case RunnerAction.updateCodeforcesData: updateCodeforcesData();
         }
 
         sys.db.Manager.cleanup();
@@ -90,24 +90,24 @@ class Main {
     }
 
     public static function updateCodeforcesTasks() {
-        codeforcesRunner.runUpdateCodeforces(Action.updateCodeforcesTasks);
+        codeforcesRunner.runUpdateCodeforces(RunnerAction.updateCodeforcesTasks);
     }
 
     public static function updateTaskIdsOnAttempts() {
-        codeforcesRunner.runUpdateCodeforces(Action.updateTaskIdsOnAttempts);
+        codeforcesRunner.runUpdateCodeforces(RunnerAction.updateTaskIdsOnAttempts);
     }
 
     public static function updateCodeforcesTasksLevelsAndTypes() {
-        codeforcesRunner.runUpdateCodeforces(Action.updateCodeforcesTasksLevelsAndTypes);
+        codeforcesRunner.runUpdateCodeforces(RunnerAction.updateCodeforcesTasksLevelsAndTypes);
     }
 
     public static function updateGymTasks() {
-        codeforcesRunner.runUpdateCodeforces(Action.updateGymTasks);
+        codeforcesRunner.runUpdateCodeforces(RunnerAction.updateGymTasks);
     }
 
     public static function updateTags() {
         trace(codeforcesRunner);
-        codeforcesRunner.runUpdateCodeforces(Action.updateTags);
+        codeforcesRunner.runUpdateCodeforces(RunnerAction.updateTags);
     }
 
     public static function updateUsersResults() {
@@ -178,7 +178,7 @@ class Main {
         var job: Job = Job.manager.search($sessionId == "updateCodeforcesData").first();
         if(job == null) {
             trace("send job");
-            publishScholaeJob(channel, ScholaeJob.UpdateCodeforcesData(codeforcesRunner.cfg), "updateCodeforcesData");
+            publishScholaeJob(channel, ScholaeJob.UpdateCodeforcesData(codeforcesRunner.config), "updateCodeforcesData");
         }
         channel.close();
         mq.close();

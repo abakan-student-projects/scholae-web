@@ -1,7 +1,7 @@
 package ;
 
-import codeforces_runner.Action;
-import codeforces_runner.CodeforcesRunner;
+import codeforces.RunnerAction;
+import codeforces.CodeforcesRunner;
 import codeforces.Contest;
 import codeforces.ProblemsResponse;
 import codeforces.ProblemStatistics;

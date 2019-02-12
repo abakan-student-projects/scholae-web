@@ -1,10 +1,10 @@
 package jobs;
 
-import codeforces_runner.Config;
+import codeforces.RunnerConfig;
 
 enum ScholaeJob {
     RefreshResultsForGroup(groupId: Float);
     RefreshResultsForUser(userId: Float);
     UpdateUserResults(userId: Float);
-    UpdateCodeforcesData(cfg: Config);
+    UpdateCodeforcesData(cfg: RunnerConfig);
 }
