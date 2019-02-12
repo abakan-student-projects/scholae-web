@@ -96,22 +96,24 @@ class User extends sys.db.Object {
     public function toRatingMessage(userId: Float, ?startDate: Date, ?finishDate: Date): RatingMessage {
         var learner = manager.select($id == userId);
         return
-        {
-            rating: if (startDate != null && finishDate != null) 0 else calculateLearnerRating(userId),
-            ratingCategory: if (startDate != null && finishDate != null) [] else calculateRatingCategory(userId),
-            learner: learner.toLearnerMessage(),
-            ratingDate: if (startDate != null && finishDate != null) calculateLearnerRatingsForUsers(userId, startDate, finishDate) else [],
-            solvedTasks: if (startDate != null && finishDate != null) getSolvedTasks(userId, startDate, finishDate) else null,
-            ratingByPeriod: if (startDate != null && finishDate != null) getRatingByPeriod(userId, startDate,finishDate) else null
-        };
+            {
+                rating: if (startDate != null && finishDate != null) 0 else calculateLearnerRating(userId),
+                ratingCategory: if (startDate != null && finishDate != null) [] else calculateRatingCategory(userId),
+                learner: learner.toLearnerMessage(),
+                ratingDate: if (startDate != null && finishDate != null) calculateLearnerRatingsForUsers(userId, startDate, finishDate) else [],
+                solvedTasks: if (startDate != null && finishDate != null) getSolvedTasks(userId, startDate, finishDate) else 0,
+                ratingByPeriod: if (startDate != null && finishDate != null) getRatingByPeriod(userId, startDate,finishDate) else 0
+            };
     }
 
     public static function getSolvedTasks(userId: Float, startDate: Date, finishDate: Date): Float {
         var attempts = [for (a in Attempt.manager.search(($userId == userId) && ($solved == true) && ($datetime >= startDate) && ($datetime <= finishDate))) a];
         var solvedTasks = 0;
-        for (a in attempts) {
-            if (a.task != null) {
-                solvedTasks ++;
+        if (attempts != null) {
+            for (a in attempts) {
+                if (a.task != null) {
+                    solvedTasks ++;
+                }
             }
         }
         return solvedTasks;
@@ -119,9 +121,14 @@ class User extends sys.db.Object {
 
     public static function getRatingByPeriod(userId: Float, startDate: Date, finishDate: Date): Float {
         var allRatingsForUser: Array<RatingDate> = calculateLearnerRatingsForUsers(userId, startDate, finishDate);
-        var startRating = allRatingsForUser.shift();
-        var finishRating = allRatingsForUser.pop();
-        var result = finishRating.rating - startRating.rating;
+        var startRating: RatingDate = null;
+        var finishRating: RatingDate = null;
+        var result:Float  = 0;
+        if (allRatingsForUser.length > 2) {
+            startRating = allRatingsForUser.shift();
+            finishRating = allRatingsForUser.pop();
+            result = finishRating.rating - startRating.rating;
+        }
         return result;
     }
 
@@ -228,6 +235,9 @@ class User extends sys.db.Object {
                 result.push(lastElement);
                 result.push({id: lastElement.id, date: finishDate, rating: lastElement.rating});
             }
+        } else {
+            result.push({id:userId, date: startDate, rating:0});
+            result.push({id: userId, date: finishDate, rating:0});
         }
         return result;
     }
