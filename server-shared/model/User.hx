@@ -100,8 +100,29 @@ class User extends sys.db.Object {
             rating: if (startDate != null && finishDate != null) 0 else calculateLearnerRating(userId),
             ratingCategory: if (startDate != null && finishDate != null) [] else calculateRatingCategory(userId),
             learner: learner.toLearnerMessage(),
-            ratingDate: if (startDate != null && finishDate != null) calculateLearnerRatingsForUsers(userId, startDate, finishDate) else []
+            ratingDate: if (startDate != null && finishDate != null) calculateLearnerRatingsForUsers(userId, startDate, finishDate) else [],
+            solvedTasks: if (startDate != null && finishDate != null) getSolvedTasks(userId, startDate, finishDate) else null,
+            ratingByPeriod: if (startDate != null && finishDate != null) getRatingByPeriod(userId, startDate,finishDate) else null
         };
+    }
+
+    public static function getSolvedTasks(userId: Float, startDate: Date, finishDate: Date): Float {
+        var attempts = [for (a in Attempt.manager.search(($userId == userId) && ($solved == true) && ($datetime >= startDate) && ($datetime <= finishDate))) a];
+        var solvedTasks = 0;
+        for (a in attempts) {
+            if (a.task != null) {
+                solvedTasks ++;
+            }
+        }
+        return solvedTasks;
+    }
+
+    public static function getRatingByPeriod(userId: Float, startDate: Date, finishDate: Date): Float {
+        var allRatingsForUser: Array<RatingDate> = calculateLearnerRatingsForUsers(userId, startDate, finishDate);
+        var startRating = allRatingsForUser.shift();
+        var finishRating = allRatingsForUser.pop();
+        var result = finishRating.rating - startRating.rating;
+        return result;
     }
 
     public static function calculateLearnerRatingsForUsers(userId: Float, startDate: Date, finishDate: Date) : Array<RatingDate> {

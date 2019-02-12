@@ -58,4 +58,8 @@ enum TeacherAction {
 
     LoadRatingsForCourse(userIds: Array<Float>, startDate: Date, finishDate: Date);
     LoadRatingsForCourseFinished(rating: Array<RatingMessage>);
+
+    SortDeltaRatingByPeriod;
+    SortSolvedTasksByPeriod;
+    SortLearnersByPeriod;
 }
