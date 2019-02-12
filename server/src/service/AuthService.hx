@@ -149,8 +149,7 @@ class AuthService {
     public function getAuthenticationData(): ResponseMessage {
         var user: User = Authorization.instance.currentUser;
         if (user != null) {
-            var sessionId = Web.getParams().get("sid");
-            var session = Session.getCurrent(sessionId);
+            var session = Session.getSessionByUser(user);
             return ServiceHelper.successResponse(user.toSessionMessage(session.id));
         }
         return ServiceHelper.failResponse("Getting authentication data failed");
@@ -165,8 +164,7 @@ class AuthService {
     }
 
     public function updateProfile(profileMessage: ProfileMessage): ResponseMessage {
-        var sessionId = Web.getParams().get("sid");
-        var user: User = User.manager.select($id == Session.getCurrent(sessionId).user.id, true);
+        var user: User = User.manager.select($id == Authorization.instance.currentUser.id, true);
         if (user != null) {
             if (profileMessage.codeforcesHandle != null) {
                 if(isCodeforcesHandleValid(profileMessage.codeforcesHandle)) {
@@ -191,8 +189,7 @@ class AuthService {
     }
 
     public function updateEmail(profileMessage: ProfileMessage): ResponseMessage {
-        var sessionId = Web.getParams().get("sid");
-        var user: User = User.manager.select($id == Session.getCurrent(sessionId).user.id, true);
+        var user: User = User.manager.select($id == Authorization.instance.currentUser.id, true);
         if (user != null) {
             if(!doesEmailExist(profileMessage.email)) {
                 user.email = profileMessage.email;
