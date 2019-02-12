@@ -16,5 +16,7 @@ typedef RatingMessage = {
     rating: Float,
     ?ratingCategory: Array<RatingCategory>,
     ?learner: LearnerMessage,
-    ?ratingDate: Array<RatingDate>
+    ?ratingDate: Array<RatingDate>,
+    ?solvedTasks: Float,
+    ?ratingByPeriod: Float
 }

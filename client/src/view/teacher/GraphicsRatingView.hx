@@ -100,6 +100,7 @@ class GraphicsRatingView
     }
 
     override function render() {
+        var appState: ApplicationState = context.store.getState();
         var colours = ['rgb(0, 250, 154)','rgb(102, 205, 170)',
                         'rgb(0, 139, 139)','rgb(0, 206, 209)',
                         'rgb(123, 104, 238)','rgb(65, 105, 225)',
@@ -130,8 +131,22 @@ class GraphicsRatingView
                     data: [for (r in l.ratingDate) {x: DateTools.format(r.date, "%d.%m.%Y"), y: r.rating} ]}]
             else []
         };
-        return jsx('
+        var result = if (props.ratingForLine != null)
+            [for (r in props.ratingForLine)
+                jsx('<tr key="${r.learner.id}">
+                                    <td>${r.learner.firstName + " " + r.learner.lastName}</td>
+                                    <td>${r.ratingByPeriod}</td>
+                                    <td>${r.solvedTasks}</td>
+                                </tr>')] else [jsx('<tr></tr>')];
+
+        return
+            if (appState.teacher.currentGroup != null)
+            jsx('
                     <div>
+                        <div className="uk-margin">
+                            <Link to=${"/teacher/group/" + appState.teacher.currentGroup.info.id + ""}>
+                            <span data-uk-icon="chevron-left"></span> ${appState.teacher.currentGroup.info.name} </Link>
+                        </div>
                         <h2>Построение графика</h2>
                         <div className="uk-margin-small">
                             <label>Ученики</label>
@@ -164,7 +179,33 @@ class GraphicsRatingView
                         <div className="uk-margin-small">
                             <Line data=${data} />
                         </div>
+                         <table className="uk-table uk-table-divider">
+                            <thead>
+                                <tr>
+                                    <th><button className="uk-button uk-button-default" onClick=$sortLearners>Ученик</button></th>
+                                    <th><button className="uk-button uk-button-default" onClick=$sortDeltaRating>Приращение рейтинга</button></th>
+                                    <th><button className="uk-button uk-button-default" onClick=$sortCountTasks>Количество решенных задач</button></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                $result
+                            </tbody>
+                        </table>
                     </div>');
+        else
+        jsx('<div></div>');
+    }
+
+    function sortDeltaRating() {
+        dispatch(TeacherAction.SortDeltaRatingByPeriod);
+    }
+
+    function sortCountTasks() {
+        dispatch(TeacherAction.SortSolvedTasksByPeriod);
+    }
+
+    function sortLearners() {
+        dispatch(TeacherAction.SortLearnersByPeriod);
     }
 
     function renderChart(){
