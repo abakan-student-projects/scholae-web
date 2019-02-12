@@ -1,4 +1,4 @@
-package model;
+package codeforces_runner;
 
 enum Action {
     updateCodeforcesTasks;

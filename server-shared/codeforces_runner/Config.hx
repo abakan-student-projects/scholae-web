@@ -1,4 +1,4 @@
-package model;
+package codeforces_runner;
 
 typedef Config = {
     action: Action,

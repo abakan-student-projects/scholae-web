@@ -1,6 +1,6 @@
 package jobs;
 
-import model.Config;
+import codeforces_runner.Config;
 
 enum ScholaeJob {
     RefreshResultsForGroup(groupId: Float);
