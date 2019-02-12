@@ -1,5 +1,6 @@
 package ;
 
+import model.Session;
 import haxe.io.Bytes;
 import haxe.Serializer;
 import model.Job;
@@ -242,27 +243,46 @@ class Main {
         var channel = mq.channel();
         var users: List<User> = User.manager.all();
         var timeNow = Date.now();
+        trace("start");
         for (user in users) {
+            trace("user - " + user.firstName + " " + user.lastName);
             var jobsByUser: Job = Job.manager.search($sessionId == "Update user results : " + user.id).first();
             if (jobsByUser == null ||
                 timeNow.getTime() > DateTools.delta(
                     if (jobsByUser != null) jobsByUser.creationDateTime else Date.fromTime(0),
-                    86400 * 500
+                    43200 * 1000
                 ).getTime()
             ) {
-                if (user.lastResultsUpdateDate == null ||
-                    DateTools.delta(
-                        if (user.lastResultsUpdateDate != null) user.lastResultsUpdateDate else Date.fromTime(0),
-                        86400 * 1000
-                    ).getTime() < timeNow.getTime()
-                ) {
-                    //JobQueue.publishScholaeJob(ScholaeJob.UpdateUserResults(user.id), "Update user results : " + user.id);
+                var session = Session.getSessionByUser(user);
+                var isOfflineUserShouldUpdate: Bool = DateTools.delta(
+                    if (user.lastResultsUpdateDate != null) user.lastResultsUpdateDate else Date.fromTime(0),
+                    86400 * 1000
+                ).getTime() < timeNow.getTime();
+                var isOnlineUserShouldUpdate = DateTools.delta(
+                    if(session != null) session.lastRequestTime else Date.fromTime(0),
+                    1800 * 1000
+                ).getTime() > timeNow.getTime() &&
+                DateTools.delta(
+                    if (user.lastResultsUpdateDate != null) user.lastResultsUpdateDate else Date.fromTime(0),
+                    300 * 1000
+                ).getTime() < timeNow.getTime();
+                if (user.lastResultsUpdateDate == null || isOfflineUserShouldUpdate || isOnlineUserShouldUpdate) {
                     publishScholaeJob(channel, ScholaeJob.UpdateUserResults(user.id), "Update user results : " + user.id);
                 }
             }
         }
+        trace("finish");
         channel.close();
         mq.close();
+    }
+
+    private static function getConnectionParams(): ConnectionParameters {
+        var params:ConnectionParameters = new ConnectionParameters();
+        params.username = "scholae";
+        params.password = "scholae";
+        params.vhostpath = "scholae";
+        params.serverhost = "127.0.0.1";
+        return params;
     }
 
     private static function publishScholaeJob(channel: Channel, job: ScholaeJob, sessionId: String): Float {
@@ -280,14 +300,5 @@ class Main {
         })),"jobs" ,"common");
 
         return jobModel.id;
-    }
-
-    private static function getConnectionParams(): ConnectionParameters {
-        var params:ConnectionParameters = new ConnectionParameters();
-        params.username = "scholae";
-        params.password = "scholae";
-        params.vhostpath = "scholae";
-        params.serverhost = "127.0.0.1";
-        return params;
     }
 }
