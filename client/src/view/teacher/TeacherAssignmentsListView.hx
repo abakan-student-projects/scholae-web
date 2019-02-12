@@ -89,7 +89,7 @@ class TeacherAssignmentsListView extends ReactComponentOfProps<TeacherAssignment
         return jsx('
                 <tr key=${learner.id}>
                     <td>
-                        <Link to=${"/teacher/user/" + learner.id +""}>${learner.firstName} ${learner.lastName}</Link><button data-uk-icon="trash" onClick=${startDeleteLearner.bind(learner.id,props.group )}></button>
+                        <Link to=${"/teacher/group/" + props.group.id + "/user/" + learner.id +""}>${learner.firstName} ${learner.lastName}</Link><button data-uk-icon="trash" onClick=${startDeleteLearner.bind(learner.id,props.group )}></button>
                     </td>
                     <TeacherTrainingCellView training=$t tags=${props.tags} group=${props.group} assignment=$a/>
 

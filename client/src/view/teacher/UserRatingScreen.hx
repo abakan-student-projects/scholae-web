@@ -26,15 +26,13 @@ class UserRatingScreen
     }
 
     function mapState(state: ApplicationState, props: RouteComponentProps): LearnerRatingProps {
-        if (state.scholae.auth.loggedIn){
             TeacherViewsHelper.ensureTagsLoaded(state);
-            TeacherViewsHelper.ensureGroupLoaded(state.teacher.currentGroup.info.id, state);
-        }
+            TeacherViewsHelper.ensureGroupLoaded(props.params.id, state);
 
         return {
             tags: if (state.teacher.tags != null && state.teacher.tags.loaded) state.teacher.tags.data else [],
             allRating: if (null != state.teacher.currentGroup) state.teacher.currentGroup.rating.data else null,
-            learnerId: props.params.id
+            learnerId: props.params.userId
            }
     }
 }

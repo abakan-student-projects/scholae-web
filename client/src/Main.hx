@@ -74,7 +74,7 @@ class Main {
 					    <Route path="registration" component=$RegistrationScreen />
 					    <Route path="activation/:code" component=$EmailActivationScreen />
 					    <Route path="teacher/group/:id" component=$TeacherGroupScreen onEnter=$requireAuth />
-					    <Route path="teacher/user/:id" component=$UserRatingScreen onEnter=$requireAuth />
+					    <Route path="teacher/group/:id/user/:userId" component=$UserRatingScreen />
 					    <Route path="teacher/group/:id/learners" component=$ClassLearnersRatingScreen />
 					    <Route path="teacher/group/:id/new-assignment" component=$TeacherNewAssignmentScreen onEnter=$requireAuth />
 					    <Route path="teacher/group/:groupId/training/:trainingId" component=$TeacherTrainingScreen onEnter=$requireAuth />

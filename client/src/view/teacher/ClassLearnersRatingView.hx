@@ -43,25 +43,29 @@ class ClassLearnersRatingView
                                             <td>${r.rating}</td>
                                         </tr>')]
                     else [jsx('<tr key="1"></tr>')];
-        return jsx('
-                <div key="listLearners">
-                    <div className="uk-margin">
-                        <Link to=${"/teacher/group/" + state.teacher.currentGroup.info.id + ""}>
-                        <span data-uk-icon="chevron-left"></span> ${state.teacher.currentGroup.info.name} </Link>
+        return
+            if (null != props.group)
+                jsx('
+                    <div key="listLearners">
+                        <div className="uk-margin">
+                            <Link to=${"/teacher/group/" + state.teacher.currentGroup.info.id + ""}>
+                            <span data-uk-icon="chevron-left"></span> ${state.teacher.currentGroup.info.name} </Link>
+                        </div>
+                        <table className="uk-table uk-table-divider">
+                            <thead>
+                                <tr>
+                                    <th>Ученик</th>
+                                    <th>Рейтинг</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                $learner
+                            </tbody>
+                        </table>
                     </div>
-                    <table className="uk-table uk-table-divider">
-                        <thead>
-                            <tr>
-                                <th>Ученик</th>
-                                <th>Рейтинг</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            $learner
-                        </tbody>
-                    </table>
-                </div>
-                ');
+                    ');
+            else
+                jsx('<div></div>');
     }
 
 }

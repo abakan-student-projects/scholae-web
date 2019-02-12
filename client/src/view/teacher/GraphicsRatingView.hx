@@ -73,9 +73,9 @@ class GraphicsRatingView
             }
         }
         sortedDates.push({id:0, date: endDate, rating: 0});
-        ArraySort.sort(sortedDates, function(x: RatingDate, y: RatingDate) { return if
-        ((x.date.getDate() > y.date.getDate()) && (x.date.getMonth() == y.date.getMonth()) && (x.date.getFullYear() == y.date.getFullYear())
-        || (x.date.getMonth() > y.date.getMonth()) || (x.date.getFullYear() > y.date.getFullYear())) 1 else -1;});
+        ArraySort.sort(sortedDates, function(x:RatingDate, y: RatingDate) { var x2 = ((x.date.getFullYear() - 2010 - 1) * 12 + x.date.getMonth()) * 31 + x.date.getDate();
+            var y2 = ((y.date.getFullYear() - 2010 - 1) * 12 + y.date.getMonth()) * 31 + y.date.getDate();
+            return if (x2 > y2) 1 else -1;});
         var sortedDatesFinished: Array<Date> = [];
         var prevData: RatingDate = null;
         var i = 1;
