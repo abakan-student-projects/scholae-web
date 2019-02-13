@@ -1,5 +1,15 @@
 package ;
 
+import codeforces.RunnerAction;
+import codeforces.CodeforcesRunner;
+import codeforces.Contest;
+import codeforces.ProblemsResponse;
+import codeforces.ProblemStatistics;
+import model.CodeforcesTaskTag;
+import model.CodeforcesTag;
+import model.CodeforcesTask;
+import codeforces.Problem;
+import codeforces.Codeforces;
 import model.User;
 import messages.MessagesHelper;
 import model.Training;
@@ -15,6 +25,10 @@ import org.amqp.fast.FastImport.Delivery;
 import org.amqp.fast.FastImport.Channel;
 import org.amqp.ConnectionParameters;
 import org.amqp.fast.neko.AmqpConnection;
+import haxe.ds.StringMap;
+import haxe.ds.IntMap;
+import haxe.Json;
+import sys.db.Types.SBigInt;
 
 class Worker {
 
@@ -82,6 +96,7 @@ class Worker {
                         job.delete();
                     };
                 };
+
                 case RefreshResultsForUser(userId): {
                     var user: User = User.manager.get(userId);
                     Sys.sleep(0.4);
@@ -114,6 +129,16 @@ class Worker {
                         job.update();
                     };
                 };
+
+                case UpdateCodeforcesData(cfg): {
+                    var codeforcesRunner: CodeforcesRunner = new CodeforcesRunner(cfg);
+                    codeforcesRunner.runAll();
+                    Sys.sleep(0.4);
+                    var job: Job = Job.manager.get(msg.id);
+                    if (null != job) {
+                        job.delete();
+                    };
+                };
             }
         }
 
@@ -125,4 +150,6 @@ class Worker {
 
         channel.ack(delivery);
     }
+
+
 }

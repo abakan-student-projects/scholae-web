@@ -1,1 +1,0 @@
-* * * * * neko /localbuild/scholae.n -a updateUsersResults
