@@ -96,13 +96,13 @@ class LearnerRatingView
                         if (r.rating != 0) { id: r.id, rating: r.rating }];
                     var ratingNotNullCategorySorted = getSortedNameTag(ratingNotNullCategory);
                     ratingResults = [for (r in ratingNotNullCategorySorted)
-                        jsx('<tr key="${r.id}"><td>${r.name}</td><td><progress className="uk-progress" value=${r.rating} max="11000" key="${r.id}"></progress></td><td>${r.rating}</td></tr>')];
+                        jsx('<tr key="${r.id}"><td>${r.name}</td><td><progress className="uk-progress" value=${r.rating} max="5" key="${r.id}"></progress></td><td>${r.rating}</td></tr>')];
 
                     var ratingNullCategory = [for (r in userRating.ratingCategory)
                         if (r.rating == 0) { id: r.id, rating: r.rating }];
                     var ratingNullCategorySorted = getSortedNameTag(ratingNullCategory);
                     ratingNullResults = [for (r in ratingNullCategorySorted)
-                        jsx('<tr key="${r.id}"><td>${r.name}</td><td><progress className="uk-progress" value=${r.rating} max="11000" key="${r.id}"></progress></td><td>${r.rating}</td></tr>')];
+                        jsx('<tr key="${r.id}"><td>${r.name}</td><td><progress className="uk-progress" value=${r.rating} max="5" key="${r.id}"></progress></td><td>${r.rating}</td></tr>')];
                 }
             }
         } else {

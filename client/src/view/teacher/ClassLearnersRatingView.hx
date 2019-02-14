@@ -39,7 +39,7 @@ class ClassLearnersRatingView
                             for (l in props.learners)
                                 if (l.id == r.learner.id)
                                     jsx('<tr key="${r.learner.id}">
-                                            <td><Link to=${"/teacher/user/" + r.learner.id +""}>${r.learner.firstName} ${r.learner.lastName}</Link></td>
+                                            <td><Link to=${"/teacher/group/" + props.group.id + "/user/" + r.learner.id +""}>${r.learner.firstName} ${r.learner.lastName}</Link></td>
                                             <td>${r.rating}</td>
                                         </tr>')]
                     else [jsx('<tr key="1"></tr>')];

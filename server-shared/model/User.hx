@@ -233,15 +233,14 @@ class User extends sys.db.Object {
     }
 
    public static function calculateLearnerRating(userId: Float): Float {
-       var rating:Float = 0;
-       var results = Attempt.manager.search(($userId == userId) && ($solved == true));
-       for (item in results) {
-           if (item.task != null){
-               rating += item.task.level;
+       var rating: Float = 0;
+       var ratingCategories = calculateRatingCategory(userId);
+       for (r in ratingCategories) {
+           if (r.rating != 0) {
+               rating += r.rating;
            }
        }
-       rating = Math.log(rating) * 1000;
-       return Math.round(rating);
+        return Math.round(Math.log(rating)*100)/100;
    }
 
     public static function calculateRatingCategory(userId: Float): Array<RatingCategory> {
@@ -256,18 +255,20 @@ class User extends sys.db.Object {
             }
         }
         var taskTagIds = CodeforcesTaskTag.manager.search($taskId in taskIds);
+        var res = [];
+        var ratingLearnerCategoryTask: Float = 0;
         for (t in tagIds) {
             for (taskTag in taskTagIds) {
                 if (taskTag.tag.id == t.id) {
-                    rating += taskTag.task.level;
+                    ratingLearnerCategoryTask += Math.pow(2, taskTag.task.level-1) * (taskTag.tag.importance/tagIds.length);
                 }
             }
-            if (rating != 0) {
-                rating = Math.log(rating) * 1000;
-                res.push({id: t.id, rating: Math.round(rating)});
-                rating = 0;
+            if (ratingLearnerCategoryTask != 0) {
+                ratingLearnerCategoryTask = Math.log(ratingLearnerCategoryTask+1);
+                res.push({id: t.id, rating: Math.round(ratingLearnerCategoryTask*100)/100});
+                ratingLearnerCategoryTask = 0;
             } else {
-                res.push({id: t.id, rating: rating});
+                res.push({id:t.id, rating: 0});
             }
         }
         return res;
