@@ -63,7 +63,7 @@ class LearnerRatingView
 
             firstName = if (props.rating.learner.firstName != null) props.rating.learner.firstName else state.scholae.auth.firstName;
             lastName = if (props.rating.learner.lastName != null) props.rating.learner.lastName else state.scholae.auth.lastName;
-            rating =  jsx('<h1>Рейтинг:${props.rating.rating}</h1>');
+            rating =  jsx('<h1>Рейтинг: ${props.rating.rating}</h1>');
 
             var ratingNotNullCategory = [for (r in props.rating.ratingCategory)
                 if (r.rating != 0) { id: r.id, rating: r.rating }];

@@ -240,7 +240,7 @@ class User extends sys.db.Object {
                rating += r.rating;
            }
        }
-        return Math.round(Math.log(rating)*100)/100;
+        return Math.round(rating*100)/100;
    }
 
     public static function calculateRatingCategory(userId: Float): Array<RatingCategory> {
