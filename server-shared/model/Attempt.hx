@@ -64,7 +64,8 @@ class Attempt extends sys.db.Object {
             datetime: datetime,
             trainingId: null,
             assignmentId: null,
-            groupId: null
+            groupId: null,
+            vendorId: vendorId
         };
     }
 

@@ -14,6 +14,7 @@ import react.ReactMacro.jsx;
 import router.Link;
 import react.ReactUtil.copy;
 import messages.AttemptMessage;
+import js.html.Window;
 
 typedef TeacherDashboardProps = {
     groups: Array<GroupMessage>,
@@ -26,7 +27,6 @@ typedef TeacherDashboardState = {
 }
 
 class TeacherDashboardView extends ReactComponentOfProps<TeacherDashboardProps> implements IConnectedComponent {
-
     public function new()
     {
         super();
@@ -39,7 +39,6 @@ class TeacherDashboardView extends ReactComponentOfProps<TeacherDashboardProps> 
                 jsx('<NewGroupView dispatch=${dispatch} close=$onCloseAddGroupClick/>')
             else
                 jsx('<button className="uk-button uk-button-default" onClick=${onAddGroupClick}>Добавить курс</button>');
-
         var lastAttempts =
             if (props.lastAttempts != null) {
                 var a = [for (a in props.lastAttempts)
@@ -47,7 +46,11 @@ class TeacherDashboardView extends ReactComponentOfProps<TeacherDashboardProps> 
                         <div className="uk-margin" key=${a.id}>
                             ${DateUtils.toStringWithTime(a.datetime)}
                             <Link className="uk-margin-small-left" to=${"/teacher/group/" + a.groupId + "/training/" + a.trainingId}>${a.learner.lastName} ${a.learner.firstName} - ${a.task.name}</Link>
-                            <span className=${"uk-label uk-margin-small-left " + if(a.solved)"uk-label-success"else"uk-label-danger"}>${if(a.solved) "Решено" else "Ошибка"}</span>
+                            <span className=${"uk-label uk-margin-small-left " + if(a.solved)"uk-label-success"else"uk-label-danger"}>
+                                <a className="uk-link-text" href=${"http://codeforces.com/contest/"+ a.task.codeforcesContestId +"/submission/"+a.vendorId} target="_blank">
+                                    ${if(a.solved) "Решено" else "Ошибка"}
+                                </a>
+                            </span>
                         </div>')
                 ];
                 jsx('<div className="attempts">$a</div>');
@@ -72,10 +75,10 @@ class TeacherDashboardView extends ReactComponentOfProps<TeacherDashboardProps> 
 
                     <h2>Курсы</h2>
 
-                    $list
-                    $deleteCourse
                     <div className="uk-margin-top">
                         $newGroup
+                        $list
+                        $deleteCourse
                     </div>
                 </div>
             ');
