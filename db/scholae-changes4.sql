@@ -1,5 +1,5 @@
 
-ALTER TABLE `CodeforcesTags` ADD `importance` FLOAT NULL AFTER `russianName`;
+ALTER TABLE `CodeforcesTags` ADD `importance` FLOAT NULL DEFAULT '0' AFTER `russianName`;
 UPDATE `CodeforcesTags` SET `importance` = 0.617422 WHERE `CodeforcesTags`.`id` = 1;
 UPDATE `CodeforcesTags` SET `importance` = 0.904154 WHERE `CodeforcesTags`.`id` = 2;
 UPDATE `CodeforcesTags` SET `importance` = 0.792531 WHERE `CodeforcesTags`.`id` = 3;
