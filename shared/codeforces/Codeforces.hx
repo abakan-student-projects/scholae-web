@@ -87,10 +87,9 @@ class Codeforces {
 
         return { problems: problems, problemStatistics: problemStatistics};
     }
-
-    public static function getCodeForcesHandle(userHandle: String): String {
+    public static function checkCodeForcesURL (url: String): String{
         var result : String;
-        var req = new haxe.Http(baseApiUrl + "user.info?handles=" + userHandle);
+        var req = new haxe.Http(url);
         req.onData =  function(data) {
             result = data;
         }
@@ -99,6 +98,10 @@ class Codeforces {
         }
         req.request(false);
         return result;
+    }
+
+    public static function getCodeForcesHandle(userHandle: String): String {
+        return checkCodeForcesURL(baseApiUrl + "user.info?handles=" + userHandle);
     }
 
     public static function getProblemUrl(contestId: Int, index: String): String {
