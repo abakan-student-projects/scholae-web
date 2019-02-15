@@ -1,5 +1,7 @@
 package;
 
+import notification.NotificationMessage;
+import services.NotificationServiceClient;
 import view.UserProfileScreen;
 import view.teacher.GraphicsRatingScreen;
 import view.teacher.ClassLearnersRatingScreen;
@@ -109,6 +111,7 @@ class Main {
                 .then(
                     function(sessionMessage) {
                         store.dispatch(Authenticated(sessionMessage));
+                        trace("Restore Session");
                     },
                     function(e) {
                         // do nothing
@@ -124,7 +127,9 @@ class Main {
                 AuthServiceClient.instance.checkSession(Session.sessionId)
                     .then(
                         function(sessionMessage) {
+                            trace("Require Auth");
                             store.dispatch(Authenticated(sessionMessage));
+                            NotificationServiceClient.instance.start();
                         },
                         function(e) {
                             Session.logout();
