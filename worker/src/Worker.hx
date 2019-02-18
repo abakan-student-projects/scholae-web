@@ -1,5 +1,8 @@
 package ;
 
+import notification.NotificationStatus;
+import utils.StringUtils;
+import notification.Notification;
 import codeforces.RunnerAction;
 import codeforces.CodeforcesRunner;
 import codeforces.Contest;
@@ -134,6 +137,32 @@ class Worker {
                     var codeforcesRunner: CodeforcesRunner = new CodeforcesRunner(cfg);
                     codeforcesRunner.runAll();
                     Sys.sleep(0.4);
+                    var job: Job = Job.manager.get(msg.id);
+                    if (null != job) {
+                        job.delete();
+                    };
+                };
+
+                case SendNotificationToEmail(notificationId): {
+                    var notification: Notification = Notification.manager.get(notificationId);
+                    var user: User = User.manager.get(notification.user.id);
+                    var subjectForUser ='Scholae: notification';
+                    var password = StringUtils.getRandomString(StringUtils.alphaNumeric, 8);
+                    //todo affirm email's templates
+                    //var template = new haxe.Template(haxe.Resource.getString("renewPasswordEmail"));
+                    var message = notification.message;
+                    var from = 'From: no-reply@scholae.lambda-calculus.ru';
+                    //todo sending email in worker
+                    //var email = mail(user.email, subjectForUser, message, from);
+                    var email = true;
+                    trace(message);
+                    if (email == true) {
+                        //notification.status = NotificationStatus.Completed;
+                        notification.status = "Completed";
+                    } else {
+                        //notification.status = NotificationStatus.InProgress;
+                        notification.status = "InProgress";
+                    }
                     var job: Job = Job.manager.get(msg.id);
                     if (null != job) {
                         job.delete();

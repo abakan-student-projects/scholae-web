@@ -8,4 +8,5 @@ enum RunnerAction {
     updateTaskIdsOnAttempts;
     updateUsersResults;
     updateCodeforcesData;
+    checkOutdatedNotifications;
 }

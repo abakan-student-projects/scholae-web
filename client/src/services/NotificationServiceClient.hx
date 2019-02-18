@@ -2,7 +2,6 @@ package services;
 
 import utils.UIkit;
 import notification.NotificationMessage;
-import js.Promise;
 
 class NotificationServiceClient extends BaseServiceClient {
 
@@ -13,6 +12,7 @@ class NotificationServiceClient extends BaseServiceClient {
         return _instance;
     }
 
+    //todo to replace this crutch to more correct code
     public var isWorking: Bool;
 
     public function new() {
@@ -32,9 +32,7 @@ class NotificationServiceClient extends BaseServiceClient {
     }
 
     public function getNotifications(): Void {
-        trace("isWorking = " + isWorking);
         if(isWorking) {
-            trace("start getting notification");
             var requestNotification = request(function(success, fail) {
                 context.NotificationService.getNotifications.call([], function(e) {
                     processResponse(e, success, fail);
@@ -42,12 +40,10 @@ class NotificationServiceClient extends BaseServiceClient {
             });
             requestNotification.then(
                 function(notifications) {
-                    trace("go send notify");
                     sendNotification(notifications);
                     planServerRequestOrStop();
                 },
                 function(e) {
-                    trace("error while get notification - " + e);
                     planServerRequestOrStop();
                 });
         }
@@ -56,9 +52,11 @@ class NotificationServiceClient extends BaseServiceClient {
     private function sendNotification(notifications: Array<NotificationMessage>) {
         if(notifications != null) {
             for (notification in notifications) {
-                if(notification.link != null)
+                //todo and maybe this crutch
+                if(notification.link != null) {
                     notification.message =
                         "<a class=\"uk-link-reset\" href=\""+notification.link+"\" target=\"_blank\">"+notification.message+"</a>";
+                }
                 UIkit.notification({
                     message: notification.message,
                     status: notification.type,
