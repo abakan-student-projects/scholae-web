@@ -37,7 +37,8 @@ class Teacher
         resultsRefreshing: false,
         newAssignment: {
             possibleTasks: RemoteDataHelper.createEmpty()
-        }
+        },
+        ratingByPeriod: RemoteDataHelper.createEmpty()
     };
 
     public var store: StoreMethods<ApplicationState>;
@@ -205,42 +206,32 @@ class Teacher
                 });
             case LoadRatingsForCourse(userIds, startDate, finishDate):
                 copy(state, {
-                    currentGroup: copy(state.currentGroup, {
-                        rating:  RemoteDataHelper.createLoading()
-                    })
-                });
-            case LoadRatingsForCourseFinished(rating):
+                    ratingByPeriod:  RemoteDataHelper.createLoading()
+                    });
+            case LoadRatingsForCourseFinished(ratingByPeriod):
                 copy(state, {
-                    currentGroup: copy(state.currentGroup, {
-                        rating: RemoteDataHelper.createLoaded(rating)
-                    })
-                });
+                        ratingByPeriod: RemoteDataHelper.createLoaded(ratingByPeriod)
+                    });
 
             case SortDeltaRatingByPeriod:
-                ArraySort.sort(state.currentGroup.rating.data, function(x: RatingMessage, y:RatingMessage){ return if(x.ratingByPeriod < y.ratingByPeriod) 1 else -1; });
+                ArraySort.sort(state.ratingByPeriod.data, function(x: RatingMessage, y:RatingMessage){ return if(x.ratingByPeriod < y.ratingByPeriod) 1 else -1; });
                 copy(state, {
-                    currentGroup: copy(state.currentGroup, {
-                        rating:{data: [for (r in state.currentGroup.rating.data) r], loaded: true, loading: false }
-                    })
-                });
+                    ratingByPeriod:{data: [for (r in state.ratingByPeriod.data) r], loaded: true, loading: false }
+                    });
 
             case SortSolvedTasksByPeriod:
-                ArraySort.sort(state.currentGroup.rating.data, function(x:RatingMessage, y:RatingMessage) { return if (x.solvedTasks < y.solvedTasks) 1 else -1; });
+                ArraySort.sort(state.ratingByPeriod.data, function(x:RatingMessage, y:RatingMessage) { return if (x.solvedTasks < y.solvedTasks) 1 else -1; });
                 copy(state, {
-                   currentGroup: copy(state.currentGroup, {
-                       rating: { data: [for (r in state.currentGroup.rating.data) r], loaded: true, loading: false }
-                   })
-                });
+                       ratingByPeriod: { data: [for (r in state.ratingByPeriod.data) r], loaded: true, loading: false }
+                   });
 
             case SortLearnersByPeriod:
-                ArraySort.sort(state.currentGroup.rating.data, function(x:RatingMessage, y: RatingMessage)
+                ArraySort.sort(state.ratingByPeriod.data, function(x:RatingMessage, y: RatingMessage)
                     { return if (x.learner.firstName > y.learner.firstName ||
                     (x.learner.lastName > y.learner.lastName && x.learner.firstName == y.learner.firstName)) 1 else -1; });
                 copy(state, {
-                    currentGroup: copy(state.currentGroup, {
-                        rating: { data: [for (r in state.currentGroup.rating.data) r], loaded: true, loading: false }
-                    })
-                });
+                        ratingByPeriod: { data: [for (r in state.ratingByPeriod.data) r], loaded: true, loading: false }
+                    });
         }
     }
 
@@ -350,7 +341,7 @@ class Teacher
 
             case LoadRatingsForCourse(userIds, startDate, finishDate):
                 TeacherServiceClient.instance.getRatingsForUsers(userIds, startDate, finishDate)
-                    .then(function(rating) { store.dispatch(LoadRatingsForCourseFinished(rating)); });
+                    .then(function(ratingByPeriod) { store.dispatch(LoadRatingsForCourseFinished(ratingByPeriod)); });
                 next();
 
             default: next();

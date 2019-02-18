@@ -22,6 +22,7 @@ typedef TeacherState = {
         trainingsByUsersAndAssignments: StringMap<StringMap<Array<TrainingMessage>>>,
         rating: RemoteData<Array<RatingMessage>>
     },
+    ratingByPeriod: RemoteData<Array<RatingMessage>>,
     showNewGroupView: Bool,
     tags: RemoteData<Array<TagMessage>>,
     lastLearnerAttempts: RemoteData<Array<AttemptMessage>>,
