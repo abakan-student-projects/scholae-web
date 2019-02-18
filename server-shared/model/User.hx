@@ -98,7 +98,7 @@ class User extends sys.db.Object {
         var learner = manager.select($id == userId);
         return
         {
-            rating: if (startDate != null && finishDate != null) null else calculateLearnerRating(userId),
+            rating: if (startDate != null && finishDate != null) 0 else calculateLearnerRating(userId),
             ratingCategory: if (startDate != null && finishDate != null) [] else calculateRatingCategory(userId),
             learner: learner.toLearnerMessage(),
             ratingDate: if (startDate != null && finishDate != null) calculateLearnerRatingsForUsers(userId, startDate, finishDate) else [],
