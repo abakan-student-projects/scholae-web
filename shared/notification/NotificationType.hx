@@ -1,9 +1,8 @@
 package notification;
 
-@:enum
-abstract NotificationType(String) {
-    var Primary = "Primary";
-    var Success = "Success";
-    var Warning = "Warning";
-    var Danger = "Danger";
+class NotificationType {
+    public static var primary(default, null) = "Primary";
+    public static var success(default, null) = "Success";
+    public static var warning(default, null) = "Warning";
+    public static var danger(default, null) = "Danger";
 }

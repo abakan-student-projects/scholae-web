@@ -1,5 +1,6 @@
 package ;
 
+import notification.NotificationDestination;
 import notification.NotificationStatus;
 import utils.StringUtils;
 import notification.Notification;
@@ -157,12 +158,11 @@ class Worker {
                     var email = true;
                     trace(message);
                     if (email == true) {
-                        //notification.status = NotificationStatus.Completed;
-                        notification.status = "Completed";
+                        notification.status = NotificationStatus.Completed;
                     } else {
-                        //notification.status = NotificationStatus.InProgress;
-                        notification.status = "InProgress";
+                        notification.status = NotificationStatus.InProgress;
                     }
+                    notification.update();
                     var job: Job = Job.manager.get(msg.id);
                     if (null != job) {
                         job.delete();

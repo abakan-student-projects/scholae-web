@@ -1,5 +1,6 @@
 package ;
 
+import notification.NotificationStatus;
 import notification.Notification;
 import codeforces.CodeforcesRunner;
 import codeforces.RunnerConfig;
@@ -176,10 +177,8 @@ class Main {
     public static function updateCodeforcesData() {
         var mq: AmqpConnection = new AmqpConnection(getConnectionParams());
         var channel = mq.channel();
-        trace("start update");
         var job: Job = Job.manager.search($sessionId == "updateCodeforcesData").first();
         if(job == null) {
-            trace("send job");
             publishScholaeJob(channel, ScholaeJob.UpdateCodeforcesData(codeforcesRunner.config), "updateCodeforcesData");
         }
         channel.close();
@@ -189,12 +188,16 @@ class Main {
     public static function checkOutdatedNotifications() {
         var mq: AmqpConnection = new AmqpConnection(getConnectionParams());
         var channel = mq.channel();
-        var notification: List<Notification> = Notification.manager.search($status == "new" || $status == "InProgress");
-        for (notification in notification) {
+        var outdatedDate: Date = DateTools.delta(Date.now(), 86400 * 1000 * 7 * (-1));
+        var notifications: List<Notification> =
+            Notification.manager.search(
+                $date <= outdatedDate && ($status == NotificationStatus.New || $status == NotificationStatus.InProgress)
+            );
+        for (notification in notifications) {
             var jobsByNotification: Job =
                 Job.manager.search($sessionId == "Sending outdated notifications" + notification.id).first();
-            if (DateTools.delta(notification.date, 86400 * 1000 * 7).getTime() < Date.now().getTime() &&
-                jobsByNotification == null) {
+            trace(jobsByNotification);
+            if (jobsByNotification == null) {
                 publishScholaeJob(
                     channel,
                     ScholaeJob.SendNotificationToEmail(notification.id),

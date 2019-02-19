@@ -22,8 +22,7 @@ class NotificationService {
                         Notification.getNotificationsByUserForClient(Authorization.instance.currentUser),
                         function(t: Notification) {
                             if (t.secondaryDestination != null &&
-                                t.secondaryDestination == "Mail") {
-                                //todo add delay to send email
+                                t.secondaryDestination == NotificationDestination.mail) {
                                 sendNotificationToEmail(t);
                             }
                             return t.toNotificationMessage();
@@ -33,10 +32,16 @@ class NotificationService {
         }
     }
 
-    private function sendNotificationToEmail(notification: Notification): Void {
+    private function sendNotificationToEmail(notification: Notification) {
         JobQueue.publishScholaeJob(
             ScholaeJob.SendNotificationToEmail(notification.id),
             Authorization.instance.session.id
         );
+        /*haxe.Timer.delay(
+            function(){
+
+                trace("finish timer sending to email after 1 min");
+            }, notification.delayBetweenSending * 1000
+        );*/
     }
 }

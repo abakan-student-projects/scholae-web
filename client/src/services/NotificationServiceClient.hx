@@ -1,7 +1,10 @@
 package services;
 
+import js.html.NotificationPermission;
 import utils.UIkit;
 import notification.NotificationMessage;
+import js.html.Notification;
+import js.html.Window;
 
 class NotificationServiceClient extends BaseServiceClient {
 
@@ -53,19 +56,21 @@ class NotificationServiceClient extends BaseServiceClient {
         if(notifications != null) {
             for (notification in notifications) {
                 //todo and maybe this crutch
-                if(notification.link != null) {
+                if (notification.link != null) {
                     notification.message =
-                        "<a class=\"uk-link-reset\" href=\""+notification.link+"\" target=\"_blank\">"+notification.message+"</a>";
+                        notification.message + "<br>" +
+                        "<button class=\"uk-button uk-width-1-1 uk-margin-small-top\" onClick=\"window.open('" +
+                        notification.link + "','_blank')\">Перейти</button>";
                 }
                 UIkit.notification({
                     message: notification.message,
                     status: notification.type,
-                    timeout: 10000,
+                    timeout: 5000,
                     pos: 'bottom-right' });
             }
         }
     }
     private function planServerRequestOrStop(): Void {
-        haxe.Timer.delay(getNotifications, 30000);
+        haxe.Timer.delay(getNotifications, 15000);
     }
 }
