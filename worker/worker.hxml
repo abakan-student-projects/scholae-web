@@ -6,4 +6,5 @@
 -cp ../server-shared
 -cp ../lib/haxe-htmlparser/library
 -cp ../lib/hxamqp
+-cp ../lib/haxe-mtwin
 -lib record-macros

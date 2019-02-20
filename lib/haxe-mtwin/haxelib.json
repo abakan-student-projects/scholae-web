@@ -1,0 +1,10 @@
+{
+  "name": "mtwin",
+  "url": "http://www.motion-twin.com",
+  "license": "BSD",
+  "tags": [],
+  "description": "Motion-Twin public Haxe libraries contains many tools which make webdevelopers life easier.",
+  "version": "1.6.0",
+  "releasenote": "Haxe 3.0 changes",
+  "contributors": ["ncannasse"]
+}

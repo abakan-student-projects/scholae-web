@@ -17,5 +17,6 @@
     <orderEntry type="module" module-name="shared" />
     <orderEntry type="library" name="hxamqp" level="project" />
     <orderEntry type="library" name="hxargs" level="project" />
+    <orderEntry type="library" name="haxe-mtwin" level="project" />
   </component>
 </module>

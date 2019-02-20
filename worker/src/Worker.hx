@@ -1,5 +1,9 @@
 package ;
 
+import mtwin.mail.Part;
+import mtwin.mail.Smtp;
+import notification.NotificationStatus;
+import model.Notification;
 import codeforces.CodeforcesRunner;
 import model.User;
 import messages.MessagesHelper;
@@ -127,16 +131,31 @@ class Worker {
                 };
 
                 case SendNotificationToEmail(notificationId): {
-                    var remotingUrl = "http://scholae.lambda-calculus.ru/remoting/";
-                    var remotingConnect = haxe.remoting.HttpAsyncConnection.urlConnect(remotingUrl);
-                    remotingConnect.setErrorHandler( function(err) { trace("Error : "+Std.string(err)); } );
-                    remotingConnect.NotificationService.sendEmail.call([notificationId], function(e) {
-                        if(e) {
-                            trace("Send email successed");
-                        } else {
-                            trace("Send email failed");
-                        }
-                    });
+                    var notification: Notification = Notification.manager.get(notificationId);
+                    var user: User = User.manager.get(notification.user.id);
+                    var subjectForUser ='Scholae: notification';
+                    //todo affirm email's templates
+                    //var template = new haxe.Template(haxe.Resource.getString("renewPasswordEmail"));
+                    var message = notification.message;
+                    var from = 'no-reply@scholae.lambda-calculus.ru';
+                    var smtpHost = "scholae.lambda-calculus.ru"; //todo change host to correct
+
+                    var email = new Part("multipart/alternative");
+                    email.setHeader("From", from);
+                    email.setHeader("To", user.email);
+                    email.setDate();
+                    email.setHeader("Subject", subjectForUser);
+                    var emailPart = email.newPart("text/plain");
+                    emailPart.setContent(message);
+                    try {
+                        trace("trying send email");
+                        Smtp.send(smtpHost, from, user.email, email.get());
+                        notification.status = NotificationStatus.Completed;
+                    } catch (e: Dynamic) {
+                        trace("SMTP Connection error: " + e);
+                        notification.status = NotificationStatus.InProgress;
+                    }
+                    notification.update();
                     var job: Job = Job.manager.get(msg.id);
                     if (null != job) {
                         job.delete();
@@ -153,6 +172,4 @@ class Worker {
 
         channel.ack(delivery);
     }
-
-
 }
