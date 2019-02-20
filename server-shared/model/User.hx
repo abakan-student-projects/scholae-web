@@ -1,5 +1,6 @@
 package model;
 
+
 import messages.ProfileMessage;
 import Std;
 import messages.AttemptMessage;
@@ -141,30 +142,33 @@ class User extends sys.db.Object {
         var ratingData: Array<RatingDate> = [];
         var rating = 0;
         var prevData: Attempt = null;
-        var prevRating = 0;
+        var prevRating: Float = 0;
         var i = 1;
         var length = attempts.length;
         for (a in attempts) {
             if (a.task != null) {
                 if(i == 1) {
                     prevData = a;
-                    prevRating = a.task.level;
+                    prevRating = getRatingByTask(a.task.id, userId);
+                    if (i == length) {
+                        ratingData.push({id: prevData.id, rating: prevRating, date: prevData.datetime});
+                    }
                 } else {
                     if (prevData.datetime.getDate() == a.datetime.getDate() && prevData.datetime.getMonth() == a.datetime.getMonth() && prevData.datetime.getFullYear() == a.datetime.getFullYear()) {
                         if (i == length) {
-                            ratingData.push({id: a.user.id, rating: Math.round(Math.log(a.task.level + prevRating)*1000), date: a.datetime});
+                            ratingData.push({id: a.user.id, rating: prevRating + getRatingByTask(a.task.id, userId), date: a.datetime});
                         } else {
                             prevData = a;
-                            prevRating += a.task.level;
+                            prevRating += getRatingByTask(a.task.id, userId);
                         }
                     } else {
                         if (i == length) {
-                            ratingData.push({id: a.user.id, rating:Math.round(Math.log(prevRating)*1000), date: prevData.datetime});
-                            ratingData.push({id: a.user.id, rating: Math.round(Math.log(prevRating+a.task.level)*1000), date: a.datetime});
+                            ratingData.push({id: a.user.id, rating: prevRating, date: prevData.datetime});
+                            ratingData.push({id: a.user.id, rating: getRatingByTask(a.task.id, userId) + prevRating, date: a.datetime});
                         } else {
-                            ratingData.push({id: a.user.id, rating:Math.round(Math.log(prevRating)*1000), date: prevData.datetime});
+                            ratingData.push({id: a.user.id, rating: prevRating, date: prevData.datetime});
                             prevData = a;
-                            prevRating += a.task.level;
+                            prevRating += getRatingByTask(a.task.id, userId);
                         }
                     }
                 }
@@ -184,6 +188,10 @@ class User extends sys.db.Object {
                 var day = ((r.date.getFullYear() - 2010 - 1) * 12 + r.date.getMonth()) * 31 + r.date.getDate();
                 if (i == 1) {
                     prevResult = r;
+                    if (i == ratingData.length) {
+                        result.push({id: userId, date: startDate, rating:0});
+                        result.push({id: r.id, date: r.date, rating: r.rating});
+                    }
                 } else {
                     var prevDay = ((prevResult.date.getFullYear() - 2010 - 1) * 12 + prevResult.date.getMonth()) * 31 + prevResult.date.getDate();
 
@@ -242,16 +250,39 @@ class User extends sys.db.Object {
         return result;
     }
 
+    public static function getRatingByTask(taskId: Float, userId: Float) {
+        var rating: Float = 0;
+        var res: Array<RatingCategory> = [];
+        var attempts = Attempt.manager.search(($userId == userId) && ($solved == true));
+        var tagIds = CodeforcesTag.manager.all();
+        var taskIds = [for (a in attempts) a.task.id];
+        var taskTagIds = CodeforcesTaskTag.manager.search($taskId in taskIds);
+        var ratingLearnerCategoryTask: Float = 0;
+        var ratingByTask: Float = 0;
+        for (t in tagIds) {
+            for (taskTag in taskTagIds) {
+                if (taskTag.tag.id == t.id && taskId == taskTag.task.id) {
+                    ratingLearnerCategoryTask += Math.pow(2, taskTag.task.level-1) * (taskTag.tag.importance/tagIds.length);
+                }
+            }
+            if (ratingLearnerCategoryTask != 0) {
+                ratingLearnerCategoryTask = Math.log(ratingLearnerCategoryTask+1);
+                ratingByTask += Math.round(ratingLearnerCategoryTask*100)/100;
+            }
+            ratingLearnerCategoryTask = 0;
+        }
+        return ratingByTask;
+    }
+
    public static function calculateLearnerRating(userId: Float): Float {
-       var rating:Float = 0;
-       var results = Attempt.manager.search(($userId == userId) && ($solved == true));
-       for (item in results) {
-           if (item.task != null){
-               rating += item.task.level;
+       var rating: Float = 0;
+       var ratingCategories = calculateRatingCategory(userId);
+       for (r in ratingCategories) {
+           if (r.rating != 0) {
+               rating += r.rating;
            }
        }
-       rating = Math.log(rating) * 1000;
-       return Math.round(rating);
+       return rating;
    }
 
     public static function calculateRatingCategory(userId: Float): Array<RatingCategory> {
@@ -266,18 +297,19 @@ class User extends sys.db.Object {
             }
         }
         var taskTagIds = CodeforcesTaskTag.manager.search($taskId in taskIds);
+        var ratingLearnerCategoryTask: Float = 0;
         for (t in tagIds) {
             for (taskTag in taskTagIds) {
                 if (taskTag.tag.id == t.id) {
-                    rating += taskTag.task.level;
+                    ratingLearnerCategoryTask += Math.pow(2, taskTag.task.level-1) * (taskTag.tag.importance/tagIds.length);
                 }
             }
-            if (rating != 0) {
-                rating = Math.log(rating) * 1000;
-                res.push({id: t.id, rating: Math.round(rating)});
-                rating = 0;
+            if (ratingLearnerCategoryTask != 0) {
+                ratingLearnerCategoryTask = Math.log(ratingLearnerCategoryTask+1);
+                res.push({id: t.id, rating: Math.round(ratingLearnerCategoryTask*100)/100});
+                ratingLearnerCategoryTask = 0;
             } else {
-                res.push({id: t.id, rating: rating});
+                res.push({id:t.id, rating: 0});
             }
         }
         return res;

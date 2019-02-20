@@ -80,7 +80,7 @@ class TeacherAssignmentsGridView extends ReactComponentOfProps<TeacherAssignment
             }
             trainings.push(jsx('<TeacherTrainingCellView key=${a.id} training=$t tags=${props.tags} group=${props.group} assignment=$a/>'));
         }
-        return jsx('<tr key=${learner.id}><td><div className="uk-flex"><Link to=${"/teacher/user/" + learner.id +""}>${learner.firstName} ${learner.lastName} </Link><button data-uk-icon="trash" onClick=${startDeleteLearner.bind(learner.id,props.group )}></button></div></td>$trainings</tr>');
+        return jsx('<tr key=${learner.id}><td><div className="uk-flex"><Link to=${"/teacher/group/" + props.group.id + "/user/" + learner.id +""}>${learner.firstName} ${learner.lastName} </Link><button data-uk-icon="trash" onClick=${startDeleteLearner.bind(learner.id,props.group )}></button></div></td>$trainings</tr>');
     }
 
     function createAssignmentsHeaderRow(assignments: Array<AssignmentMessage>) {
