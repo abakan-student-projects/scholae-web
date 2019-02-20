@@ -6,7 +6,7 @@ import model.User;
 import notification.NotificationDestination;
 import jobs.ScholaeJob;
 import jobs.JobQueue;
-import notification.Notification;
+import model.Notification;
 import messages.ResponseMessage;
 
 class NotificationService {
@@ -43,5 +43,29 @@ class NotificationService {
                 trace("finish timer sending to email after 1 min");
             }, notification.delayBetweenSending * 1000
         );*/
+    }
+
+    public function sendEmail(notificationId: Float): Bool {
+        var notification: Notification = Notification.manager.get(notificationId);
+        var user: User = User.manager.get(notification.user.id);
+        var subjectForUser ='Scholae: notification';
+        var password = StringUtils.getRandomString(StringUtils.alphaNumeric, 8);
+        //todo affirm email's templates
+        //var template = new haxe.Template(haxe.Resource.getString("renewPasswordEmail"));
+        var message = notification.message;
+        var from = 'From: no-reply@scholae.lambda-calculus.ru';
+        //todo uncomment sending email
+        //var email = mail(user.email, subjectForUser, message, from);
+        var email = true;
+        trace(message);
+        if (email == true) {
+            notification.status = NotificationStatus.Completed;
+            notification.update();
+            return true;
+        } else {
+            notification.status = NotificationStatus.InProgress;
+            notification.update();
+            return false;
+        }
     }
 }

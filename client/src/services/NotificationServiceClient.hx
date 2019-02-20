@@ -1,10 +1,7 @@
 package services;
 
-import js.html.NotificationPermission;
 import utils.UIkit;
 import notification.NotificationMessage;
-import js.html.Notification;
-import js.html.Window;
 
 class NotificationServiceClient extends BaseServiceClient {
 

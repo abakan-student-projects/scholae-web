@@ -1,5 +1,6 @@
-package notification;
+package model;
 
+import notification.NotificationStatus;
 import model.User;
 import sys.db.Types.SDateTime;
 import sys.db.Types.SInt;

@@ -1,7 +1,7 @@
 package ;
 
 import notification.NotificationStatus;
-import notification.Notification;
+import model.Notification;
 import codeforces.CodeforcesRunner;
 import codeforces.RunnerConfig;
 import codeforces.RunnerAction;

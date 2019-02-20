@@ -1,23 +1,9 @@
 package ;
 
-import notification.NotificationDestination;
-import notification.NotificationStatus;
-import utils.StringUtils;
-import notification.Notification;
-import codeforces.RunnerAction;
 import codeforces.CodeforcesRunner;
-import codeforces.Contest;
-import codeforces.ProblemsResponse;
-import codeforces.ProblemStatistics;
-import model.CodeforcesTaskTag;
-import model.CodeforcesTag;
-import model.CodeforcesTask;
-import codeforces.Problem;
-import codeforces.Codeforces;
 import model.User;
 import messages.MessagesHelper;
 import model.Training;
-import messages.ResponseStatus;
 import haxe.EnumTools.EnumValueTools;
 import model.Job;
 import jobs.JobMessage;
@@ -29,10 +15,6 @@ import org.amqp.fast.FastImport.Delivery;
 import org.amqp.fast.FastImport.Channel;
 import org.amqp.ConnectionParameters;
 import org.amqp.fast.neko.AmqpConnection;
-import haxe.ds.StringMap;
-import haxe.ds.IntMap;
-import haxe.Json;
-import sys.db.Types.SBigInt;
 
 class Worker {
 
@@ -145,24 +127,16 @@ class Worker {
                 };
 
                 case SendNotificationToEmail(notificationId): {
-                    var notification: Notification = Notification.manager.get(notificationId);
-                    var user: User = User.manager.get(notification.user.id);
-                    var subjectForUser ='Scholae: notification';
-                    var password = StringUtils.getRandomString(StringUtils.alphaNumeric, 8);
-                    //todo affirm email's templates
-                    //var template = new haxe.Template(haxe.Resource.getString("renewPasswordEmail"));
-                    var message = notification.message;
-                    var from = 'From: no-reply@scholae.lambda-calculus.ru';
-                    //todo sending email in worker
-                    //var email = mail(user.email, subjectForUser, message, from);
-                    var email = true;
-                    trace(message);
-                    if (email == true) {
-                        notification.status = NotificationStatus.Completed;
-                    } else {
-                        notification.status = NotificationStatus.InProgress;
-                    }
-                    notification.update();
+                    var remotingUrl = "http://scholae.lambda-calculus.ru/remoting/";
+                    var remotingConnect = haxe.remoting.HttpAsyncConnection.urlConnect(remotingUrl);
+                    remotingConnect.setErrorHandler( function(err) { trace("Error : "+Std.string(err)); } );
+                    remotingConnect.NotificationService.sendEmail.call([notificationId], function(e) {
+                        if(e) {
+                            trace("Send email successed");
+                        } else {
+                            trace("Send email failed");
+                        }
+                    });
                     var job: Job = Job.manager.get(msg.id);
                     if (null != job) {
                         job.delete();
