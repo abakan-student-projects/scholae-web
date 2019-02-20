@@ -32,7 +32,7 @@ UPDATE `CodeforcesTags` SET `importance` = 0.857776 WHERE `CodeforcesTags`.`id` 
 UPDATE `CodeforcesTags` SET `importance` = 0.599735 WHERE `CodeforcesTags`.`id` = 30;
 UPDATE `CodeforcesTags` SET `importance` = 0.500077 WHERE `CodeforcesTags`.`id` = 31;
 UPDATE `CodeforcesTags` SET `importance` = 0.48602 WHERE `CodeforcesTags`.`id` = 32;
-UPDATE `CodeforcesTags` SET `importance` = 0.675242 WHERE `CodeforcesTags`.`id` = 33;
+UPDATE `CodeforcesTags` SET `importance` = 0 WHERE `CodeforcesTags`.`id` = 33;
 UPDATE `CodeforcesTags` SET `importance` = 0.756745 WHERE `CodeforcesTags`.`id` = 34;
 UPDATE `CodeforcesTags` SET `importance` = 0.7688 WHERE `CodeforcesTags`.`id` = 35;
 UPDATE `CodeforcesTags` SET `importance` = 0.682311 WHERE `CodeforcesTags`.`id` = 36;
