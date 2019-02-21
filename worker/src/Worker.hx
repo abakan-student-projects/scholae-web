@@ -138,7 +138,9 @@ class Worker {
                     //var template = new haxe.Template(haxe.Resource.getString("renewPasswordEmail"));
                     var message = notification.message;
                     var from = 'no-reply@scholae.lambda-calculus.ru';
-                    var smtpHost = "scholae.lambda-calculus.ru"; //todo change host to correct
+                    var smtpHost = "smtp.gmail.com"; //todo change host connection paramets
+                    var smtpHostUser = "leonid.tumoyakov@gmail.com";
+                    var smtpHostPassword = "*****";
 
                     var email = new Part("multipart/alternative");
                     email.setHeader("From", from);
@@ -146,10 +148,10 @@ class Worker {
                     email.setDate();
                     email.setHeader("Subject", subjectForUser);
                     var emailPart = email.newPart("text/plain");
-                    emailPart.setContent(message);
+                    emailPart.setContent("Message");
                     try {
                         trace("trying send email");
-                        Smtp.send(smtpHost, from, user.email, email.get());
+                        Smtp.send(smtpHost, smtpHostUser, user.email, emailPart.get(), 465, smtpHostUser, smtpHostPassword);
                         notification.status = NotificationStatus.Completed;
                     } catch (e: Dynamic) {
                         trace("SMTP Connection error: " + e);

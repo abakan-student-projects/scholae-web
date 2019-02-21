@@ -1,5 +1,6 @@
 package ;
 
+import DateTools;
 import notification.NotificationStatus;
 import model.Notification;
 import codeforces.CodeforcesRunner;
@@ -191,18 +192,27 @@ class Main {
         var outdatedDate: Date = DateTools.delta(Date.now(), 86400 * 1000 * 7 * (-1));
         var notifications: List<Notification> =
             Notification.manager.search(
-                $date <= outdatedDate && ($status == NotificationStatus.New || $status == NotificationStatus.InProgress)
+                $status == NotificationStatus.New ||
+                $status == NotificationStatus.InProgress
             );
+        trace(notifications.length);
         for (notification in notifications) {
-            var jobsByNotification: Job =
-                Job.manager.search($sessionId == "Sending outdated notifications" + notification.id).first();
-            trace(jobsByNotification);
-            if (jobsByNotification == null) {
-                publishScholaeJob(
-                    channel,
-                    ScholaeJob.SendNotificationToEmail(notification.id),
-                    "Sending outdated notifications" + notification.id
-                );
+            var isOutdated = notification.date.getTime() <= outdatedDate.getTime();
+            var isTimeout =
+                DateTools.delta(notification.date, notification.delayBetweenSending * 1000.0).getTime() <=
+                Date.now().getTime();
+            if (isOutdated || isTimeout) {
+                var jobsByNotification: Job =
+                    Job.manager.search($sessionId == "Sending outdated notifications" + notification.id).first();
+                if (jobsByNotification == null) {
+                    publishScholaeJob(
+                        channel,
+                        ScholaeJob.SendNotificationToEmail(notification.id),
+                        "Sending outdated notifications" + notification.id
+                    );
+                }
+                notification.status = NotificationStatus.Completed;
+                notification.update();
             }
         }
         channel.close();

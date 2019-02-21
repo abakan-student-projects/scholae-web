@@ -19,10 +19,6 @@ class NotificationService {
                     Lambda.map(
                         Notification.getNotificationsByUserForClient(Authorization.instance.currentUser),
                         function(t: Notification) {
-                            if (t.secondaryDestination != null &&
-                                t.secondaryDestination == NotificationDestination.mail) {
-                                sendNotificationToEmail(t);
-                            }
                             return t.toNotificationMessage();
                         })));
         } else {
@@ -30,7 +26,7 @@ class NotificationService {
         }
     }
 
-    private inline function sendNotificationToEmail(notification: Notification) {
+    public static function sendNotificationToEmail(notification: Notification) {
         notification.status = NotificationStatus.InProgress;
         notification.update();
         JobQueue.publishScholaeJob(
