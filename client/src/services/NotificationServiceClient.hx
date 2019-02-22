@@ -1,5 +1,6 @@
 package services;
 
+import notification.NotificationType;
 import utils.UIkit;
 import notification.NotificationMessage;
 
@@ -12,7 +13,6 @@ class NotificationServiceClient extends BaseServiceClient {
         return _instance;
     }
 
-    //todo to replace this crutch to more correct code
     public var isWorking: Bool;
 
     public function new() {
@@ -39,7 +39,7 @@ class NotificationServiceClient extends BaseServiceClient {
                 });
             });
             requestNotification.then(
-                function(notifications) {
+                function(notifications: Array<NotificationMessage>) {
                     sendNotification(notifications);
                     planServerRequestOrStop();
                 },
@@ -49,25 +49,35 @@ class NotificationServiceClient extends BaseServiceClient {
         }
     }
 
-    private function sendNotification(notifications: Array<NotificationMessage>) {
+    private inline function sendNotification(notifications: Array<NotificationMessage>) {
         if(notifications != null) {
-            for (notification in notifications) {
-                //todo and maybe this crutch
-                if (notification.link != null) {
-                    notification.message =
-                        notification.message + "<br>" +
-                        "<button class=\"uk-button uk-width-1-1 uk-margin-small-top\" onClick=\"window.open('" +
-                        notification.link + "','_blank')\">Перейти</button>";
-                }
-                UIkit.notification({
-                    message: notification.message,
-                    status: notification.type,
-                    timeout: 5000,
-                    pos: 'bottom-right' });
+            for (n in notifications) {
+                var notification: NotificationType = haxe.Unserializer.run(n.type);
+                switch(notification) {
+                    case SimpleMessage(message, type): {
+                        var template = new haxe.Template(haxe.Resource.getString("simpleNotification"));
+                        var notificationMessage = template.execute({message: message});
+                        showNotification(notificationMessage, type);
+                    }
+                    case MessageWithLink(message, link, type) :{
+                        var template = new haxe.Template(haxe.Resource.getString("notificationWithLink"));
+                        var notificationMessage = template.execute({message: message, link: link});
+                        showNotification(notificationMessage, type);
+                    }
+                };
             }
         }
     }
-    private function planServerRequestOrStop(): Void {
+
+    private inline function showNotification(message: String, status: String) {
+        UIkit.notification({
+            message: message,
+            status: status,
+            timeout: 5000,
+            pos: 'bottom-right' });
+    }
+
+    private inline function planServerRequestOrStop(): Void {
         haxe.Timer.delay(getNotifications, 15000);
     }
 }

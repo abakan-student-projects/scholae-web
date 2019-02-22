@@ -1,7 +1,6 @@
 package service;
 
 import notification.NotificationStatus;
-import notification.NotificationDestination;
 import jobs.ScholaeJob;
 import jobs.JobQueue;
 import model.Notification;
@@ -14,19 +13,31 @@ class NotificationService {
 
     public function getNotifications(): ResponseMessage {
         if(Authorization.instance.currentUser != null) {
-            return ServiceHelper.successResponse(
-                Lambda.array(
-                    Lambda.map(
-                        Notification.getNotificationsByUserForClient(Authorization.instance.currentUser),
+            var notifications: List<Notification> =
+                Notification.getNotificationsByUserForClient(Authorization.instance.currentUser);
+            if(notifications != null) {
+                return ServiceHelper.successResponse(
+                    Lambda.array(
+                        Lambda.map(
+                        notifications,
                         function(t: Notification) {
+                            if (t.secondaryDestination == null) {
+                                t.status = NotificationStatus.Completed;
+                            } else {
+                                t.status = NotificationStatus.InProgress;
+                            }
+                            t.update();
                             return t.toNotificationMessage();
                         })));
+            } else {
+                return ServiceHelper.failResponse("No notifications");
+            }
         } else {
             return ServiceHelper.failResponse("Not autorized");
         }
     }
 
-    public static function sendNotificationToEmail(notification: Notification) {
+    public function sendNotificationToEmail(notification: Notification) {
         notification.status = NotificationStatus.InProgress;
         notification.update();
         JobQueue.publishScholaeJob(

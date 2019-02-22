@@ -41,7 +41,6 @@ class Main {
             php.Lib.print("This is a remoting server !");
         }
 
-
         sys.db.Manager.cleanup();
         cnx.close();
     }

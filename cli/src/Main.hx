@@ -1,5 +1,6 @@
 package ;
 
+import notification.NotificationDestination;
 import DateTools;
 import notification.NotificationStatus;
 import model.Notification;
@@ -201,7 +202,8 @@ class Main {
             var isTimeout =
                 DateTools.delta(notification.date, notification.delayBetweenSending * 1000.0).getTime() <=
                 Date.now().getTime();
-            if (isOutdated || isTimeout) {
+            var isFirstDestination = if (notification.primaryDestination == NotificationDestination.Mail) true else false;
+            if (isOutdated || isTimeout || isFirstDestination) {
                 var jobsByNotification: Job =
                     Job.manager.search($sessionId == "Sending outdated notifications" + notification.id).first();
                 if (jobsByNotification == null) {
@@ -211,8 +213,6 @@ class Main {
                         "Sending outdated notifications" + notification.id
                     );
                 }
-                notification.status = NotificationStatus.Completed;
-                notification.update();
             }
         }
         channel.close();

@@ -1,8 +1,6 @@
 package notification;
 
 enum NotificationType {
-   primary;
-   success;
-   warning;
-   danger;
+   SimpleMessage(message: String, ?type: String);
+   MessageWithLink(message: String, link: String, ?type: String);
 }

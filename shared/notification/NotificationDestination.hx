@@ -1,7 +1,7 @@
 package notification;
 
 enum NotificationDestination {
-    client;
-    mail;
-    push;
+    Client;
+    Mail;
+    Push;
 }

@@ -1,5 +1,6 @@
 package ;
 
+import notification.NotificationType;
 import mtwin.mail.Part;
 import mtwin.mail.Smtp;
 import notification.NotificationStatus;
@@ -133,10 +134,19 @@ class Worker {
                 case SendNotificationToEmail(notificationId): {
                     var notification: Notification = Notification.manager.get(notificationId);
                     var user: User = User.manager.get(notification.user.id);
+                    var notificationData: NotificationType = notification.type;
+                    var emailMessage;
+                    switch(notificationData) {
+                        case SimpleMessage(message, type): {
+                            emailMessage = message;
+                        }
+                        case MessageWithLink(message, link, type): {
+                            emailMessage = message;
+                        }
+                    };
                     var subjectForUser ='Scholae: notification';
                     //todo affirm email's templates
                     //var template = new haxe.Template(haxe.Resource.getString("renewPasswordEmail"));
-                    var message = notification.message;
                     var from = 'no-reply@scholae.lambda-calculus.ru';
                     var smtpHost = "smtp.gmail.com"; //todo change host connection paramets
                     var smtpHostUser = "leonid.tumoyakov@gmail.com";
@@ -148,10 +158,10 @@ class Worker {
                     email.setDate();
                     email.setHeader("Subject", subjectForUser);
                     var emailPart = email.newPart("text/plain");
-                    emailPart.setContent("Message");
+                    emailPart.setContent(emailMessage);
                     try {
                         trace("trying send email");
-                        Smtp.send(smtpHost, smtpHostUser, user.email, emailPart.get(), 465, smtpHostUser, smtpHostPassword);
+                        Smtp.send(smtpHost, smtpHostUser, user.email, emailPart.get(), 25, smtpHostUser, smtpHostPassword);
                         notification.status = NotificationStatus.Completed;
                     } catch (e: Dynamic) {
                         trace("SMTP Connection error: " + e);
