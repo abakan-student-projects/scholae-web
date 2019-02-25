@@ -8,6 +8,7 @@
 
 	<target name="build">
 		<antcall target="build.cli"/>
+		<antcall target="build.configuration"/>
 		<antcall target="build.server"/>
 		<antcall target="build.client"/>
 		<antcall target="build.static"/>
@@ -20,6 +21,13 @@
             <param name="dir" value="${project.root.path}/server"/>
 			<param name="hxml" value="server.hxml"/>
 		</antcall>
+	</target>
+
+	<target name="build.configuration">
+		<mkdir dir="${local.build.path}/configuration/server"/>
+		<copy todir="${local.build.path}/configuration/server"
+			  file="${project.root.path}/server-shared/configuration/scholae.xml"
+			  overwrite="yes"/>
 	</target>
 
 	<target name="build.worker">

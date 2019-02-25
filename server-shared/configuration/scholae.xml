@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+	<EmailNotification>no-reply@scholae.lambda-calculus.ru</EmailNotification>
+	<DatabaseParameters>
+		<name>scholae</name>
+		<user>scholae</user>
+		<password>scholae</password>
+		<host>127.0.0.1</host>
+	</DatabaseParameters>
+	<AmqpParameters>
+		<user>scholae</user>
+		<password>scholae</password>
+		<hostpath>scholae</hostpath>
+		<host>127.0.0.1</host>
+	</AmqpParameters>
+	<SMTPParameters>
+		<host>smtp.gmail.com</host>
+		<port>465</port>
+		<user>leonid.tumoyakov@gmail.com</user>
+		<password>*******</password>
+	</SMTPParameters>
+</configuration>

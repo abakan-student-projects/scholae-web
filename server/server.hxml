@@ -6,4 +6,5 @@
 -cp ../lib/haxe-htmlparser/library
 -resource src/templates/ActivationEmail.txt@activationEmail
 -resource src/templates/RenewPasswordEmail.txt@renewPasswordEmail
+-resource ../localbuild/configuration/server/scholae.xml@scholae.xml
 -lib record-macros

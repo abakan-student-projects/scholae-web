@@ -1,15 +1,11 @@
 package service;
 
+import configuration.Configuration;
 import php.Web;
 import codeforces.Codeforces;
 import messages.PasswordMessage;
 import sys.db.Manager;
 import messages.ProfileMessage;
-import service.ServiceHelper;
-import service.ServiceHelper;
-import service.ServiceHelper;
-import service.ServiceHelper;
-import service.ServiceHelper;
 import service.ServiceHelper;
 import model.Role;
 import model.Role.Roles;
@@ -90,7 +86,7 @@ class AuthService {
         var password = StringUtils.getRandomString(StringUtils.alphaNumeric, 8);
         var template = new haxe.Template(haxe.Resource.getString("renewPasswordEmail"));
         var message = template.execute({password: password});
-        var from = 'From: no-reply@scholae.lambda-calculus.ru';
+        var from = "From: " + Configuration.instance.getEmailNotification();
         if (null != user) {
             var res = mail(user.email, subjectForUser, message, from);
             user.passwordHash = Md5.encode(password);
@@ -104,7 +100,7 @@ class AuthService {
         var subjectForUser ='Scholae: здравствуйте!';
         var template = new haxe.Template(haxe.Resource.getString("activationEmail"));
         var message = template.execute({isRegistration: true, activationCode: user.emailActivationCode});
-        var from = 'From: no-reply@scholae.lambda-calculus.ru';
+        var from = "From: " + Configuration.instance.getEmailNotification();
         mail(user.email, subjectForUser, message, from);
     }
 
@@ -213,7 +209,7 @@ class AuthService {
             var subjectForUser ='Scholae: подтверждение почты!';
             var template = new haxe.Template(haxe.Resource.getString("activationEmail"));
             var message = template.execute({isRegistration: false, activationCode: user.emailActivationCode});
-            var from = 'From: no-reply@scholae.lambda-calculus.ru';
+            var from = "From: " + Configuration.instance.getEmailNotification();
             var res = mail(user.email, subjectForUser, message, from);
             return ServiceHelper.successResponse(res);
         }

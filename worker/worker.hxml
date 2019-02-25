@@ -7,4 +7,5 @@
 -cp ../lib/haxe-htmlparser/library
 -cp ../lib/hxamqp
 -cp ../lib/haxe-mtwin
+-resource ../localbuild/configuration/server/scholae.xml@scholae.xml
 -lib record-macros

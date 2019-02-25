@@ -1,5 +1,9 @@
 package ;
 
+import configuration.AmqpConfig;
+import configuration.DatabaseConfig;
+import configuration.Configuration;
+import configuration.SmtpConfig;
 import notification.NotificationType;
 import mtwin.mail.Part;
 import mtwin.mail.Smtp;
@@ -39,10 +43,11 @@ class Worker {
 
     public static function getConnectionParams(): ConnectionParameters {
         var params:ConnectionParameters = new ConnectionParameters();
-        params.username = "scholae";
-        params.password = "scholae";
-        params.vhostpath = "scholae";
-        params.serverhost = "127.0.0.1";
+        var config: AmqpConfig = Configuration.instance.getAmqpConfig();
+        params.username = config.user;
+        params.password = config.password;
+        params.vhostpath = config.hostpath;
+        params.serverhost = config.host;
         return params;
     }
 
@@ -56,12 +61,14 @@ class Worker {
 
     public function onConsume(delivery: Delivery) {
 
+        var config: DatabaseConfig = Configuration.instance.getDatabaseConfig();
+
         var cnx = sys.db.Mysql.connect({
-            host : "127.0.0.1",
+            host : config.host,
             port : null,
-            user : "scholae",
-            pass : "scholae",
-            database : "scholae",
+            user : config.user,
+            pass : config.password,
+            database : config.name,
             socket : null,
         });
         cnx.request("SET NAMES 'utf8';");
@@ -147,11 +154,8 @@ class Worker {
                     var subjectForUser ='Scholae: notification';
                     //todo affirm email's templates
                     //var template = new haxe.Template(haxe.Resource.getString("renewPasswordEmail"));
-                    var from = 'no-reply@scholae.lambda-calculus.ru';
-                    var smtpHost = "smtp.gmail.com"; //todo change host connection paramets
-                    var smtpHostUser = "leonid.tumoyakov@gmail.com";
-                    var smtpHostPassword = "*****";
-
+                    var from = Configuration.instance.getEmailNotification();
+                    var smtpConfig: SmtpConfig = Configuration.instance.getSmtpConfig();
                     var email = new Part("multipart/alternative");
                     email.setHeader("From", from);
                     email.setHeader("To", user.email);
@@ -160,8 +164,15 @@ class Worker {
                     var emailPart = email.newPart("text/plain");
                     emailPart.setContent(emailMessage);
                     try {
-                        trace("trying send email");
-                        Smtp.send(smtpHost, smtpHostUser, user.email, emailPart.get(), 25, smtpHostUser, smtpHostPassword);
+                        Smtp.send(
+                            smtpConfig.host,
+                            from,
+                            user.email,
+                            emailPart.get(),
+                            smtpConfig.port,
+                            smtpConfig.user,
+                            smtpConfig.password
+                        );
                         notification.status = NotificationStatus.Completed;
                     } catch (e: Dynamic) {
                         trace("SMTP Connection error: " + e);
