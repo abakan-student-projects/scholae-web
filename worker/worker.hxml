@@ -6,4 +6,8 @@
 -cp ../server-shared
 -cp ../lib/haxe-htmlparser/library
 -cp ../lib/hxamqp
+-cp ../lib/haxe-mtwin
+-resource src/templates/EmailNotificationWithLink.txt@EmailNotificationWithLink
+-resource src/templates/SimpleEmailNotification.txt@SimpleEmailNotification
+-resource ../localbuild/configuration/server/scholae.xml@scholae.xml
 -lib record-macros

@@ -204,6 +204,13 @@
       <JAVADOC />
       <SOURCES />
     </library>
+    <library name="haxe-mtwin" type="Haxe">
+      <CLASSES>
+        <root url="file://$PROJECT_DIR$/lib/haxe-mtwin" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
     <library name="haxe-react-router" type="Haxe">
       <CLASSES>
         <root url="file://$PROJECT_DIR$/lib/haxe-react-router" />

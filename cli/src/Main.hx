@@ -1,5 +1,9 @@
 package ;
 
+import notification.NotificationDestination;
+import DateTools;
+import notification.NotificationStatus;
+import model.Notification;
 import codeforces.CodeforcesRunner;
 import codeforces.RunnerConfig;
 import codeforces.RunnerAction;
@@ -55,7 +59,7 @@ class Main {
         var args = Sys.args();
         var argHandler = hxargs.Args.generate([
             @doc("Action: updateCodeforcesTasks, updateCodeforcesTasksLevelsAndTypes, updateGymTasks,
-            updateTags, updateTaskIdsOnAttempts, updateUsersResults, updateCodeforcesData")
+            updateTags, updateTaskIdsOnAttempts, updateUsersResults, updateCodeforcesData, checkOutdatedNotifications")
             ["-a", "--action"] => function(action:String) codeforcesRunner.config.action = EnumTools.createByName(RunnerAction, action),
 
             @doc("Limit number of processing items. Works only for updateGymTasks")
@@ -83,6 +87,7 @@ class Main {
             case RunnerAction.updateTaskIdsOnAttempts: updateTaskIdsOnAttempts();//4
             case RunnerAction.updateUsersResults: updateUsersResults();
             case RunnerAction.updateCodeforcesData: updateCodeforcesData();
+            case RunnerAction.checkOutdatedNotifications: checkOutdatedNotifications();
         }
 
         sys.db.Manager.cleanup();
@@ -174,11 +179,41 @@ class Main {
     public static function updateCodeforcesData() {
         var mq: AmqpConnection = new AmqpConnection(getConnectionParams());
         var channel = mq.channel();
-        trace("start update");
         var job: Job = Job.manager.search($sessionId == "updateCodeforcesData").first();
         if(job == null) {
-            trace("send job");
             publishScholaeJob(channel, ScholaeJob.UpdateCodeforcesData(codeforcesRunner.config), "updateCodeforcesData");
+        }
+        channel.close();
+        mq.close();
+    }
+
+    public static function checkOutdatedNotifications() {
+        var mq: AmqpConnection = new AmqpConnection(getConnectionParams());
+        var channel = mq.channel();
+        var outdatedDate: Date = DateTools.delta(Date.now(), 86400 * 1000 * 7 * (-1));
+        var notifications: List<Notification> =
+            Notification.manager.search(
+                $status == NotificationStatus.New ||
+                $status == NotificationStatus.InProgress
+            );
+        trace(notifications.length);
+        for (notification in notifications) {
+            var isOutdated = notification.date.getTime() <= outdatedDate.getTime();
+            var isTimeout =
+                DateTools.delta(notification.date, notification.delayBetweenSending * 1000.0).getTime() <=
+                Date.now().getTime();
+            var isFirstDestination = if (notification.primaryDestination == NotificationDestination.Mail) true else false;
+            if (isOutdated || isTimeout || isFirstDestination) {
+                var jobsByNotification: Job =
+                    Job.manager.search($sessionId == "Sending outdated notifications" + notification.id).first();
+                if (jobsByNotification == null) {
+                    publishScholaeJob(
+                        channel,
+                        ScholaeJob.SendNotificationToEmail(notification.id),
+                        "Sending outdated notifications" + notification.id
+                    );
+                }
+            }
         }
         channel.close();
         mq.close();

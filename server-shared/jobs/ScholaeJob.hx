@@ -7,4 +7,5 @@ enum ScholaeJob {
     RefreshResultsForUser(userId: Float);
     UpdateUserResults(userId: Float);
     UpdateCodeforcesData(cfg: RunnerConfig);
+    SendNotificationToEmail(notificationId: Float);
 }

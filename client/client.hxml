@@ -9,6 +9,9 @@
 -cp ../lib/extern-js-moment/src
 -cp ../lib/haxe-htmlparser/library
 
+-resource src/templates/NotificationWithLink.txt@notificationWithLink
+-resource src/templates/SimpleNotification.txt@simpleNotification
+
 --macro includeFile("dist/src/imports.js", "top")
 
 -D extkit_mode=global

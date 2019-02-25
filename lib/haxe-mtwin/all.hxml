@@ -1,0 +1,4 @@
+-cp .
+--macro include('mtwin')
+-neko out.n
+--no-output

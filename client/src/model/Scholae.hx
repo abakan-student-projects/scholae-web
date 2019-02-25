@@ -1,5 +1,6 @@
 package model;
 
+import services.NotificationServiceClient;
 import utils.RemoteData;
 import utils.RemoteDataHelper;
 import messages.SessionMessage;
@@ -161,6 +162,7 @@ class Scholae
                     .then(
                         function(sessionMessage) {
                             store.dispatch(Authenticated(sessionMessage));
+                            NotificationServiceClient.instance.start();
                         },
                         function(e) {
                             store.dispatch(AuthenticationFailed(e));

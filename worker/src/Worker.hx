@@ -1,19 +1,18 @@
 package ;
 
-import codeforces.RunnerAction;
+import configuration.AmqpConfig;
+import configuration.DatabaseConfig;
+import configuration.Configuration;
+import configuration.SmtpConfig;
+import notification.NotificationType;
+import mtwin.mail.Part;
+import mtwin.mail.Smtp;
+import notification.NotificationStatus;
+import model.Notification;
 import codeforces.CodeforcesRunner;
-import codeforces.Contest;
-import codeforces.ProblemsResponse;
-import codeforces.ProblemStatistics;
-import model.CodeforcesTaskTag;
-import model.CodeforcesTag;
-import model.CodeforcesTask;
-import codeforces.Problem;
-import codeforces.Codeforces;
 import model.User;
 import messages.MessagesHelper;
 import model.Training;
-import messages.ResponseStatus;
 import haxe.EnumTools.EnumValueTools;
 import model.Job;
 import jobs.JobMessage;
@@ -25,10 +24,6 @@ import org.amqp.fast.FastImport.Delivery;
 import org.amqp.fast.FastImport.Channel;
 import org.amqp.ConnectionParameters;
 import org.amqp.fast.neko.AmqpConnection;
-import haxe.ds.StringMap;
-import haxe.ds.IntMap;
-import haxe.Json;
-import sys.db.Types.SBigInt;
 
 class Worker {
 
@@ -48,10 +43,11 @@ class Worker {
 
     public static function getConnectionParams(): ConnectionParameters {
         var params:ConnectionParameters = new ConnectionParameters();
-        params.username = "scholae";
-        params.password = "scholae";
-        params.vhostpath = "scholae";
-        params.serverhost = "127.0.0.1";
+        var config: AmqpConfig = Configuration.instance.getAmqpConfig();
+        params.username = config.user;
+        params.password = config.password;
+        params.vhostpath = config.hostpath;
+        params.serverhost = config.host;
         return params;
     }
 
@@ -65,12 +61,14 @@ class Worker {
 
     public function onConsume(delivery: Delivery) {
 
+        var config: DatabaseConfig = Configuration.instance.getDatabaseConfig();
+
         var cnx = sys.db.Mysql.connect({
-            host : "127.0.0.1",
+            host : config.host,
             port : null,
-            user : "scholae",
-            pass : "scholae",
-            database : "scholae",
+            user : config.user,
+            pass : config.password,
+            database : config.name,
             socket : null,
         });
         cnx.request("SET NAMES 'utf8';");
@@ -139,6 +137,54 @@ class Worker {
                         job.delete();
                     };
                 };
+
+                case SendNotificationToEmail(notificationId): {
+                    var notification: Notification = Notification.manager.get(notificationId);
+                    var user: User = User.manager.get(notification.user.id);
+                    var notificationData: NotificationType = notification.type;
+                    var emailMessage: String;
+                    var template: haxe.Template;
+                    switch(notificationData) {
+                        case SimpleMessage(message, type): {
+                            template = new haxe.Template(haxe.Resource.getString("SimpleEmailNotification"));
+                            emailMessage = template.execute({message: message});
+                        }
+                        case MessageWithLink(message, link, type): {
+                            template = new haxe.Template(haxe.Resource.getString("EmailNotificationWithLink"));
+                            emailMessage = template.execute({message: message, link: link});
+                        }
+                    };
+                    var subjectForUser ='Scholae: notification';
+                    var from = Configuration.instance.getEmailNotification();
+                    var smtpConfig: SmtpConfig = Configuration.instance.getSmtpConfig();
+                    var email = new Part("multipart/alternative", true, "utf-8");
+                    email.setHeader("From", from);
+                    email.setHeader("To", user.email);
+                    email.setDate();
+                    email.setHeader("Subject", subjectForUser);
+                    var emailPart = email.newPart("text/html");
+                    emailPart.setContent(emailMessage);
+                    try {
+                        Smtp.send(
+                            smtpConfig.host,
+                            from,
+                            user.email,
+                            emailPart.get(),
+                            smtpConfig.port,
+                            if (smtpConfig.user != "") smtpConfig.user else null,
+                            if (smtpConfig.password != "") smtpConfig.password else null
+                        );
+                        notification.status = NotificationStatus.Completed;
+                    } catch (e: Dynamic) {
+                        trace("SMTP Connection error: " + e);
+                        notification.status = NotificationStatus.InProgress;
+                    }
+                    notification.update();
+                    var job: Job = Job.manager.get(msg.id);
+                    if (null != job) {
+                        job.delete();
+                    };
+                };
             }
         }
 
@@ -150,6 +196,4 @@ class Worker {
 
         channel.ack(delivery);
     }
-
-
 }
