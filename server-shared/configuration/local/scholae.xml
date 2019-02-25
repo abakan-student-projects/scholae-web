@@ -14,9 +14,9 @@
 		<host>127.0.0.1</host>
 	</AmqpParameters>
 	<SMTPParameters>
-		<host>smtp.gmail.com</host>
-		<port>465</port>
-		<user>leonid.tumoyakov@gmail.com</user>
-		<password>*******</password>
+		<host>localhost</host>
+		<port>25</port>
+		<user></user>
+		<password></password>
 	</SMTPParameters>
 </configuration>

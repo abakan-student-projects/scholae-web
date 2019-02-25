@@ -16,7 +16,7 @@
 	<SMTPParameters>
 		<host>smtp.gmail.com</host>
 		<port>465</port>
-		<user>leonid.tumoyakov@gmail.com</user>
-		<password>*******</password>
+		<user></user>
+		<password></password>
 	</SMTPParameters>
 </configuration>

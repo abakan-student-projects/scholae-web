@@ -157,12 +157,12 @@ class Worker {
                     var subjectForUser ='Scholae: notification';
                     var from = Configuration.instance.getEmailNotification();
                     var smtpConfig: SmtpConfig = Configuration.instance.getSmtpConfig();
-                    var email = new Part("multipart/alternative");
+                    var email = new Part("multipart/alternative", true, "utf-8");
                     email.setHeader("From", from);
                     email.setHeader("To", user.email);
                     email.setDate();
                     email.setHeader("Subject", subjectForUser);
-                    var emailPart = email.newPart("text/plain");
+                    var emailPart = email.newPart("text/html");
                     emailPart.setContent(emailMessage);
                     try {
                         Smtp.send(
@@ -171,8 +171,8 @@ class Worker {
                             user.email,
                             emailPart.get(),
                             smtpConfig.port,
-                            smtpConfig.user,
-                            smtpConfig.password
+                            if (smtpConfig.user != "") smtpConfig.user else null,
+                            if (smtpConfig.password != "") smtpConfig.password else null
                         );
                         notification.status = NotificationStatus.Completed;
                     } catch (e: Dynamic) {
