@@ -142,18 +142,19 @@ class Worker {
                     var notification: Notification = Notification.manager.get(notificationId);
                     var user: User = User.manager.get(notification.user.id);
                     var notificationData: NotificationType = notification.type;
-                    var emailMessage;
+                    var emailMessage: String;
+                    var template: haxe.Template;
                     switch(notificationData) {
                         case SimpleMessage(message, type): {
-                            emailMessage = message;
+                            template = new haxe.Template(haxe.Resource.getString("SimpleEmailNotification"));
+                            emailMessage = template.execute({message: message});
                         }
                         case MessageWithLink(message, link, type): {
-                            emailMessage = message;
+                            template = new haxe.Template(haxe.Resource.getString("EmailNotificationWithLink"));
+                            emailMessage = template.execute({message: message, link: link});
                         }
                     };
                     var subjectForUser ='Scholae: notification';
-                    //todo affirm email's templates
-                    //var template = new haxe.Template(haxe.Resource.getString("renewPasswordEmail"));
                     var from = Configuration.instance.getEmailNotification();
                     var smtpConfig: SmtpConfig = Configuration.instance.getSmtpConfig();
                     var email = new Part("multipart/alternative");
