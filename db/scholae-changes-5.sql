@@ -18,7 +18,6 @@ create table achievement
   title varchar(512) not null,
   description text not null,
   icon varchar(512) not null,
-  date datetime not null,
   category tinyint(4) not null
 );
 
@@ -27,5 +26,6 @@ create table userAchievement
   id bigint auto_increment
     primary key,
   userId bigint(11) not null,
-  achievementId bigint(11) not null
+  achievementId bigint(11) not null,
+  date datetime not null
 );

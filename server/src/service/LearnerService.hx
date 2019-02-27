@@ -78,7 +78,7 @@ class LearnerService {
                Lambda.array(
                    Lambda.map(
                        UserAchievement.getUserAchievements(Authorization.instance.currentUser),
-                       function(t: UserAchievement) { return t.achievement.toMessage();}
+                       function(t: UserAchievement) { return t.toMessage();}
                    )
                )
            );

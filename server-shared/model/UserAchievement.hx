@@ -1,5 +1,6 @@
 package model;
 
+import sys.db.Types.SDateTime;
 import sys.db.Manager;
 import sys.db.Types.SBigId;
 
@@ -8,6 +9,7 @@ class UserAchievement extends sys.db.Object {
     public var id: SBigId;
     @:relation(userId) public var user: User;
     @:relation(achievementId) public var achievement: Achievement;
+    public var date: SDateTime;
 
     public function new() {
         super();
@@ -24,6 +26,19 @@ class UserAchievement extends sys.db.Object {
         var userAchievement = new UserAchievement();
         userAchievement.user = user;
         userAchievement.achievement = achievement;
+        userAchievement.date = Date.now();
         userAchievement.insert();
+    }
+
+    public function toMessage() {
+        return
+            {
+                id: id,
+                title: achievement.title,
+                description: achievement.description,
+                iconPath: achievement.iconPath,
+                date: date,
+                category: haxe.Serializer.run(achievement.category)
+            };
     }
 }
