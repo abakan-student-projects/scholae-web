@@ -1,5 +1,6 @@
 package ;
 
+import notification.NotificationDestination;
 import configuration.AmqpConfig;
 import configuration.DatabaseConfig;
 import configuration.Configuration;
@@ -99,6 +100,16 @@ class Worker {
                     var user: User = User.manager.get(userId);
                     Sys.sleep(0.4);
                     Attempt.updateAttemptsForUser(user);
+                    var text = "Вы умеете обновлять данные с codeforces поздравляем!";
+                    var template: haxe.Template = new haxe.Template(haxe.Resource.getString("AchievementNotification"));
+                    var message = template.execute({message: text});
+                    var notification: Notification = new Notification();
+                    notification.date = Date.now();
+                    notification.type = NotificationType.SimpleMessage(message);
+                    notification.status = NotificationStatus.New;
+                    notification.user = user;
+                    notification.primaryDestination = NotificationDestination.Client;
+                    notification.insert();
                     var job: Job = Job.manager.get(msg.id);
                     if (null != job) {
                         job.response = MessagesHelper.successResponse(

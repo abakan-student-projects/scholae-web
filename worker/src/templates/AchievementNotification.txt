@@ -1,0 +1,7 @@
+<div style = 'width: 10%; height: 100%; display: flex; float: left;'>
+    <span style = 'margin: auto;' uk-icon='icon: check'></span>
+</div>
+<p style = 'display: inline-block; width: 80%; text-align: center; vertical-align: middle'>
+    <span style = 'font-size: 12pt; color: #64d13d'>Achievement unlocked</span><br>
+    <span style = 'font-size: 12pt'>::message::</span>
+</p>
