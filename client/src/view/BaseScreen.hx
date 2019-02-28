@@ -115,8 +115,9 @@ class BaseScreen
                         </button>
                         <div data-uk-dropdown="pos: bottom-left">
                             <ul className="uk-nav uk-dropdown-nav">
+                                <li className="uk-nav-divider"></li>
                                 <li>
-                                    <Link className="uk-link-text uk-margin-right" to="#">
+                                    <Link className="uk-link-text uk-margin-right" to="/achievements">
                                         <span className="uk-margin-right" data-uk-icon="image"></span>
                                         Достижения
                                     </Link>
@@ -128,6 +129,7 @@ class BaseScreen
                                         Настройки
                                     </Link>
                                 </li>
+                                <li className="uk-nav-divider"></li>
                             </ul>
                         </div>
 

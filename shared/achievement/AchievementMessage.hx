@@ -4,7 +4,7 @@ typedef AchievementMessage = {
     id: Float,
     title: String,
     description: String,
-    iconPath: String,
+    icon: String,
     date: String,
     category: String
 }

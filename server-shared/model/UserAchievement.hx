@@ -3,6 +3,7 @@ package model;
 import sys.db.Types.SDateTime;
 import sys.db.Manager;
 import sys.db.Types.SBigId;
+import achievement.AchievementCategory;
 
 @:table("UserAchievement")
 class UserAchievement extends sys.db.Object {
@@ -31,14 +32,15 @@ class UserAchievement extends sys.db.Object {
     }
 
     public function toMessage() {
+        var formattedDate = date.getDate()+"."+date.getMonth()+"."+date.getFullYear();
         return
             {
                 id: id,
                 title: achievement.title,
                 description: achievement.description,
-                iconPath: achievement.iconPath,
-                date: date,
-                category: haxe.Serializer.run(achievement.category)
+                icon: achievement.icon,
+                date: formattedDate,
+                category: "1"
             };
     }
 }

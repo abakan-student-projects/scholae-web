@@ -1,5 +1,8 @@
 package model;
 
+import services.LearnerServiceClient;
+import view.LearnerDashboardScreen;
+import achievement.AchievementMessage;
 import services.NotificationServiceClient;
 import utils.RemoteData;
 import utils.RemoteDataHelper;
@@ -25,7 +28,8 @@ typedef ScholaeState = {
     loading: Bool,
     activetedEmail: Bool,
     registration: RegistrationState,
-    profile: RemoteData<ProfileMessage>
+    profile: RemoteData<ProfileMessage>,
+    achievements: RemoteData<Array<AchievementMessage>>
 }
 
 class Scholae
@@ -55,7 +59,8 @@ class Scholae
         },
         activetedEmail: false,
         loading: false,
-        profile: RemoteDataHelper.createEmpty()
+        profile: RemoteDataHelper.createEmpty(),
+        achievements: RemoteDataHelper.createEmpty()
     };
 
     public var store: StoreMethods<ApplicationState>;
@@ -152,6 +157,12 @@ class Scholae
                 })
             });
             case UpdatePassword(passwordMessage): state;
+            case GetAchievements: copy(state, {
+                achievements: RemoteDataHelper.createLoading()
+            });
+            case GetAchievementsFinished(achievements): copy(state, {
+                achievements: RemoteDataHelper.createLoaded(achievements)
+            });
         }
     }
 
@@ -230,7 +241,7 @@ class Scholae
                             message: "Ошибка при отправлении письма: "+ e, timeout: 5000, status: "warning"
                         });
                     });
-                next;
+                next();
 
             case GetProfile:
                 AuthServiceClient.instance.getProfile().then(
@@ -242,7 +253,7 @@ class Scholae
                             message: "Ошибка загрузки профиля: " + e + ".", timeout: 5000, status: "warning"
                         });
                     });
-                next;
+                next();
 
             case UpdateProfile(profileMessage):
                 AuthServiceClient.instance.updateProfile(profileMessage).then(
@@ -255,7 +266,7 @@ class Scholae
                             message: "Ошибка обновления профиля: " + e + ".", timeout: 5000, status: "warning"
                         });
                     });
-                next;
+                next();
 
             case UpdateEmail(profileMessage):
                 AuthServiceClient.instance.updateEmail(profileMessage).then(
@@ -268,7 +279,7 @@ class Scholae
                             message: "Ошибка обновления email: " + e + ".", timeout: 5000, status: "warning"
                         });
                     });
-                next;
+                next();
 
             case UpdatePassword(passwordMessage):
                 AuthServiceClient.instance.updatePassword(passwordMessage).then(
@@ -282,7 +293,19 @@ class Scholae
                             message: e, timeout: 5000, status: "warning"
                         });
                     });
-                next;
+                next();
+
+            case GetAchievements:
+                LearnerServiceClient.instance.getAchievements().then(
+                    function(achievements: Array<AchievementMessage>) {
+                        store.dispatch(GetAchievementsFinished(achievements));
+                    },
+                    function(e) {
+                        UIkit.notification({
+                            message: "Ошибка получения достижений: " + e + ".", timeout: 5000, status: "warning"
+                        });
+                    });
+                next();
 
             default: next();
         }

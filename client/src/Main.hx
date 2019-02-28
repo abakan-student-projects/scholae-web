@@ -1,5 +1,6 @@
 package;
 
+import view.UserAchievementScreen;
 import notification.NotificationMessage;
 import services.NotificationServiceClient;
 import view.UserProfileScreen;
@@ -98,6 +99,7 @@ class Main {
 					    <Route path="renew-password-response" component=$RenewPasswordResponseView/>
 					    <Route path="student-project" component=$StudentProjectScreen />
 					    <Route path="profile" component=$UserProfileScreen />
+					    <Route path="achievements" component=$UserAchievementScreen onEnter=$requireAuth/>
 					</Route>
 				</Router>
 			</Provider>

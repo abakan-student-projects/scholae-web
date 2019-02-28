@@ -1,5 +1,6 @@
 package services;
 
+import achievement.AchievementMessage;
 import messages.RatingMessage;
 import messages.TrainingMessage;
 import js.Promise;
@@ -46,6 +47,14 @@ class LearnerServiceClient extends BaseServiceClient {
     public function getRating(learnerId : Float): Promise<Array<RatingMessage>> {
         return request(function(success, fail) {
             context.LearnerService.getRating.call([learnerId], function(e) {
+                processResponse(e, success, fail);
+            });
+        });
+    }
+
+    public function getAchievements(): Promise<Array<AchievementMessage>> {
+        return request(function(success, fail) {
+            context.LearnerService.getAchievements.call([], function(e) {
                 processResponse(e, success, fail);
             });
         });

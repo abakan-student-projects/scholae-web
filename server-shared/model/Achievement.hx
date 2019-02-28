@@ -1,9 +1,9 @@
 package model;
 
+import sys.db.Types.SEnum;
 import sys.db.Types.SText;
 import sys.db.Manager;
 import achievement.AchievementCategory;
-import sys.db.Types.SEnum;
 import sys.db.Types.SString;
 import sys.db.Types.SBigId;
 
@@ -12,7 +12,7 @@ class Achievement extends sys.db.Object {
     public var id: SBigId;
     public var title: SString<512>;
     public var description: SText;
-    public var iconPath: SString<512>;
+    public var icon: SString<512>;
     public var category: SEnum<AchievementCategory>;
 
     public function new() {
@@ -20,4 +20,5 @@ class Achievement extends sys.db.Object {
     }
 
     public static var manager = new Manager<Achievement>(Achievement);
+
 }
