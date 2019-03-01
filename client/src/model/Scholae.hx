@@ -1,6 +1,6 @@
 package model;
 
-import services.LearnerServiceClient;
+import haxe.ds.ArraySort;
 import view.LearnerDashboardScreen;
 import achievement.AchievementMessage;
 import services.NotificationServiceClient;
@@ -296,8 +296,13 @@ class Scholae
                 next();
 
             case GetAchievements:
-                LearnerServiceClient.instance.getAchievements().then(
+                AuthServiceClient.instance.getAchievements().then(
                     function(achievements: Array<AchievementMessage>) {
+                        ArraySort.sort(
+                            achievements,
+                            function(x: AchievementMessage, y: AchievementMessage) {
+                                return if(x.category < y.category) -1 else 1;
+                            });
                         store.dispatch(GetAchievementsFinished(achievements));
                     },
                     function(e) {

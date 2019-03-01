@@ -1,5 +1,6 @@
 package model;
 
+import haxe.EnumTools.EnumValueTools;
 import sys.db.Types.SDateTime;
 import sys.db.Manager;
 import sys.db.Types.SBigId;
@@ -32,15 +33,14 @@ class UserAchievement extends sys.db.Object {
     }
 
     public function toMessage() {
-        var formattedDate = date.getDate()+"."+date.getMonth()+"."+date.getFullYear();
         return
             {
                 id: id,
                 title: achievement.title,
                 description: achievement.description,
                 icon: achievement.icon,
-                date: formattedDate,
-                category: "1"
+                date: date,
+                category: EnumValueTools.getIndex(achievement.category)
             };
     }
 }

@@ -1,7 +1,5 @@
 package service;
 
-import model.Achievement;
-import model.UserAchievement;
 import jobs.ScholaeJob;
 import jobs.JobQueue;
 import model.ModelUtils;
@@ -59,7 +57,6 @@ class LearnerService {
         });
     }
 
-
     public function getRating(learnerId: Float) : ResponseMessage {
         return ServiceHelper.authorize(Role.Learner, function() {
             var user: User;
@@ -71,18 +68,4 @@ class LearnerService {
             return ServiceHelper.successResponse(user.toRatingMessage(user.id));
         });
     }
-
-    public function getAchievements(): ResponseMessage {
-        return ServiceHelper.authorize(Role.Learner, function() {
-           return ServiceHelper.successResponse(
-               Lambda.array(
-                   Lambda.map(
-                       UserAchievement.getUserAchievements(Authorization.instance.currentUser),
-                       function(t: UserAchievement) { return t.toMessage();}
-                   )
-               )
-           );
-        });
-    }
-
 }

@@ -1,7 +1,9 @@
-<div style = 'width: 10%; height: 100%; display: flex; float: left;'>
-    <span style = 'margin: auto;' uk-icon='icon: check'></span>
+<div class="uk-flex uk-flex-middle uk-flex-wrap">
+    <div class="uk-width-1-4 uk-text-center">
+        <img class="uk-margin-small-right" src="../../images/::icon::" width="50" height="50"></img>
+    </div>
+    <div class="uk-width-3-4 uk-flex uk-flex-column uk-text-left uk-flex-wrap">
+        <div class="uk-width-1-1 uk-text-justify uk-text-lead uk-text-small">Achievement unlocked!</div>
+        <div class="uk-width-1-1 uk-text-justify uk-text-small">::title::</div>
+    </div>
 </div>
-<p style = 'display: inline-block; width: 80%; text-align: center; vertical-align: middle'>
-    <span style = 'font-size: 12pt; color: #64d13d'>Achievement unlocked</span><br>
-    <span style = 'font-size: 12pt'>::message::</span>
-</p>

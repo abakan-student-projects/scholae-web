@@ -5,6 +5,6 @@ typedef AchievementMessage = {
     title: String,
     description: String,
     icon: String,
-    date: String,
-    category: String
+    date: Date,
+    category: Int
 }

@@ -100,9 +100,10 @@ class Worker {
                     var user: User = User.manager.get(userId);
                     Sys.sleep(0.4);
                     Attempt.updateAttemptsForUser(user);
+                    //todo delete this notification before merging with master branch
                     var text = "Вы умеете обновлять данные с codeforces поздравляем!";
                     var template: haxe.Template = new haxe.Template(haxe.Resource.getString("AchievementNotification"));
-                    var message = template.execute({message: text});
+                    var message = template.execute({icon: "cup.png", title: text});
                     var notification: Notification = new Notification();
                     notification.date = Date.now();
                     notification.type = NotificationType.SimpleMessage(message);
