@@ -1,5 +1,8 @@
 package model;
 
+import notification.NotificationStatus;
+import notification.NotificationDestination;
+import notification.NotificationType;
 import messages.AttemptMessage;
 import haxe.Json;
 import model.CodeforcesTask;
@@ -47,7 +50,7 @@ class Attempt extends sys.db.Object {
             a.datetime = Date.fromTime(s.creationTimeSeconds * 1000.0);
             a.solved = s.testset != "PRETESTS" && s.testset != "SAMPLES" && s.verdict == "OK";
             a.insert();
-           // if (s.verdict == "OK") sendNotification(user, t);
+            if (s.verdict == "OK") sendNotification(user, t);
         }
 
         user.lock();
@@ -56,17 +59,16 @@ class Attempt extends sys.db.Object {
         user.update();
     }
 
-   /* private static function sendNotification(user: User, t: CodeforcesTask) {
+    private static function sendNotification(user: User, t: CodeforcesTask) {
         var notification = new Notification();
         notification.user = user;
-        notification.message = "Задача " + t.name + "из контеста" + t.contestIndex + " решена.";
-        notification.link = null;
-        notification.type = NotificationType();
+        var message = "Задача "+ t.contestId + t.contestIndex+ ": \"" + t.name + "\" решена.";
+        notification.type = NotificationType.SimpleMessage(message, "success");
         notification.status = NotificationStatus.New;
         notification.primaryDestination = NotificationDestination.Client;
         notification.insert();
     }
-*/
+
     public function toMessage(): AttemptMessage {
         return {
             id: id,

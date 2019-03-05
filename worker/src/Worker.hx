@@ -104,9 +104,10 @@ class Worker {
                     var text = "Вы умеете обновлять данные с codeforces поздравляем!";
                     var template: haxe.Template = new haxe.Template(haxe.Resource.getString("AchievementNotification"));
                     var message = template.execute({icon: "cup.png", title: text});
+                    var link = "http://scholae.lambda-calculus.ru/achievements#22";
                     var notification: Notification = new Notification();
                     notification.date = Date.now();
-                    notification.type = NotificationType.SimpleMessage(message);
+                    notification.type = NotificationType.MessageWithLink(message, link);
                     notification.status = NotificationStatus.New;
                     notification.user = user;
                     notification.primaryDestination = NotificationDestination.Client;
