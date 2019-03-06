@@ -1,4 +1,4 @@
-create table notification
+create table Notification
 (
   id bigint auto_increment
     primary key,
@@ -11,21 +11,21 @@ create table notification
   secondaryDestination tinyint(4) null
 );
 
-create table achievement
+create table Achievement
 (
   id bigint auto_increment
     primary key,
   title varchar(512) not null,
   description text not null,
-  icon varchar(512) not null,
-  category tinyint(4) not null
+  category int(11) not null
 );
 
-create table userAchievement
+create table UserAchievement
 (
   id bigint auto_increment
     primary key,
   userId bigint(11) not null,
   achievementId bigint(11) not null,
+  grade int(11) not null,
   date datetime not null
 );

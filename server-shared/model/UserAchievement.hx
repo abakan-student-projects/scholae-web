@@ -1,6 +1,5 @@
 package model;
 
-import sys.db.Types.SString;
 import achievement.AchievementGrade;
 import sys.db.Types.SEnum;
 import haxe.EnumTools.EnumValueTools;
@@ -14,7 +13,7 @@ class UserAchievement extends sys.db.Object {
     @:relation(userId) public var user: User;
     @:relation(achievementId) public var achievement: Achievement;
     public var date: SDateTime;
-    public var grade: SString<128>;
+    public var grade: SEnum<AchievementGrade>;
 
     public function new() {
         super();
@@ -27,7 +26,7 @@ class UserAchievement extends sys.db.Object {
         return achievements;
     }
 
-    public static function insertUserAchievement(user: User, achievement: Achievement, grade: String) {
+    public static function insertUserAchievement(user: User, achievement: Achievement, grade: AchievementGrade) {
         var userAchievement = new UserAchievement();
         userAchievement.user = user;
         userAchievement.achievement = achievement;
@@ -42,9 +41,8 @@ class UserAchievement extends sys.db.Object {
                 id: id,
                 title: achievement.title,
                 description: achievement.description,
-                icon: achievement.icon,
                 date: date,
-                grade: grade,
+                grade: EnumValueTools.getIndex(grade),
                 category: achievement.category
             };
     }

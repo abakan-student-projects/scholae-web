@@ -10,7 +10,6 @@ class Achievement extends sys.db.Object {
     public var id: SBigId;
     public var title: SString<512>;
     public var description: SText;
-    public var icon: SString<512>;
     public var category: Int;
 
     public function new() {
