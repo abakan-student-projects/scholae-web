@@ -66,6 +66,7 @@ class Attempt extends sys.db.Object {
         notification.type = NotificationType.SimpleMessage(message, "success");
         notification.status = NotificationStatus.New;
         notification.primaryDestination = NotificationDestination.Client;
+        notification.date = Date.now();
         notification.insert();
     }
 

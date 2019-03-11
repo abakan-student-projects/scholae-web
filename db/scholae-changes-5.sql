@@ -17,7 +17,8 @@ create table Achievement
     primary key,
   title varchar(512) not null,
   description text not null,
-  category int(11) not null
+  category tinyint(4) not null,
+  parameters text null
 );
 
 create table UserAchievement

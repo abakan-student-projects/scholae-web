@@ -1,6 +1,6 @@
 package notification;
 
 enum NotificationType {
-   SimpleMessage(message: String, ?type: String);
-   MessageWithLink(message: String, link: String, ?type: String);
+   SimpleMessage(message: String, ?style: String);
+   MessageWithLink(message: String, link: String, ?style: String);
 }

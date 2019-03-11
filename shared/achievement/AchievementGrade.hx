@@ -1,8 +1,8 @@
 package achievement;
 
 enum AchievementGrade {
-    nograde;
-    newbie;
-    amateur;
-    master;
+    NoGrade;
+    Newbie;
+    Amateur;
+    Master;
 }

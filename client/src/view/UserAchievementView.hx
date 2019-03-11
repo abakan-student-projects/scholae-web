@@ -1,5 +1,7 @@
 package view;
 
+import achievement.AchievementGrade;
+import haxe.EnumTools;
 import achievement.AchievementUtils;
 import utils.StringUtils;
 import js.Browser;
@@ -56,7 +58,7 @@ class UserAchievementView extends ReactComponentOfProps<UserAchievementViewProps
                 <div className="uk-flex uk-flex-center uk-flex-wrap uk-flex-wrap-middle">
                     <div className="uk-width-2-3"><h2>Достижения</h2></div>
                     <ul data-uk-accordion="multiple: true" className="achievements uk-width-2-3">
-                        ${if(userAchievements == null) doesntLoading else if(userAchievements.length != 0) userAchievements else empty}
+                        ${if(props.achievements == null) doesntLoading else if(props.achievements.length != 0) userAchievements else empty}
                     </ul>
                 </div>
             </div>
@@ -78,14 +80,15 @@ class UserAchievementView extends ReactComponentOfProps<UserAchievementViewProps
     }
 
     private function renderAchievement(achievement: AchievementMessage){
-        var imagesSrc = "../../images/" + AchievementUtils.getIconPathByGrade(achievement.grade);
+        var grade: AchievementGrade  = EnumTools.createByIndex(AchievementGrade, achievement.grade);
+        var imagesSrc = "../../images/" + AchievementUtils.getIconPathByGrade(grade);
         return jsx('
             <div key=${achievement.id} id=${achievement.id} className="uk-card uk-card-small uk-card-default uk-flex uk-flex-middle uk-margin-top uk-margin-bottom">
                 <div className="uk-card-media-left uk-width-1-5 uk-text-center">
                     <img src="$imagesSrc" width="80" height="80"></img>
                 </div>
                 <div className="uk-card-body uk-padding-small uk-padding-remove-left uk-width-4-5 uk-flex uk-flex-column uk-text-left uk-flex-wrap">
-                    <legend className="uk-legend uk-margin-small-bottom">${achievement.title} ${if(achievement.grade != 0) " - " + AchievementUtils.getGradeName(achievement.grade) else null}</legend>
+                    <legend className="uk-legend uk-margin-small-bottom">${achievement.title} ${if(achievement.grade != 0) " - " + AchievementUtils.getGradeName(grade) else null}</legend>
                     <div className="uk-width-1-1 uk-text-justify uk-margin-small-bottom">${achievement.description}</div>
                     <div className="uk-margin-small-bottom">Дата получения: ${DateUtils.toString(achievement.date)}</div>
                 </div>
