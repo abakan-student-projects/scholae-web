@@ -276,7 +276,7 @@ class User extends sys.db.Object {
         return ratingByTask;
     }
 
-   public static function calculateLearnerRating(userId: Float){
+   public static function calculateLearnerRating(userId: Float) {
        var rating: Float = 0;
        var ratingCategories = calculateRatingCategory(userId);
        for (r in ratingCategories) {
@@ -348,7 +348,7 @@ class User extends sys.db.Object {
         return res;
     }
 
-    public static function getRatingCategory(userId: Float): Array<RatingCategory>{
+    public static function getRatingCategory(userId: Float): Array<RatingCategory> {
         var ratings: List<CategoryRating> = CategoryRating.manager.search($userId == userId);
         if(ratings.length == 0) {
             var categories = CodeforcesTag.manager.all();
