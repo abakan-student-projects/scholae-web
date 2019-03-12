@@ -17,10 +17,10 @@ class AchievementUtils {
 
     public static function getGradeName(grade: AchievementGrade): String{
         return switch (grade) {
-            case AchievementGrade.Newbie: "cup-bronze";
-            case AchievementGrade.Amateur: "cup-silver";
-            case AchievementGrade.Master: "cup-gold";
-            default: "cup-gold";
+            case AchievementGrade.Newbie: "Новичок";
+            case AchievementGrade.Amateur: "Любитель";
+            case AchievementGrade.Master: "Мастер";
+            default: "";
         }
     }
 

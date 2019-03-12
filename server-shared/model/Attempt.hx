@@ -1,5 +1,9 @@
 package model;
 
+import notification.NotificationStyle;
+import haxe.EnumTools;
+import notification.NotificationStyle;
+import achievement.AchievementGrade;
 import notification.NotificationStatus;
 import notification.NotificationDestination;
 import notification.NotificationType;
@@ -53,6 +57,8 @@ class Attempt extends sys.db.Object {
             if (s.verdict == "OK") sendNotification(user, t);
         }
 
+        User.calculateLearnerRating(user.id);
+        UserAchievement.checkUserAchievements(user);
         user.lock();
         user.lastCodeforcesSubmissionId = lastSubmissionId;
         user.lastResultsUpdateDate = Date.now();
@@ -60,14 +66,16 @@ class Attempt extends sys.db.Object {
     }
 
     private static function sendNotification(user: User, t: CodeforcesTask) {
-        var notification = new Notification();
-        notification.user = user;
-        var message = "Задача "+ t.contestId + t.contestIndex+ ": \"" + t.name + "\" решена.";
-        notification.type = NotificationType.SimpleMessage(message, "success");
-        notification.status = NotificationStatus.New;
-        notification.primaryDestination = NotificationDestination.Client;
-        notification.date = Date.now();
-        notification.insert();
+        if(t != null) {
+            var notification = new Notification();
+            notification.user = user;
+            var message = "Задача "+ t.contestId + t.contestIndex+ ": \"" + t.name + "\" решена.";
+            notification.type = NotificationType.SimpleMessage(message, EnumValueTools.getName(NotificationStyle.success));
+            notification.status = NotificationStatus.New;
+            notification.primaryDestination = NotificationDestination.Client;
+            notification.date = Date.now();
+            notification.insert();
+        }
     }
 
     public function toMessage(): AttemptMessage {

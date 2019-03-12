@@ -31,7 +31,6 @@ class UserAchievement extends sys.db.Object {
     public static var manager = new Manager<UserAchievement>(UserAchievement);
 
     public static function getUserAchievements(user: User): List<UserAchievement> {
-        checkUserAchievements(user);
         var achievements: List<UserAchievement> = manager.search($userId == user.id);
         return achievements;
     }
@@ -69,18 +68,35 @@ class UserAchievement extends sys.db.Object {
 
     public static function checkCodeforcesAchievements(user: User) {
         var achievements: List<Achievement> = Achievement.manager.search($category == AchievementCategory.Codeforces);
+        var solvedTasks: List<CodeforcesTask>  = ModelUtils.getTasksSolvedByUser(user);
         for(achievement in achievements) {
             var achievementsCount = UserAchievement.manager.count($userId == user.id && $achievementId == achievement.id);
-            trace(achievementsCount);
             if (achievementsCount == 0) {
                 switch(achievement.id) {
                     case 1: {
-                        var existsSolvedTask: Bool = if(ModelUtils.getTasksSolvedByUser(user) > 0) true else false;
-                        if(existsSolvedTask) {
+                        if(solvedTasks.length > 0) {
                             insertUserAchievement(user, achievement, AchievementGrade.NoGrade);
                             sendAchievementNotification(user, achievement.title, achievement.id, AchievementGrade.NoGrade);
                         }
-                    } ;
+                    }
+                    case 45: {
+                        if(solvedTasks.length > 100 ) {
+                            insertUserAchievement(user, achievement, AchievementGrade.NoGrade);
+                            sendAchievementNotification(user, achievement.title, achievement.id, AchievementGrade.NoGrade);
+                        }
+                    }
+                    case 46: {
+                        if(solvedTasks.length > 666 ) {
+                            insertUserAchievement(user, achievement, AchievementGrade.NoGrade);
+                            sendAchievementNotification(user, achievement.title, achievement.id, AchievementGrade.NoGrade);
+                        }
+                    }
+                    case 47: {
+                        if(solvedTasks.length > 9000 ) {
+                            insertUserAchievement(user, achievement, AchievementGrade.NoGrade);
+                            sendAchievementNotification(user, achievement.title, achievement.id, AchievementGrade.NoGrade);
+                        }
+                    }
                 }
             }
         }
@@ -110,14 +126,23 @@ class UserAchievement extends sys.db.Object {
                 insertUserAchievement(user, achievement, grade);
                 sendAchievementNotification(user,achievement.title, achievement.id, grade);
             } else if (grade != AchievementGrade.NoGrade) {
-                updateUserAchievement(user, achievement, grade);
-                sendAchievementNotification(user,achievement.title, achievement.id, grade);
+                var userAchievement: UserAchievement = UserAchievement.manager.search($userId == user.id && $achievementId == achievement.id).first();
+                if(userAchievement != null) {
+                    if(userAchievement.grade != grade) {
+                        updateUserAchievement(user, achievement, grade);
+                        sendAchievementNotification(user,achievement.title, achievement.id, grade);
+                    }
+                }
             }
         }
     }
 
     private static function sendAchievementNotification(user: User, message: String, achievementId: Float, grade: AchievementGrade) {
         var template = new haxe.Template(haxe.Resource.getString("AchievementNotification"));
+        var message = if(grade != AchievementGrade.NoGrade)
+            message+" - "+AchievementUtils.getGradeName(grade)
+        else
+            message;
         var notificationMessage = template.execute(
             {
                 id: achievementId,
@@ -125,7 +150,6 @@ class UserAchievement extends sys.db.Object {
                 icon: AchievementUtils.getIconPathByGrade(grade)
             }
         );
-        trace(notificationMessage);
         var notification = new Notification();
         notification.user = user;
         notification.type = NotificationType.SimpleMessage(notificationMessage, EnumValueTools.getName(NotificationStyle.success));
