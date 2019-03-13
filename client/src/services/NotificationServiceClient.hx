@@ -64,6 +64,7 @@ class NotificationServiceClient extends BaseServiceClient {
                         var notificationMessage = template.execute({message: message, link: link});
                         showNotification(notificationMessage, type);
                     }
+                    default: null;
                 };
             }
         }

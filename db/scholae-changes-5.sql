@@ -39,7 +39,7 @@ create table CategoryRating
     primary key,
   userId bigint(11) not null,
   categoryId bigint(11) not null,
-  grade float not null
+  rating float not null
 );
 
 INSERT INTO `achievement` (`id`, `title`, `description`, `category`, `parameters`) VALUES
@@ -89,7 +89,8 @@ INSERT INTO `achievement` (`id`, `title`, `description`, `category`, `parameters
 (NULL, 'Категория \"Хэширование\"', 'Достижение за решение задач в категории \"Хэширование\"', 3, 'jy33:achievement.AchievementParameters:0:1i16'),
 (NULL, 'Первая сотня', 'Вы решили более 100 задач на codeforces. Так держать!', '1', NULL),
 (NULL, '666 задач', 'Вы решили более 666 задач. Теперь сам сатана может позавидовать вашему навыку олимпиадного программирования', '1', NULL),
-(NULL, 'IT’S OVER NINE THOUSAAAAAND!', 'Вы решили более 9000 задач. Уровень вашей силы превосходит любые ожидания', '1', NULL);
+(NULL, 'IT’S OVER NINE THOUSAAAAAND!', 'Вы решили более 9000 задач. Уровень вашей силы превосходит любые ожидания', '1', NULL),
+(NULL, 'Крепкий орешек', 'Вы решили задачу с самым высоким рейтингом в системе', '1', NULL);
 
 ALTER TABLE `codeforcestasks` ADD `rating` INT NULL AFTER `active`;
 
