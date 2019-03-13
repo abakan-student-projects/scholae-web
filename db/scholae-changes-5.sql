@@ -90,3 +90,6 @@ INSERT INTO `achievement` (`id`, `title`, `description`, `category`, `parameters
 (NULL, 'Первая сотня', 'Вы решили более 100 задач на codeforces. Так держать!', '1', NULL),
 (NULL, '666 задач', 'Вы решили более 666 задач. Теперь сам сатана может позавидовать вашему навыку олимпиадного программирования', '1', NULL),
 (NULL, 'IT’S OVER NINE THOUSAAAAAND!', 'Вы решили более 9000 задач. Уровень вашей силы превосходит любые ожидания', '1', NULL);
+
+ALTER TABLE `codeforcestasks` ADD `rating` INT NULL AFTER `active`;
+
