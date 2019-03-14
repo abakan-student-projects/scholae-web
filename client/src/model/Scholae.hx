@@ -213,6 +213,7 @@ class Scholae
                     function(sessionMessage) {
                         Session.sessionId = sessionMessage.sessionId;
                         store.dispatch(RegisteredAndAuthenticated(sessionMessage));
+                        NotificationServiceClient.instance.start();
                     },
                     function(e) {
                         store.dispatch(RegistrationFailed(e));

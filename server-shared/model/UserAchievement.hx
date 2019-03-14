@@ -71,9 +71,7 @@ class UserAchievement extends sys.db.Object {
     public static function checkCodeforcesAchievements(user: User) {
         var achievements: List<Achievement> = Achievement.manager.search($category == AchievementCategory.Codeforces);
         var solvedTasks: Array<CodeforcesTask> = Lambda.array(ModelUtils.getTasksSolvedByUser(user));
-        var flag = false;
         for(achievement in achievements) {
-            trace("for");
             var achievementsCount = UserAchievement.manager.count($userId == user.id && $achievementId == achievement.id);
             if (achievementsCount == 0) {
                 switch(Std.int(achievement.id)) {
@@ -111,16 +109,17 @@ class UserAchievement extends sys.db.Object {
                         });
                         var mostRatedTask = tasks[0];
                         var mostRatedSolvedTask = solvedTasks[0];
-                        if (mostRatedTask != null && mostRatedTask.rating <= mostRatedSolvedTask.rating) {
-                            insertUserAchievement(user, achievement, AchievementGrade.NoGrade);
-                            sendAchievementNotification(user, achievement.title, achievement.id, AchievementGrade.NoGrade);
+                        if (mostRatedTask != null && mostRatedSolvedTask != null) {
+                            if(mostRatedTask.rating <= mostRatedSolvedTask.rating){
+                                insertUserAchievement(user, achievement, AchievementGrade.NoGrade);
+                                sendAchievementNotification(user, achievement.title, achievement.id, AchievementGrade.NoGrade);
+                            }
                         }
                     }
                     default: null;
                 }
             }
         }
-        trace(flag);
     }
 
     public static function checkRatingAchievements(user: User){
