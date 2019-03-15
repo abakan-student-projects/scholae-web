@@ -1,5 +1,6 @@
 package view.teacher;
 
+import utils.DateUtils;
 import codeforces.Codeforces;
 import messages.ExerciseMessage;
 import haxe.ds.ArraySort;
@@ -36,9 +37,13 @@ class TeacherTrainingView extends ReactComponentOfProps<TeacherTrainingProps> im
                         <div className="uk-margin">
                             <Link to=${"/teacher/group/" + props.group.id}><span data-uk-icon="chevron-left"></span>${props.group.name}</Link>
                         </div>
-                        <h2 className="uk-margin-remove">${props.training.name}</h2>
+                        <h2 className="uk-margin-remove-top uk-margin-small-bottom">${props.training.name}</h2>
                         <h3 className="uk-margin-remove">${props.learner.lastName} ${props.learner.firstName}</h3>
-                        <div className="exercises uk-margin-top">$exercises</div>
+                        <div className="exercises uk-margin-small-top">
+                            <ul data-uk-accordion="multiple: true">
+                                $exercises
+                            </ul>
+                        </div>
                     </div>
                 ');
         } else {
@@ -71,14 +76,54 @@ class TeacherTrainingView extends ReactComponentOfProps<TeacherTrainingProps> im
             default : "";
         };
 
-        return jsx('
-            <div key=${Std.string(exercise.id)} className="uk-margin">
-                <div>
-                    <a href=$problemUrl target="_blank">${exercise.task.name}</a> <span className=${"uk-label" + labelStyle}>${Std.string(exercise.task.level)}</span>
-                    $solvedMark
-                    <span className="tags uk-margin-left uk-text-meta">$tags</span>
+        var attempt = if(exercise.attempts != null) {
+            var a = [for (a in exercise.attempts)
+                jsx('
+                    <div className="uk-margin-small-bottom" key=${a.id}>
+                        <a className="uk-link-text" href=${"http://codeforces.com/contest/"+ exercise.task.codeforcesContestId +"/submission/"+a.vendorId} target="_blank">
+                            <span className="uk-label uk-text-capitalize uk-margin-small-left">
+                                Посылка: ${a.vendorId} - ${DateUtils.toStringWithTime(a.datetime)}
+                            </span>
+                            <span className=${"uk-label uk-margin-small-left " + if(a.solved)"uk-label-success"else"uk-label-danger"}>
+                                ${if(a.solved) "Решено" else "Ошибка"}
+                            </span>
+                        </a>
                     </div>
-            </div>
+                ')
+            ];
+            jsx('
+                <div className="attempts uk-margin-remove-top uk-accordion-content">
+                    <div className="uk-margin-small-left uk-margin-small-bottom">
+                        <Link to=$problemUrl target="_blank" className="uk-link-text ">
+                            Перейти к условию задачи
+                        </Link>
+                    </div>
+                    $a
+                </div>
+            ');
+        }
+        else {
+            jsx('
+                <div className="attempts uk-accordion-content uk-margin-remove-top">
+                    <div className="uk-margin-small-left">
+                        <Link to=$problemUrl target="_blank" className="uk-link-text uk-margin-small-left">
+                            Перейти к условию задачи
+                        </Link>
+                    <div className="uk-margin-small-left">
+                </div>
+            ');
+        }
+
+        return jsx('
+            <li key=${Std.string(exercise.id)} className="uk-margin-small-left">
+                <a className="uk-accordion-title uk-margin-small-bottom" href="#">
+                    <span className="uk-margin-small-right">${exercise.task.name}</span>
+                    <span className=${"uk-label" + labelStyle}>${Std.string(exercise.task.level)}</span>
+                    $solvedMark
+                    <span className="tags uk-text-meta uk-margin-small-left">$tags</span>
+                </a>
+                $attempt
+            </li>
         ');
     }
 }

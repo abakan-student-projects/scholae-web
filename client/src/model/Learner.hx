@@ -92,6 +92,7 @@ class Learner
 
             case RefreshResultsFinished(trainings):
                 UIkit.notification({ message: "Результаты обновлены.", timeout: 3000 });
+                store.dispatch(LoadTrainings);
                 next();
 
             case LoadRating(learnerId):
