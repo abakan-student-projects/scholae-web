@@ -146,24 +146,32 @@ class CodeforcesRunner {
 
             t.type = contest.type;
 
-            if (contest.difficulty != null) {
-                var contestSum: Int = Lambda.fold(tasksByContest.get(t.contestId), function(t, sum) { return sum + t.solvedCount;}, 0);
-                var contestMiddle = contestSum / Lambda.count(tasksByContest.get(t.contestId));
-
-                if (t.solvedCount < contestMiddle - contestSum / 6) {
-                    t.level = Std.int(Math.max(1, contest.difficulty + 1));
-                } else if (t.solvedCount > contestMiddle + contestSum / 6) {
-                    t.level = Std.int(Math.min(contest.difficulty - 1, 5));
-                } else {
-                    t.level = contest.difficulty;
-                }
-            } else {
-                t.level =
-                if (t.solvedCount < 100) 5
-                else if (t.solvedCount < 1000) 4
-                else if (t.solvedCount < 5000) 3
-                else if (t.solvedCount < 20000) 2
+            if (t.rating != null) {
+                t.level = if (t.rating >= 3000) 5
+                else if (t.rating >= 2000) 4
+                else if (t.rating >= 1500) 3
+                else if (t.rating >= 1000) 2
                 else 1;
+            } else {
+                if (contest.difficulty != null) {
+                    var contestSum: Int = Lambda.fold(tasksByContest.get(t.contestId), function(t, sum) { return sum + t.solvedCount;}, 0);
+                    var contestMiddle = contestSum / Lambda.count(tasksByContest.get(t.contestId));
+
+                    if (t.solvedCount < contestMiddle - contestSum / 6) {
+                        t.level = Std.int(Math.max(1, contest.difficulty + 1));
+                    } else if (t.solvedCount > contestMiddle + contestSum / 6) {
+                        t.level = Std.int(Math.min(contest.difficulty - 1, 5));
+                    } else {
+                        t.level = contest.difficulty;
+                    }
+                } else {
+                    t.level =
+                    if (t.solvedCount < 100) 5
+                    else if (t.solvedCount < 1000) 4
+                    else if (t.solvedCount < 5000) 3
+                    else if (t.solvedCount < 20000) 2
+                    else 1;
+                }
             }
 
             t.update();

@@ -15,6 +15,7 @@ class CodeforcesTask extends sys.db.Object {
     public var contestIndex: SString<128>;
     public var type: SString<128>;
     public var active: Bool;
+    public var rating: SInt;
 
     public function new() {
         super();
@@ -34,10 +35,14 @@ class CodeforcesTask extends sys.db.Object {
             task.name = p.name;
             task.level = 0;
             task.solvedCount = 0;
+            task.rating = p.rating;
             task.insert();
+        } else if(task.rating != p.rating){
+            task.rating = p.rating;
+            task.update();
         }
 
-        task.name =p.name;
+        task.name = p.name;
         return task;
     }
 

@@ -1,5 +1,6 @@
 package service;
 
+import model.UserAchievement;
 import configuration.Configuration;
 import php.Web;
 import codeforces.Codeforces;
@@ -229,5 +230,18 @@ class AuthService {
             }
         }
         else return ServiceHelper.failResponse("Не удалось изменить пароль");
+    }
+
+    public function getAchievements(): ResponseMessage {
+        return ServiceHelper.authorize(Role.Learner, function() {
+            return ServiceHelper.successResponse(
+                Lambda.array(
+                    Lambda.map(
+                        UserAchievement.getUserAchievements(Authorization.instance.currentUser),
+                        function(t: UserAchievement) { return t.toMessage();}
+                    )
+                )
+            );
+        });
     }
 }

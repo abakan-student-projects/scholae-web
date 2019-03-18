@@ -1,5 +1,6 @@
 package action;
 
+import achievement.AchievementMessage;
 import messages.PasswordMessage;
 import messages.ProfileMessage;
 import messages.SessionMessage;
@@ -35,4 +36,7 @@ enum ScholaeAction {
     EmailActivationCode(code: String);
     EmailActivationCodeFinished(check: Bool);
     SendActivationEmail;
+
+    GetAchievements;
+    GetAchievementsFinished(achievements: Array<AchievementMessage>);
 }

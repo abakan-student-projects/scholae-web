@@ -1,5 +1,6 @@
 package ;
 
+import notification.NotificationDestination;
 import configuration.AmqpConfig;
 import configuration.DatabaseConfig;
 import configuration.Configuration;
@@ -148,38 +149,15 @@ class Worker {
                         case SimpleMessage(message, type): {
                             template = new haxe.Template(haxe.Resource.getString("SimpleEmailNotification"));
                             emailMessage = template.execute({message: message});
+                            sendEmail(user, notification, emailMessage);
                         }
                         case MessageWithLink(message, link, type): {
                             template = new haxe.Template(haxe.Resource.getString("EmailNotificationWithLink"));
                             emailMessage = template.execute({message: message, link: link});
+                            sendEmail(user, notification, emailMessage);
                         }
+                        default: null;
                     };
-                    var subjectForUser ='Scholae: notification';
-                    var from = Configuration.instance.getEmailNotification();
-                    var smtpConfig: SmtpConfig = Configuration.instance.getSmtpConfig();
-                    var email = new Part("multipart/alternative", true, "utf-8");
-                    email.setHeader("From", from);
-                    email.setHeader("To", user.email);
-                    email.setDate();
-                    email.setHeader("Subject", subjectForUser);
-                    var emailPart = email.newPart("text/html");
-                    emailPart.setContent(emailMessage);
-                    try {
-                        Smtp.send(
-                            smtpConfig.host,
-                            from,
-                            user.email,
-                            emailPart.get(),
-                            smtpConfig.port,
-                            if (smtpConfig.user != "") smtpConfig.user else null,
-                            if (smtpConfig.password != "") smtpConfig.password else null
-                        );
-                        notification.status = NotificationStatus.Completed;
-                    } catch (e: Dynamic) {
-                        trace("SMTP Connection error: " + e);
-                        notification.status = NotificationStatus.InProgress;
-                    }
-                    notification.update();
                     var job: Job = Job.manager.get(msg.id);
                     if (null != job) {
                         job.delete();
@@ -195,5 +173,34 @@ class Worker {
         Sys.stderr().flush();
 
         channel.ack(delivery);
+    }
+
+    private function sendEmail(user: User, notification: Notification, emailMessage: String) {
+        var subjectForUser ='Scholae: notification';
+        var from = Configuration.instance.getEmailNotification();
+        var smtpConfig: SmtpConfig = Configuration.instance.getSmtpConfig();
+        var email = new Part("multipart/alternative", true, "utf-8");
+        email.setHeader("From", from);
+        email.setHeader("To", user.email);
+        email.setDate();
+        email.setHeader("Subject", subjectForUser);
+        var emailPart = email.newPart("text/html");
+        emailPart.setContent(emailMessage);
+        try {
+            Smtp.send(
+                smtpConfig.host,
+                from,
+                user.email,
+                emailPart.get(),
+                smtpConfig.port,
+                if (smtpConfig.user != "") smtpConfig.user else null,
+                if (smtpConfig.password != "") smtpConfig.password else null
+            );
+            notification.status = NotificationStatus.Completed;
+        } catch (e: Dynamic) {
+            trace("SMTP Connection error: " + e);
+            notification.status = NotificationStatus.InProgress;
+        }
+        notification.update();
     }
 }

@@ -11,5 +11,6 @@ typedef Problem = {
     name: String,
     type: String,
     ?points: Float,
+    ?rating: Int,
     tags: Array<String>
 }

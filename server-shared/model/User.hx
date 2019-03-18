@@ -1,6 +1,7 @@
 package model;
 
 
+import codeforces.RunnerAction;
 import messages.ProfileMessage;
 import Std;
 import messages.AttemptMessage;
@@ -32,6 +33,7 @@ class User extends sys.db.Object {
     public var emailActivationCode: SString<128>;
     public var emailActivated: SBool;
     public var lastResultsUpdateDate: SDateTime;
+    public var rating: Float;
 
     public function new() {
         super();
@@ -98,8 +100,8 @@ class User extends sys.db.Object {
         var learner = manager.select($id == userId);
         return
             {
-                rating: if (startDate != null && finishDate != null) 0 else calculateLearnerRating(userId),
-                ratingCategory: if (startDate != null && finishDate != null) [] else calculateRatingCategory(userId),
+                rating: if (startDate != null && finishDate != null) 0 else getLearnerRating(userId),
+                ratingCategory: if (startDate != null && finishDate != null) [] else getRatingCategory(userId),
                 learner: learner.toLearnerMessage(),
                 ratingDate: if (startDate != null && finishDate != null) calculateLearnerRatingsForUsers(userId, startDate, finishDate) else [],
                 solvedTasks: if (startDate != null && finishDate != null) getSolvedTasks(userId, startDate, finishDate) else 0,
@@ -274,7 +276,7 @@ class User extends sys.db.Object {
         return ratingByTask;
     }
 
-   public static function calculateLearnerRating(userId: Float): Float {
+   public static function calculateLearnerRating(userId: Float) {
        var rating: Float = 0;
        var ratingCategories = calculateRatingCategory(userId);
        for (r in ratingCategories) {
@@ -282,14 +284,21 @@ class User extends sys.db.Object {
                rating += r.rating;
            }
        }
-       return rating;
+       var user: User = User.manager.get(userId);
+       user.rating = rating;
+       user.update();
    }
+
+    public static function getLearnerRating(userId: Float): Float {
+        var user: User = User.manager.get(userId);
+        return if(user.rating != null) user.rating else 0;
+    }
 
     public static function calculateRatingCategory(userId: Float): Array<RatingCategory> {
         var rating: Float = 0;
         var res: Array<RatingCategory> = [];
         var attempts = Attempt.manager.search(($userId == userId) && ($solved == true));
-        var tagIds = CodeforcesTag.manager.all();
+        var tagIds: List<CodeforcesTag> = CodeforcesTag.manager.all();
         var taskIds = [];
         for (a in attempts) {
             if (a.task != null){
@@ -306,12 +315,56 @@ class User extends sys.db.Object {
             }
             if (ratingLearnerCategoryTask != 0) {
                 ratingLearnerCategoryTask = Math.log(ratingLearnerCategoryTask+1);
-                res.push({id: t.id, rating: Math.round(ratingLearnerCategoryTask*100)/100});
+                var rating = Math.round(ratingLearnerCategoryTask*100)/100;
+                var categoryRating: CategoryRating = CategoryRating.manager.search($userId == userId && $categoryId == t.id).first();
+                if (categoryRating != null) {
+                    if (categoryRating.rating != rating) {
+                        categoryRating.rating = rating;
+                        categoryRating.update();
+                    }
+                } else {
+                    categoryRating = new CategoryRating();
+                    var user:User = User.manager.get(userId);
+                    categoryRating.user = user;
+                    categoryRating.tag = t;
+                    categoryRating.rating = rating;
+                    categoryRating.insert();
+                }
+                res.push({id: t.id, rating: rating});
                 ratingLearnerCategoryTask = 0;
             } else {
+                var categoryRating: CategoryRating = CategoryRating.manager.search($userId == userId && $categoryId == t.id).first();
+                if (categoryRating == null) {
+                    categoryRating = new CategoryRating();
+                    var user:User = User.manager.get(userId);
+                    categoryRating.user = user;
+                    categoryRating.tag = t;
+                    categoryRating.rating = 0;
+                    categoryRating.insert();
+                }
                 res.push({id:t.id, rating: 0});
             }
         }
         return res;
+    }
+
+    public static function getRatingCategory(userId: Float): Array<RatingCategory> {
+        var ratings: List<CategoryRating> = CategoryRating.manager.search($userId == userId);
+        if(ratings.length == 0) {
+            var categories = CodeforcesTag.manager.all();
+            return Lambda.array(
+                Lambda.map(categories, function(category: CodeforcesTag){
+                    var rating: RatingCategory = {id: category.id, rating: 0};
+                    return rating;
+                })
+            );
+        } else {
+            return Lambda.array(
+                Lambda.map(ratings, function(categoryRating: CategoryRating){
+                    var rating: RatingCategory = {id: categoryRating.tag.id, rating: categoryRating.rating}
+                    return rating;
+                })
+            );
+        }
     }
 }
