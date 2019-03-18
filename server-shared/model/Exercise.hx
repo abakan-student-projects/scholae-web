@@ -1,5 +1,6 @@
 package model;
 
+import messages.AttemptMessage;
 import messages.ExerciseMessage;
 import sys.db.Manager;
 import sys.db.Types;
@@ -22,10 +23,18 @@ class Exercise extends sys.db.Object {
     }
 
     public function toMessage(): ExerciseMessage {
+        var attempts: Array<AttemptMessage> = Lambda.array(
+            Lambda.map(
+                Attempt.manager.search(
+                    $userId == training.user.id &&
+                    $taskId == task.id),
+                function(t){ return t.toMessage();}
+            ));
         return {
             id: id,
             task: task.toMessage(training.user),
-            trainingId: training.id
+            trainingId: training.id,
+            attempts: if(attempts.length != 0) attempts else null
         };
     }
 
