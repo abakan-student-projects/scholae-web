@@ -13,22 +13,23 @@ import utils.Select;
 typedef TrainingParametersProps = {
     tags: Array<TagMessage>,
     onTagsChanged: Array<Float> -> Void,
-    onChanged: Int -> Int -> Int -> Void,
+    ?onChanged: Int -> ?Int -> ?Int -> Void,
     learners: Array<LearnerMessage>,
     onLearnersChanged: Array<Float> -> Void,
+    blockMode: Float
 }
 
 typedef TrainingParametersRefs = {
-    minLevel: InputElement,
-    maxLevel: InputElement,
+    ?minLevel: InputElement,
+    ?maxLevel: InputElement,
     tasksCount: InputElement,
     tagsSelect: Dynamic,
     learnersSelect: Dynamic
 }
 
 typedef TrainingParametersState = {
-    minLevel: Int,
-    maxLevel: Int,
+    ?minLevel: Int,
+    ?maxLevel: Int,
     tasksCount: Int
 }
 
@@ -45,7 +46,9 @@ class TrainingParametersView extends ReactComponentOfPropsAndRefs<TrainingParame
         return tags;
     }
     function getLearnersForSelect(){
-        var learners = Lambda.array(Lambda.map(props.learners, function(t){ return { value: t.id, label: t.firstName+" "+t.lastName}; }));
+        var learners = [];
+        if (props.learners != null)
+            learners = Lambda.array(Lambda.map(props.learners, function(t){ return { value: t.id, label: t.firstName+" "+t.lastName}; }));
         learners.sort(function(x, y) { return if (x.label < y.label) -1 else 1; });
         return learners;
     }
@@ -54,18 +57,19 @@ class TrainingParametersView extends ReactComponentOfPropsAndRefs<TrainingParame
         var tags = getTagsForSelect();
         var learners = getLearnersForSelect();
         return
-            jsx('
+            if (props.blockMode == 1)
+                jsx('
                 <div id="params" className="uk-margin">
                     <h2>Параметры тренировки</h2>
-                    <div className="uk-margin uk-width-1-2@s">
+                    <div className="uk-margin uk-width-1-2">
                         <label>Минимальный уровень: ${state.minLevel}</label>
                         <input className="uk-range uk-margin" type="range" min="1" max="5" step="1" value=${state.minLevel} onChange=$onChange ref="minLevel"/>
                     </div>
-                    <div className="uk-margin uk-width-1-2@s">
+                    <div className="uk-margin uk-width-1-2">
                         <label>Максимальный уровень: ${state.maxLevel}</label>
                         <input className="uk-range uk-margin" type="range" min="1" max="5" step="1" value=${state.maxLevel} onChange=$onChange ref="maxLevel"/>
                     </div>
-                    <div className="uk-margin uk-width-1-2@s">
+                    <div className="uk-margin uk-width-1-2">
                         <label>Количество задач: ${state.tasksCount}</label>
                         <input className="uk-range uk-margin" type="range" min="1" max="20" step="1" value=${state.tasksCount} onChange=$onChange ref="tasksCount"/>
                     </div>
@@ -96,7 +100,26 @@ class TrainingParametersView extends ReactComponentOfPropsAndRefs<TrainingParame
                             ref="learnersSelect"/>
                     </div>
                 </div>
-            ');
+            '); else if (props.blockMode == 2) jsx ('
+                <div id="params2" className="uk-margin">
+                    <h2>Параметры тренировки</h2>
+                    <div className="uk-margin uk-width-1-2@s">
+                        <label>Количество задач: ${state.tasksCount}</label>
+                        <input className="uk-range uk-margin" type="range" min="1" max="20" step="1" value=${state.tasksCount} onChange=$onChange ref="tasksCount"/>
+                    </div>
+                    <h3>Ученики</h3>
+                    <div className="uk-margin">
+                        <button className="uk-button uk-button-default uk-button-small  uk-margin-small-right" onClick=$selectAllLearners>Выбрать все</button>
+                        <button className="uk-button uk-button-default uk-button-small" onClick=$deselectAllLearners>Исключить все</button>
+                    </div>
+                    <Select
+                        isMulti=${true}
+                        isLoading=${learners == null || learners.length <= 0}
+                        options=$learners
+                        onChange=$onSelectedLearnersChanged
+                        placeholder="Выберите учеников..."
+                        ref="learnersSelect"/>
+                </div>'); else jsx('<div></div>');
     }
 
     override function componentWillMount() {
@@ -108,17 +131,30 @@ class TrainingParametersView extends ReactComponentOfPropsAndRefs<TrainingParame
     }
 
     function onChange(e) {
-        var minLevel = Math.min(Std.parseInt(refs.minLevel.value), state.maxLevel);
-        var maxLevel = Math.max(Std.parseInt(refs.maxLevel.value), state.minLevel);
-        setState({
-            minLevel: minLevel,
-            maxLevel: maxLevel,
-            tasksCount: Std.parseInt(refs.tasksCount.value)
-        }, onInputsChanged);
+        if (props.blockMode != 2) {
+            var minLevel = Math.min(Std.parseInt(refs.minLevel.value), state.maxLevel);
+            var maxLevel = Math.max(Std.parseInt(refs.maxLevel.value), state.minLevel);
+            setState({
+                minLevel: minLevel,
+                maxLevel: maxLevel,
+                tasksCount: Std.parseInt(refs.tasksCount.value)
+            }, onInputsChanged);
+        } else {
+            setState({
+                minLevel: null,
+                maxLevel: null,
+                tasksCount: Std.parseInt(refs.tasksCount.value)
+            }, onInputsChanged);
+        }
     }
 
     function onInputsChanged() {
-        props.onChanged(state.minLevel, state.maxLevel, state.tasksCount);
+        if (props.blockMode != 2) {
+            props.onChanged(state.minLevel, state.maxLevel, state.tasksCount);
+        } else {
+            props.onChanged(state.tasksCount);
+        }
+
     }
 
     function onSelectedTagsChanged(tags) {

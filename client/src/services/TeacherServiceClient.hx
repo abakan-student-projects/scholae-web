@@ -81,6 +81,14 @@ class TeacherServiceClient extends BaseServiceClient {
         });
     }
 
+    public function createAdaptiveAssignment(group: GroupMessage, name: String, startDate: Date, finishDate: Date, tasksCount: Int, learnerIds: Array<Float>): Promise<AssignmentMessage> {
+        return request(function(success, fail) {
+            context.TeacherService.createAdaptiveAssignment.call([group, name, startDate, finishDate, tasksCount, learnerIds], function(e) {
+                processResponse(e, success, fail);
+            });
+        });
+    }
+
     public function getAssignmentsByGroup(groupId: Float): Promise<Array<AssignmentMessage>> {
         return request(function(success, fail) {
             context.TeacherService.getAssignmentsByGroup.call([groupId], function(e) {
