@@ -74,6 +74,8 @@ class UserAchievement extends sys.db.Object {
         for(achievement in achievements) {
             var achievementsCount = UserAchievement.manager.count($userId == user.id && $achievementId == achievement.id);
             if (achievementsCount == 0) {
+                // Take a look into the UserAchievment table rows in the DB for the ID meanings
+                // TODO: let's have constants for these magic ID numbers below ;)
                 switch(Std.int(achievement.id)) {
                     case 1: {
                         if(solvedTasks.length > 0) {
