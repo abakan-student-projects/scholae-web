@@ -1,5 +1,7 @@
 package model;
 
+import action.ScholaeAction;
+import ApplicationState;
 import haxe.Log;
 import js.html.Console;
 import haxe.ds.ArraySort;
@@ -93,6 +95,8 @@ class Learner
             case RefreshResultsFinished(trainings):
                 UIkit.notification({ message: "Результаты обновлены.", timeout: 3000 });
                 store.dispatch(LoadTrainings);
+                store.dispatch(LoadRating(null));
+                store.dispatch(ScholaeAction.GetAchievements);
                 next();
 
             case LoadRating(learnerId):

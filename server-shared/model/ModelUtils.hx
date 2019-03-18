@@ -26,7 +26,7 @@ class ModelUtils {
         var res = new StringMap<Bool>();
         var relations = CodeforcesTaskTag.manager.search($tagId in tagIds);
         for (r in relations) {
-            if (r.task.active)
+            if (r.task != null && r.task.active==true)
                 res.set(Std.string(r.task.id), true);
         }
         return res;

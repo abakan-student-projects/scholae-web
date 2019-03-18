@@ -72,6 +72,10 @@ class TeacherNewAssignmentScreen
                         groupId: null
                     }
                 ));
+            },
+            createAdaptive: function(name, startDate, finishDate, tasksCount, learnerIds) {
+                dispatch(TeacherAction.CreateAdaptiveAssignment(state.teacher.currentGroup.info,
+                    name, startDate, finishDate, tasksCount, learnerIds));
             }
         };
     }

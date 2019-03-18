@@ -36,6 +36,7 @@ enum TeacherAction {
     LoadLastLearnerAttemptsFinished(attempts: Array<AttemptMessage>);
 
     CreateAssignment(group: GroupMessage, assignment: AssignmentMessage);
+    CreateAdaptiveAssignment(group: GroupMessage, name: String, startDate: Date, finishDate: Date, tasksCount: Int, learnerIds: Array<Float>);
     CreateAssignmentFinished(assignment: AssignmentMessage);
 
     CreateTrainingsByMetaTrainings(groupId: Float);

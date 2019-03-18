@@ -103,7 +103,8 @@ class Teacher
                 copy(state, {
                     lastLearnerAttempts: RemoteDataHelper.createLoaded(attempts)
                 });
-
+            case CreateAdaptiveAssignment(group, name, startDate, finishDate, tasksCount, learnerIds):
+                copy(state, { assignmentCreating: true });
             case CreateAssignment(group, assignment): copy(state, { assignmentCreating: true });
             case CreateAssignmentFinished(assignment):
                 if (state.currentGroup != null && state.currentGroup.info.id == assignment.groupId) {
@@ -281,6 +282,11 @@ class Teacher
                     .then(function(attempts) {
                         store.dispatch(LoadLastLearnerAttemptsFinished(attempts));
                     });
+                next();
+
+            case CreateAdaptiveAssignment(group, name, startDate, finishDate, tasksCount, learnerIds):
+                TeacherServiceClient.instance.createAdaptiveAssignment(group,name,startDate,finishDate,tasksCount,learnerIds)
+                    .then(function(a) { store.dispatch(CreateAssignmentFinished(a)); });
                 next();
 
             case CreateAssignment(group, assignment):

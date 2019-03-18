@@ -1,5 +1,6 @@
 package services;
 
+import achievement.AchievementMessage;
 import messages.PasswordMessage;
 import messages.ProfileMessage;
 import messages.UserMessage;
@@ -108,4 +109,11 @@ class AuthServiceClient extends BaseServiceClient {
         });
     }
 
+    public function getAchievements(): Promise<Array<AchievementMessage>> {
+        return request(function(success, fail) {
+            context.AuthService.getAchievements.call([], function(e) {
+                processResponse(e, success, fail);
+            });
+        });
+    }
 }

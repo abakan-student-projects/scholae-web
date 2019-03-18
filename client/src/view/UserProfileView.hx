@@ -1,7 +1,6 @@
 package view;
 
 import haxe.crypto.Md5;
-import haxe.crypto.Md5;
 import messages.PasswordMessage;
 import utils.UIkit;
 import haxe.io.Input;

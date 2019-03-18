@@ -57,7 +57,6 @@ class LearnerService {
         });
     }
 
-
     public function getRating(learnerId: Float) : ResponseMessage {
         return ServiceHelper.authorize(Role.Learner, function() {
             var user: User;
@@ -69,5 +68,4 @@ class LearnerService {
             return ServiceHelper.successResponse(user.toRatingMessage(user.id));
         });
     }
-
 }
