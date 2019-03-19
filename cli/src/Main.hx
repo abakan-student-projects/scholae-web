@@ -1,5 +1,7 @@
 package ;
 
+import model.UserAchievement;
+import model.Role;
 import notification.NotificationDestination;
 import DateTools;
 import notification.NotificationStatus;
@@ -59,7 +61,8 @@ class Main {
         var args = Sys.args();
         var argHandler = hxargs.Args.generate([
             @doc("Action: updateCodeforcesTasks, updateCodeforcesTasksLevelsAndTypes, updateGymTasks,
-            updateTags, updateTaskIdsOnAttempts, updateUsersResults, updateCodeforcesData, checkOutdatedNotifications")
+            updateTags, updateTaskIdsOnAttempts, updateUsersResults, updateCodeforcesData, checkOutdatedNotifications,
+            updateUsersRatings")
             ["-a", "--action"] => function(action:String) codeforcesRunner.config.action = EnumTools.createByName(RunnerAction, action),
 
             @doc("Limit number of processing items. Works only for updateGymTasks")
@@ -88,6 +91,7 @@ class Main {
             case RunnerAction.updateUsersResults: updateUsersResults();
             case RunnerAction.updateCodeforcesData: updateCodeforcesData();
             case RunnerAction.checkOutdatedNotifications: checkOutdatedNotifications();
+            case RunnerAction.updateUsersRatings: updateUsersRatings();
         }
 
         sys.db.Manager.cleanup();
@@ -143,6 +147,7 @@ class Main {
                 ).getTime() < timeNow.getTime();
                 if (user.lastResultsUpdateDate == null || isOfflineUserShouldUpdate || isOnlineUserShouldUpdate) {
                     publishScholaeJob(channel, ScholaeJob.UpdateUserResults(user.id), "Update user results : " + user.id);
+                    Sys.sleep(0.01);
                 }
             }
         }
@@ -212,10 +217,32 @@ class Main {
                         ScholaeJob.SendNotificationToEmail(notification.id),
                         "Sending outdated notifications" + notification.id
                     );
+                    Sys.sleep(0.01);
                 }
             }
         }
         channel.close();
         mq.close();
+    }
+
+    public static function updateUsersRatings() {
+        var mq: AmqpConnection = new AmqpConnection(getConnectionParams());
+        var channel = mq.channel();
+        var users: List<User> = User.manager.all();
+        trace("updating user ratings");
+        for(user in users) {
+            if(user.roles.has(Role.Learner) || user.roles.has(Role.Administrator)) {
+                var jobsByUser: Job =
+                    Job.manager.search($sessionId == "Update user results : " + user.id).first();
+                if (jobsByUser == null) {
+                    publishScholaeJob(
+                        channel,
+                        ScholaeJob.UpdateUserResults(user.id),
+                        "Update user results : " + user.id
+                    );
+                    Sys.sleep(0.01);
+                }
+            }
+        }
     }
 }
