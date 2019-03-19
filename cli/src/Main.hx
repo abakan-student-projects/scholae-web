@@ -147,6 +147,7 @@ class Main {
                 ).getTime() < timeNow.getTime();
                 if (user.lastResultsUpdateDate == null || isOfflineUserShouldUpdate || isOnlineUserShouldUpdate) {
                     publishScholaeJob(channel, ScholaeJob.UpdateUserResults(user.id), "Update user results : " + user.id);
+                    Sys.sleep(0.01);
                 }
             }
         }
@@ -216,6 +217,7 @@ class Main {
                         ScholaeJob.SendNotificationToEmail(notification.id),
                         "Sending outdated notifications" + notification.id
                     );
+                    Sys.sleep(0.01);
                 }
             }
         }
@@ -224,12 +226,22 @@ class Main {
     }
 
     public static function updateUsersRatings() {
+        var mq: AmqpConnection = new AmqpConnection(getConnectionParams());
+        var channel = mq.channel();
         var users: List<User> = User.manager.all();
         trace("updating user ratings");
         for(user in users) {
             if(user.roles.has(Role.Learner) || user.roles.has(Role.Administrator)) {
-                User.calculateLearnerRating(user.id);
-                UserAchievement.checkUserAchievements(user);
+                var jobsByUser: Job =
+                    Job.manager.search($sessionId == "Update user results : " + user.id).first();
+                if (jobsByUser == null) {
+                    publishScholaeJob(
+                        channel,
+                        ScholaeJob.UpdateUserResults(user.id),
+                        "Update user results : " + user.id
+                    );
+                    Sys.sleep(0.01);
+                }
             }
         }
     }
