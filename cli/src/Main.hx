@@ -1,5 +1,7 @@
 package ;
 
+import model.UserAchievement;
+import model.Role;
 import notification.NotificationDestination;
 import DateTools;
 import notification.NotificationStatus;
@@ -59,7 +61,8 @@ class Main {
         var args = Sys.args();
         var argHandler = hxargs.Args.generate([
             @doc("Action: updateCodeforcesTasks, updateCodeforcesTasksLevelsAndTypes, updateGymTasks,
-            updateTags, updateTaskIdsOnAttempts, updateUsersResults, updateCodeforcesData, checkOutdatedNotifications")
+            updateTags, updateTaskIdsOnAttempts, updateUsersResults, updateCodeforcesData, checkOutdatedNotifications,
+            updateUsersRatings")
             ["-a", "--action"] => function(action:String) codeforcesRunner.config.action = EnumTools.createByName(RunnerAction, action),
 
             @doc("Limit number of processing items. Works only for updateGymTasks")
@@ -88,6 +91,7 @@ class Main {
             case RunnerAction.updateUsersResults: updateUsersResults();
             case RunnerAction.updateCodeforcesData: updateCodeforcesData();
             case RunnerAction.checkOutdatedNotifications: checkOutdatedNotifications();
+            case RunnerAction.updateUsersRatings: updateUsersRatings();
         }
 
         sys.db.Manager.cleanup();
@@ -217,5 +221,16 @@ class Main {
         }
         channel.close();
         mq.close();
+    }
+
+    public static function updateUsersRatings() {
+        var users: List<User> = User.manager.all();
+        trace("updating user ratings");
+        for(user in users) {
+            if(user.roles.has(Role.Learner) || user.roles.has(Role.Administrator)) {
+                User.calculateLearnerRating(user.id);
+                UserAchievement.checkUserAchievements(user);
+            }
+        }
     }
 }

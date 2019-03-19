@@ -9,4 +9,5 @@ enum RunnerAction {
     updateUsersResults;
     updateCodeforcesData;
     checkOutdatedNotifications;
+    updateUsersRatings;
 }
