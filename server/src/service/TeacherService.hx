@@ -159,7 +159,7 @@ class TeacherService {
                 for (l in learnerIds) {
                     tasks = getTasksIds(l,tasksCount,null);
                     for (t in tasks) {
-                        taskIds.push(t);
+                        taskIds.push(t.id);
                     }
                 }
                 var taskTag = CodeforcesTaskTag.manager.search($taskId in taskIds);
@@ -194,8 +194,7 @@ class TeacherService {
                             t.insert();
 
                             var exercisesTaskIds: List<Float> = Lambda.map(ModelUtils.getExercisesTasksByUser(user), function(t) {return t.id; });
-                            var taskIds = getTasksIds(l, tasksCount, exercisesTaskIds);
-                            var tasks = CodeforcesTask.manager.search($id in taskIds);
+                            var tasks = getTasksIds(l, tasksCount, exercisesTaskIds);
                             if (tasks != null)  {
                                 for (task in tasks) {
                                     var exercise = new Exercise();
@@ -213,7 +212,7 @@ class TeacherService {
         });
     }
 
-    public function getTasksIds(learnerId: Float, tasksCount: Float, exercisesTaskIds: List<Float>) {
+    public static function getTasksIds(?learnerId: Float, tasksCount: Float, ?exercisesTaskIds: List<Float>, ?userLevel: Int) {
         var resultTasks: Array<CategoryWeight> = [];
         var res = [];
         var currentRatingCategory = [];
@@ -239,21 +238,25 @@ class TeacherService {
 
         ArraySort.sort(categoryWeight, function(x: CategoryWeight, y: CategoryWeight) { return if (x.weight < y.weight) 1 else -1; });
         var learnerLevel = null;
-        var taskIds = [];
+        var CodeforcesTasks = [];
         var tasks = [];
         for (c in categoryWeight) {
-            learnerLevel = getLearnerLevel(c.category, c.level, learnerId);
+            if (userLevel == null) {
+                learnerLevel = getLearnerLevel(c.category, c.level, learnerId);
+            } else {
+                learnerLevel = c.level;
+            }
             if (learnerLevel == c.level) {
-                taskIds = getNotSolvedTaskIds(c.category,learnerLevel,learnerId, exercisesTaskIds);
-                tasks.push(taskIds);
+                CodeforcesTasks = getNotSolvedTaskIds(c.category,learnerLevel,learnerId, exercisesTaskIds);
+                tasks.push(CodeforcesTasks);
             }
         }
-        var j = 1;
-        var tasksFinished = [];
+        var j = 0;
+        var tasksFinished: Array<CodeforcesTask> = [];
         for (task in tasks) {
             if (task.length != 0) {
                 for(t in task) {
-                    if (j <= tasksCount) {
+                    if (j < tasksCount) {
                         tasksFinished.push(t);
                         j++;
                     }
@@ -263,7 +266,7 @@ class TeacherService {
         return tasksFinished;
     }
 
-    public function getLearnerLevel(category: Float, level: Int, learnerId: Float) {
+    public static function getLearnerLevel(category: Float, level: Int, learnerId: Float) {
         var tasksTag = CodeforcesTaskTag.manager.search($tagId == category);
         var tasksTagIds = [for (t in tasksTag) if (t.task != null) t.task.id];
         var tasks = CodeforcesTask.manager.search(($id in tasksTagIds) && ($level == level));
@@ -302,29 +305,43 @@ class TeacherService {
         return learnerLevel;
     }
 
-    public function getNotSolvedTaskIds(category: Float, level: Int, learnerId: Float, exercisesTasksIds: List<Float>) {
-        var user: User = User.manager.select($id == learnerId);
-        var solvedTasks = ModelUtils.getTasksSolvedByUser(user);
-        var solvedTasksIds = [for (s in solvedTasks) s.id];
-        var tasksTag = CodeforcesTaskTag.manager.search($tagId == category);
-        var tasksTagIds = [for (t in tasksTag) if (t.task != null) t.task.id];
-        var tasks = CodeforcesTask.manager.search(($id in tasksTagIds) && ($level == level) && !($id in solvedTasksIds) && !($id in exercisesTasksIds));
-        var notSolvedTasks = [for (t in tasks) t.id];
-        return notSolvedTasks;
+    public static function getNotSolvedTaskIds(category: Float, level: Int, learnerId: Float, exercisesTasksIds: List<Float>) {
+        var tasks: Array<CodeforcesTask> = [];
+        if (learnerId == 0) {
+            var tasksTag = CodeforcesTaskTag.manager.search($tagId == category);
+            var tasksTagIds = [for (t in tasksTag) if (t.task != null) t.task.id];
+            tasks = Lambda.array(
+                        Lambda.map(
+                            CodeforcesTask.manager.search(($id in tasksTagIds) && ($level == level)),
+                                function(t){return t;}));
+        } else {
+            var user: User = User.manager.select($id == learnerId);
+            var solvedTasks = ModelUtils.getTasksSolvedByUser(user);
+            var solvedTasksIds = [for (s in solvedTasks) s.id];
+            var tasksTag = CodeforcesTaskTag.manager.search($tagId == category);
+            var tasksTagIds = [for (t in tasksTag) if (t.task != null) t.task.id];
+            tasks = Lambda.array(
+                        Lambda.map(
+                            CodeforcesTask.manager.search(($id in tasksTagIds) && ($level == level) && !($id in solvedTasksIds) && !($id in exercisesTasksIds)),
+                            function(t) {return t;}));
+        }
+        return tasks;
     }
 
-    public function getRatingCategory(userId: Float) {
+    public static function getRatingCategory(userId: Float) {
         var rating = 0;
         var res: Array<RatingCategory> = [];
         var attempts = Attempt.manager.search(($userId == userId) && ($solved == true));
         var tagIds = CodeforcesTag.manager.all();
-        var taskIds = [for (a in attempts) a.task.id];
+        var taskIds = [for (a in attempts) if (a.task != null) a.task.id];
         var taskTagIds = CodeforcesTaskTag.manager.search($taskId in taskIds);
         var ratingLearnerCategoryTask: Float = 0;
         for (t in tagIds) {
-            for (taskTag in taskTagIds) {
-                if (taskTag.tag.id == t.id) {
-                    ratingLearnerCategoryTask += Math.pow(2, taskTag.task.level-1) * (taskTag.tag.importance/tagIds.length);
+            if (taskTagIds != null) {
+                for (taskTag in taskTagIds) {
+                    if (taskTag.tag.id == t.id && taskTag != null) {
+                        ratingLearnerCategoryTask += Math.pow(2, taskTag.task.level-1) * (taskTag.tag.importance/tagIds.length);
+                    }
                 }
             }
             if (ratingLearnerCategoryTask != 0) {

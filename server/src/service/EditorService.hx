@@ -1,5 +1,7 @@
 package service;
 
+import Lambda;
+import Array;
 import messages.UserMessage;
 import haxe.EnumTools;
 import model.User;
@@ -157,6 +159,15 @@ class EditorService {
             } else {
                 return ServiceHelper.failResponse("Задача id=" + taskId + " не существует.");
             }
+        });
+    }
+
+    public function testAdaptiveDemo(tasksCount: Int): ResponseMessage {
+        return authorize(function() {
+            var tasks = TeacherService.getTasksIds(0,tasksCount,null,1);
+            return ServiceHelper.successResponse(
+                Lambda.array(Lambda.map(
+                    tasks, function(t) {return t.toMessage();})));
         });
     }
 }
