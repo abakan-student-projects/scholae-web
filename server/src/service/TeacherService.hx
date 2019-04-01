@@ -278,7 +278,6 @@ class TeacherService {
             for (a in attempt) {
                 for (t in taskIds) {
                     if (a.task != null && t == a.task.id) {
-
                         countSolvedTasks++;
                         learnerLevel = level;
                     }

@@ -24,7 +24,6 @@ class AdminAdaptiveScreen
     }
 
     function mapState(state: ApplicationState, props: RouteComponentProps): AdminAdaptiveProps {
-        RemoteDataHelper.ensureRemoteDataLoaded(state.admin.tasks, AdminAction.TestAdaptiveDemo(0));
         RemoteDataHelper.ensureRemoteDataLoaded(state.editor.tags, EditorAction.LoadTags);
         return {
                 tasks: if (state.admin.tasks != null) state.admin.tasks.data else [],

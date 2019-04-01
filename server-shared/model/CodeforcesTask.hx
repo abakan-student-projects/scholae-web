@@ -97,7 +97,7 @@ class CodeforcesTask extends sys.db.Object {
         for (t in taskTag) {
             if (t.task != null && t.tag != null) {
                 rating = Math.pow(2, t.task.level-1)*(t.tag.importance/allTags.length);
-                ratingBytag.push({tagId: if (t.tag.russianName != null) t.tag.russianName else t.tag.name, rating: rating});
+                ratingBytag.push({tagId: t.tag.id,name: if (t.tag.russianName != null) t.tag.russianName else t.tag.name, rating: Math.round(rating*100)/100});
             }
         }
         return ratingBytag;

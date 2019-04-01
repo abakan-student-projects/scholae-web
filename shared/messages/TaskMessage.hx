@@ -1,7 +1,8 @@
 package messages;
 
 typedef RatingByTag = {
-    tagId: String,
+    tagId: Float,
+    name:String,
     rating: Float
 }
 
