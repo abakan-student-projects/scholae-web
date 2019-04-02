@@ -27,7 +27,8 @@ typedef AdminAdaptiveState = {
     bar: Dynamic,
     i: Float,
     prevData: Array<ChartAxis>,
-    timer1: Bool
+    timer1: Bool,
+    color: String
 }
 
 typedef ChartProps = {
@@ -84,6 +85,12 @@ class AdminAdaptiveView extends ReactComponentOfProps<AdminAdaptiveProps> implem
         };
         if (props.tasks != null) {
             var tasks = [];
+            var color1 = {
+                background: state.color
+            };
+            var white = {
+                background: 'white'
+            }
             var i = 1;
             for (t in props.tasks) {
                 var problemUrl =
@@ -92,8 +99,8 @@ class AdminAdaptiveView extends ReactComponentOfProps<AdminAdaptiveProps> implem
                     else
                         Codeforces.getProblemUrl(t.codeforcesContestId, t.codeforcesIndex);
 
-                tasks.push(jsx('<tr>
-                                    <td>${i++}</td>
+                tasks.push(jsx('<tr style={${if (state.i == i++) color1 else white}}>
+                                    <td>${i-1}</td>
                                     <td><Link to=$problemUrl target="_blank" className="uk-link-text">${t.name}</Link></td>
                                     <td>${t.level}</td>
                                     <td>${renderTags(t,i-1)}</td>
@@ -215,7 +222,7 @@ class AdminAdaptiveView extends ReactComponentOfProps<AdminAdaptiveProps> implem
             labels: data.labels,
             datasets: [newDataSet]
         };
-        setState(copy(state,{bar: newState, i: numberTask, prevData: newData, timer1: false}));
+        setState(copy(state,{bar: newState, i: numberTask, prevData: newData, timer1: false, color:'Bisque'}));
         timer.stop();
     }
 
@@ -321,7 +328,7 @@ class AdminAdaptiveView extends ReactComponentOfProps<AdminAdaptiveProps> implem
                 labels: data.labels,
                 datasets: [newDataSet]
             };
-            setState(copy(state,{bar: newState, i: j, prevData: newData, timer1: true}));
+            setState(copy(state,{bar: newState, i: j, prevData: newData, timer1: true, color:'Bisque'}));
         };
     }
 }
