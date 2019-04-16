@@ -244,7 +244,7 @@ class TeacherService {
             if (userLevel == null) {
                 learnerLevel = getLearnerLevel(c.category, c.level, learnerId);
             } else {
-                learnerLevel = c.level;
+                learnerLevel = 1;
             }
             if (learnerLevel == c.level) {
                 CodeforcesTasks = getNotSolvedTaskIds(c.category,learnerLevel,learnerId, exercisesTaskIds);
