@@ -240,25 +240,38 @@ class TeacherService {
         var learnerLevel = null;
         var CodeforcesTasks = [];
         var tasks = [];
-        for (c in categoryWeight) {
-            if (userLevel == null) {
-                learnerLevel = getLearnerLevel(c.category, c.level, learnerId);
-            } else {
-                learnerLevel = 1;
-            }
-            if (learnerLevel == c.level) {
-                CodeforcesTasks = getNotSolvedTaskIds(c.category,learnerLevel,learnerId, exercisesTaskIds);
-                tasks.push(CodeforcesTasks);
-            }
-        }
+        var solvedTasks = [];
+        var i = 0;
+        var forRun = [];
         var j = 0;
         var tasksFinished: Array<CodeforcesTask> = [];
-        for (task in tasks) {
-            if (task.length != 0) {
-                for(t in task) {
-                    if (j < tasksCount) {
-                        tasksFinished.push(t);
-                        j++;
+        if (userLevel != null) {
+            forRun = getTasksForRunAdaptive(tasksCount,categoryWeight, solvedTasks);
+            while (forRun.length < tasksCount) {
+                forRun = getTasksForRunAdaptive(tasksCount,categoryWeight, forRun);
+            }
+            var i = 0;
+            for (f in forRun) {
+                if (i < tasksCount) {
+                    tasksFinished.push(f);
+                    i++;
+                }
+            }
+        } else {
+            for (c in categoryWeight) {
+                learnerLevel = getLearnerLevel(c.category, c.level, learnerId);
+                if (learnerLevel == c.level) {
+                    CodeforcesTasks = getNotSolvedTaskIds(c.category,learnerLevel,learnerId, exercisesTaskIds);
+                    tasks.push(CodeforcesTasks);
+                }
+            }
+            for (task in tasks) {
+                if (task.length != 0) {
+                    for(t in task) {
+                        if (j < tasksCount) {
+                            tasksFinished.push(t);
+                            j++;
+                        }
                     }
                 }
             }
@@ -266,12 +279,38 @@ class TeacherService {
         return tasksFinished;
     }
 
+    public static function getTasksForRunAdaptive(tasksCount: Float, categoryWeight: Array<CategoryWeight>, solvedTasks: Array<CodeforcesTask>) {
+        var tasks: Array<CodeforcesTask> = [];
+        for (c in categoryWeight) {
+            tasks = getNotSolvedTaskIds(c.category, c.level,0,null);
+            for (t in tasks) {
+                if (solvedTasks.length >= tasksCount)
+                    break;
+                if (t.level == 1 && solvedTasks.length < 3) {
+                    solvedTasks.push(t);
+                } else if (t.level == 2 && solvedTasks.length < 13 && solvedTasks.length >= 3 ) {
+                    solvedTasks.push(t);
+                } else if (t.level == 3 && solvedTasks.length < 33 && solvedTasks.length >= 13) {
+                    solvedTasks.push(t);
+                } else if (t.level == 4 && solvedTasks.length < 83 && solvedTasks.length >= 33) {
+                    solvedTasks.push(t);
+                } else if (t.level == 5 && solvedTasks.length >= 83) {
+                    solvedTasks.push(t);
+                }
+            }
+        }
+        return solvedTasks;
+    }
+
     public static function getLearnerLevel(category: Float, level: Int, learnerId: Float) {
         var tasksTag = CodeforcesTaskTag.manager.search($tagId == category);
         var tasksTagIds = [for (t in tasksTag) if (t.task != null) t.task.id];
         var tasks = CodeforcesTask.manager.search(($id in tasksTagIds) && ($level == level));
         var taskIds = [for (t in tasks) t.id];
-        var attempt = Lambda.array(Lambda.map(Attempt.manager.search($userId == learnerId && $solved == true && ($taskId in taskIds)), function(a){return a;}));
+        var attempt = Lambda.array(
+                            Lambda.map(
+                                Attempt.manager.search($userId == learnerId && $solved == true && ($taskId in taskIds)),
+                                    function(a){return a;}));
         var countSolvedTasks = 0;
         var learnerLevel = 0;
         if (attempt.length != 0) {
@@ -279,7 +318,7 @@ class TeacherService {
                 for (t in taskIds) {
                     if (a.task != null && t == a.task.id) {
                         countSolvedTasks++;
-                        learnerLevel = level;
+                        learnerLevel = a.task.level;
                     }
                 }
             }
@@ -300,7 +339,6 @@ class TeacherService {
             case 5: learnerLevel = 5;
             default : learnerLevel = 1;
         }
-
         return learnerLevel;
     }
 
@@ -332,7 +370,7 @@ class TeacherService {
         var res: Array<RatingCategory> = [];
         var attempts = Attempt.manager.search(($userId == userId) && ($solved == true));
         var tagIds = CodeforcesTag.manager.all();
-        var taskIds = [for (a in attempts) if (a.task != null) a.task.id];
+        var taskIds = if (attempts != null)[for (a in attempts) if (a.task != null) a.task.id] else [];
         var taskTagIds = CodeforcesTaskTag.manager.search($taskId in taskIds);
         var ratingLearnerCategoryTask: Float = 0;
         for (t in tagIds) {
