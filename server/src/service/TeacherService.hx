@@ -1,5 +1,6 @@
 package service;
 
+import model.CategoryRating;
 import Lambda;
 import Array;
 import haxe.ds.ArraySort;
@@ -33,12 +34,6 @@ import messages.GroupMessage;
 import messages.SessionMessage;
 import model.Session;
 import model.User;
-
-typedef CategoryWeight = {
-    category: Float,
-    level: Int,
-    weight: Float
-}
 
 class TeacherService {
 
@@ -213,156 +208,25 @@ class TeacherService {
     }
 
     public static function getTasksIds(?learnerId: Float, tasksCount: Float, ?exercisesTaskIds: List<Float>, ?userLevel: Int) {
-        var resultTasks: Array<CategoryWeight> = [];
-        var res = [];
-        var currentRatingCategory = [];
-        var tags = CodeforcesTag.manager.all();
-        var levels = [1,2,3,4,5];
-        var weight: Float = 0;
-        var forTrace = [];
-        var rating:Float = 0;
-        var categoryWeight: Array<CategoryWeight> = [];
-        currentRatingCategory = getRatingCategory(learnerId);
-
-        for (t in tags) {
-            for (c in currentRatingCategory){
-                if (t.id == c.id) {
-                    for (l in levels) {
-                        rating = Math.pow(2,l-1) * (t.importance/tags.length);
-                        weight = Math.abs(Math.log(c.rating + 1) - Math.log(c.rating + rating + 1));
-                        categoryWeight.push({category: t.id, level: l, weight: Math.round(weight*100)/100});
-                    }
-                }
-            }
-        }
-
-        ArraySort.sort(categoryWeight, function(x: CategoryWeight, y: CategoryWeight) { return if (x.weight < y.weight) 1 else -1; });
-        var learnerLevel = null;
-        var CodeforcesTasks = [];
-        var tasks = [];
-        var solvedTasks = [];
-        var i = 0;
-        var forRun = [];
-        var j = 0;
-        var tasksFinished: Array<CodeforcesTask> = [];
-        if (userLevel != null) {
-            forRun = getTasksForRunAdaptive(tasksCount,categoryWeight, solvedTasks);
-            while (forRun.length < tasksCount) {
-                forRun = getTasksForRunAdaptive(tasksCount,categoryWeight, forRun);
-            }
-            var i = 0;
-            for (f in forRun) {
-                if (i < tasksCount) {
-                    tasksFinished.push(f);
-                    i++;
-                }
-            }
-        } else {
-            for (c in categoryWeight) {
-                learnerLevel = getLearnerLevel(c.category, c.level, learnerId);
-                if (learnerLevel == c.level) {
-                    CodeforcesTasks = getNotSolvedTaskIds(c.category,learnerLevel,learnerId, exercisesTaskIds);
-                    tasks.push(CodeforcesTasks);
-                }
-            }
-            for (task in tasks) {
-                if (task.length != 0) {
-                    for(t in task) {
-                        if (j < tasksCount) {
-                            tasksFinished.push(t);
-                            j++;
-                        }
-                    }
-                }
-            }
-        }
-        return tasksFinished;
-    }
-
-    public static function getTasksForRunAdaptive(tasksCount: Float, categoryWeight: Array<CategoryWeight>, solvedTasks: Array<CodeforcesTask>) {
-        var tasks: Array<CodeforcesTask> = [];
-        for (c in categoryWeight) {
-            tasks = getNotSolvedTaskIds(c.category, c.level,0,null);
-            for (t in tasks) {
-                if (solvedTasks.length >= tasksCount)
-                    break;
-                if (t.level == 1 && solvedTasks.length < 3) {
-                    solvedTasks.push(t);
-                } else if (t.level == 2 && solvedTasks.length < 13 && solvedTasks.length >= 3 ) {
-                    solvedTasks.push(t);
-                } else if (t.level == 3 && solvedTasks.length < 33 && solvedTasks.length >= 13) {
-                    solvedTasks.push(t);
-                } else if (t.level == 4 && solvedTasks.length < 83 && solvedTasks.length >= 33) {
-                    solvedTasks.push(t);
-                } else if (t.level == 5 && solvedTasks.length >= 83) {
-                    solvedTasks.push(t);
-                }
-            }
-        }
-        return solvedTasks;
-    }
-
-    public static function getLearnerLevel(category: Float, level: Int, learnerId: Float) {
-        var tasksTag = CodeforcesTaskTag.manager.search($tagId == category);
-        var tasksTagIds = [for (t in tasksTag) if (t.task != null) t.task.id];
-        var tasks = CodeforcesTask.manager.search(($id in tasksTagIds) && ($level == level));
-        var taskIds = [for (t in tasks) t.id];
-        var attempt = Lambda.array(
+        var attempt = Attempt.manager.search(($userId == learnerId) && ($solved == true));
+        var solvedTaskIds = if (attempt != null)[for (a in attempt) if (a.task != null) a.task.id] else [];
+        var solvedTasks = Lambda.array(
                             Lambda.map(
-                                Attempt.manager.search($userId == learnerId && $solved == true && ($taskId in taskIds)),
-                                    function(a){return a;}));
-        var countSolvedTasks = 0;
-        var learnerLevel = 0;
-        if (attempt.length != 0) {
-            for (a in attempt) {
-                for (t in taskIds) {
-                    if (a.task != null && t == a.task.id) {
-                        countSolvedTasks++;
-                        learnerLevel = a.task.level;
-                    }
-                }
-            }
-        }
-        switch(learnerLevel){
-            case 1: if (countSolvedTasks >= 3) {
-                        learnerLevel = 2;
-                    }
-            case 2: if (countSolvedTasks >= 10) {
-                        learnerLevel = 3;
-                    }
-            case 3: if (countSolvedTasks >= 20) {
-                        learnerLevel = 4;
-                    }
-            case 4: if (countSolvedTasks >= 50) {
-                        learnerLevel = 5;
-                    }
-            case 5: learnerLevel = 5;
-            default : learnerLevel = 1;
-        }
-        return learnerLevel;
-    }
-
-    public static function getNotSolvedTaskIds(category: Float, level: Int, learnerId: Float, exercisesTasksIds: List<Float>) {
-        var tasks: Array<CodeforcesTask> = [];
-        if (learnerId == 0) {
-            var tasksTag = CodeforcesTaskTag.manager.search($tagId == category);
-            var tasksTagIds = [for (t in tasksTag) if (t.task != null) t.task.id];
-            tasks = Lambda.array(
-                        Lambda.map(
-                            CodeforcesTask.manager.search(($id in tasksTagIds) && ($level == level)),
-                                function(t){return t;}));
-        } else {
-            var user: User = User.manager.select($id == learnerId);
-            var solvedTasks = ModelUtils.getTasksSolvedByUser(user);
-            var solvedTasksIds = [for (s in solvedTasks) s.id];
-            var tasksTag = CodeforcesTaskTag.manager.search($tagId == category);
-            var tasksTagIds = [for (t in tasksTag) if (t.task != null) t.task.id];
-            tasks = Lambda.array(
-                        Lambda.map(
-                            CodeforcesTask.manager.search(($id in tasksTagIds) && ($level == level) && !($id in solvedTasksIds) && !($id in exercisesTasksIds)),
-                            function(t) {return t;}));
-        }
-        return tasks;
+                                CodeforcesTask.manager.search($id in solvedTaskIds),
+                                function(t) {return t;}));
+        var taskTag = [for (c in CodeforcesTaskTag.manager.search(!($taskId in solvedTaskIds) && !($taskId in exercisesTaskIds))) c];
+        var solvedTaskTags: Array<CodeforcesTaskTag> = Lambda.array(
+                                                    Lambda.map(
+                                                        CodeforcesTaskTag.manager.search($taskId in solvedTaskIds),
+                                                        function(t) {return t;}));
+        var allTags = Lambda.array(Lambda.map(CodeforcesTag.manager.all(), function(t) {return t;}));
+        var learnerLevels = AdaptiveLearning.calcLearnerLevel(solvedTaskTags, allTags);
+        var possibleTasks = AdaptiveLearning.executeFilter(taskTag, learnerLevels);
+        var currentRating = getRatingCategory(learnerId);
+        var taskIds = [for (p in possibleTasks) p.id];
+        var possibleTaskTags = [for (t in CodeforcesTaskTag.manager.search($taskId in taskIds)) t];
+        var finishedTasks = AdaptiveLearning.selectTasks(possibleTasks, possibleTaskTags, currentRating, tasksCount);
+        return finishedTasks;
     }
 
     public static function getRatingCategory(userId: Float) {
