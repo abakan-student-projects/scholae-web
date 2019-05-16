@@ -164,7 +164,11 @@ class EditorService {
 
     public function testAdaptiveDemo(tasksCount: Int): ResponseMessage {
         return authorize(function() {
-            var tasks = TeacherService.getTasksIds(0,tasksCount,null,1);
+            var currentRating = TeacherService.getRatingCategory(0);
+            var tags = [for (t in CodeforcesTag.manager.all()) t];
+            var tasks = [for (t in CodeforcesTask.manager.all()) t];
+            var taskTags = Lambda.array(Lambda.map(CodeforcesTaskTag.manager.all(), function(t){return t;}));
+            var tasks = AdaptiveLearning.selectTasksForChart(tasks, taskTags, currentRating, tasksCount, tags);
             return ServiceHelper.successResponse(
                 Lambda.array(Lambda.map(
                     tasks, function(t) {return t.toMessage();})));
