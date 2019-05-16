@@ -1,5 +1,6 @@
 package ;
 
+import haxe.ds.StringMap;
 import Array;
 import utils.IterableUtils;
 import messages.RatingMessage.RatingCategory;
@@ -120,7 +121,7 @@ class AdaptiveLearning {
         return result;
     }
 
-    public static function selectTasks(tasks: Array<CodeforcesTask>, possibleTaskTag: Array<CodeforcesTaskTag>, currentRating: Array<RatingCategory>, tasksCount: Float): Array<CodeforcesTask> {
+    public static function selectTasks(tasks: Array<CodeforcesTask>, possibleTaskTag: StringMap<Array<CodeforcesTaskTag>>, currentRating: StringMap<RatingCategory>, tasksCount: Float): Array<CodeforcesTask> {
         var i = 0;
         var task: CodeforcesTask = null;
         var finishedTasks = [];
@@ -129,28 +130,21 @@ class AdaptiveLearning {
             currentRating = emulateSolution(currentRating, task, possibleTaskTag);
             finishedTasks.push(task);
             tasks.remove(task);
-            for (p in possibleTaskTag) {
-                if (p.task.id == task.id) {
-                    possibleTaskTag.remove(p);
-                }
-            }
             i++;
         }
         return finishedTasks;
     }
 
-    public static function nextTask(tasks: Array<CodeforcesTask>, currentRating: Array<RatingCategory>, possibleTaskTag: Array<CodeforcesTaskTag>): CodeforcesTask {
+    public static function nextTask(tasks: Array<CodeforcesTask>, currentRating: StringMap<RatingCategory>, possibleTaskTag: StringMap<Array<CodeforcesTaskTag>>): CodeforcesTask {
         var ratingTasks: Array<TaskRating> = [];
         var rating: Float = 0;
-        var categoryRating = IterableUtils.createStringMap(currentRating, function(c){return Std.string(c.id);});
-        var tasksTags = IterableUtils.createStringMapOfArrays(possibleTaskTag, function(p){return if (p.task != null) Std.string(p.task.id) else null;});
         var taskTag: Array<CodeforcesTaskTag> = [];
         var realRating: RatingCategory = null;
         for (t in tasks) {
-            taskTag = tasksTags.get(Std.string(t.id));
+            taskTag = possibleTaskTag.get(Std.string(t.id));
             for (tag in taskTag) {
                 if (tag.tag != null){
-                    realRating = categoryRating.get(Std.string(tag.tag.id));
+                    realRating = currentRating.get(Std.string(tag.tag.id));
                     rating += Math.pow(2,t.level-1)*(tag.tag.importance/43) + realRating.rating;
                 }
             }
@@ -162,22 +156,19 @@ class AdaptiveLearning {
         return result.task;
     }
 
-    public static function emulateSolution(currentRating: Array<RatingCategory>, task: CodeforcesTask, taskTag: Array<CodeforcesTaskTag>): Array<RatingCategory> {
+    public static function emulateSolution(currentRating: StringMap<RatingCategory>, task: CodeforcesTask, taskTag: StringMap<Array<CodeforcesTaskTag>>): StringMap<RatingCategory> {
         var result: Array<RatingCategory> = [];
-        var currentRating = IterableUtils.createStringMap(currentRating, function(c){return Std.string(c.id);});
-        var tasksTags = IterableUtils.createStringMapOfArrays(taskTag, function(t){return if (t.task != null) Std.string(t.task.id) else null;});
-        var taskTags: Array<CodeforcesTaskTag> = tasksTags.get(Std.string(task.id));
+        var taskTags: Array<CodeforcesTaskTag> = taskTag.get(Std.string(task.id));
         var rating: Float = 0;
         for (t in taskTags) {
             var curRating: RatingCategory = currentRating.get(Std.string(t.tag.id));
             rating = Math.pow(2,task.level - 1)*(t.tag.importance/43) + curRating.rating;
             currentRating.set(Std.string(curRating.id), {id: curRating.id, rating: rating, name: null});
         }
-        result = [for (c in currentRating) c];
-        return result;
+        return currentRating;
     }
 
-    public static function selectTasksForChart(tasks: Array<CodeforcesTask>, possibleTaskTags: Array<CodeforcesTaskTag>, currentRating: Array<RatingCategory>, tasksCount: Int, tags: Array<CodeforcesTag>) {
+    public static function selectTasksForChart(tasks: Array<CodeforcesTask>, possibleTaskTags: Array<CodeforcesTaskTag>, currentRating: StringMap<RatingCategory>, tasksCount: Int, tags: Array<CodeforcesTag>, taskTagsMap: StringMap<Array<CodeforcesTaskTag>>) {
         var learnerLevel = calcLearnerLevel(tags);
         var filteredTasks = executeFilter(possibleTaskTags, learnerLevel);
         var finishedTasks = [];
@@ -185,8 +176,8 @@ class AdaptiveLearning {
         var i = 0;
         var solvedTaskTag: Array<CodeforcesTaskTag> = [];
         while (i < tasksCount) {
-            task = nextTask(filteredTasks, currentRating, possibleTaskTags);
-            currentRating = emulateSolution(currentRating, task, possibleTaskTags);
+            task = nextTask(filteredTasks, currentRating, taskTagsMap);
+            currentRating = emulateSolution(currentRating, task, taskTagsMap);
             finishedTasks.push(task);
             filteredTasks.remove(task);
             for (p in possibleTaskTags) {

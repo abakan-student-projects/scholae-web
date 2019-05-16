@@ -223,9 +223,11 @@ class TeacherService {
         var learnerLevels = AdaptiveLearning.calcLearnerLevel(solvedTaskTags, allTags);
         var possibleTasks = AdaptiveLearning.executeFilter(taskTag, learnerLevels);
         var currentRating = getRatingCategory(learnerId);
+        var curRating = IterableUtils.createStringMap(currentRating, function(c){return Std.string(c.id);});
         var taskIds = [for (p in possibleTasks) p.id];
         var possibleTaskTags = [for (t in CodeforcesTaskTag.manager.search($taskId in taskIds)) t];
-        var finishedTasks = AdaptiveLearning.selectTasks(possibleTasks, possibleTaskTags, currentRating, tasksCount);
+        var tasksTagsMap = IterableUtils.createStringMapOfArrays(possibleTaskTags, function(t){return if (t.task != null) Std.string(t.task.id) else null;});
+        var finishedTasks = AdaptiveLearning.selectTasks(possibleTasks, tasksTagsMap, curRating, tasksCount);
         return finishedTasks;
     }
 

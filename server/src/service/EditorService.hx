@@ -1,5 +1,6 @@
 package service;
 
+import utils.IterableUtils;
 import Lambda;
 import Array;
 import messages.UserMessage;
@@ -165,10 +166,12 @@ class EditorService {
     public function testAdaptiveDemo(tasksCount: Int): ResponseMessage {
         return authorize(function() {
             var currentRating = TeacherService.getRatingCategory(0);
+            var curRating = IterableUtils.createStringMap(currentRating, function(c){return Std.string(c.id);});
             var tags = [for (t in CodeforcesTag.manager.all()) t];
             var tasks = [for (t in CodeforcesTask.manager.all()) t];
             var taskTags = Lambda.array(Lambda.map(CodeforcesTaskTag.manager.all(), function(t){return t;}));
-            var tasks = AdaptiveLearning.selectTasksForChart(tasks, taskTags, currentRating, tasksCount, tags);
+            var tasksTagsMap = IterableUtils.createStringMapOfArrays(taskTags, function(t){return if (t.task != null) Std.string(t.task.id) else null;});
+            var tasks = AdaptiveLearning.selectTasksForChart(tasks, taskTags, curRating, tasksCount, tags, tasksTagsMap);
             return ServiceHelper.successResponse(
                 Lambda.array(Lambda.map(
                     tasks, function(t) {return t.toMessage();})));
