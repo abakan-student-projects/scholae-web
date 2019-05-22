@@ -236,7 +236,7 @@ class AdminAdaptiveView extends ReactComponentOfProps<AdminAdaptiveProps> implem
                 if (i <= numberTask) {
                     for (r in t.ratingByTag) {
                         if (finishData.exists(Std.string(r.tagId))) {
-                            finishData.set(Std.string(r.tagId),finishData.get(Std.string(r.tagId)) + r.rating);
+                            finishData.set(Std.string(r.tagId),(r.rating + finishData.get(Std.string(r.tagId))) - finishData.get(Std.string(r.tagId)));
                         } else {
                             finishData.set(Std.string(r.tagId), r.rating);
                         }

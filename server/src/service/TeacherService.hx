@@ -1,7 +1,7 @@
 package service;
 
-import model.CategoryRating;
 import Lambda;
+import model.CategoryRating;
 import Array;
 import haxe.ds.ArraySort;
 import model.CodeforcesTaskTag;
@@ -219,13 +219,18 @@ class TeacherService {
                                                     Lambda.map(
                                                         CodeforcesTaskTag.manager.search($taskId in solvedTaskIds),
                                                         function(t) {return t;}));
-        var allTags = Lambda.array(Lambda.map(CodeforcesTag.manager.all(), function(t) {return t;}));
-        var learnerLevels = AdaptiveLearning.calcLearnerLevel(solvedTaskTags, allTags);
-        var possibleTasks = AdaptiveLearning.executeFilter(taskTag, learnerLevels);
+        var allTags = [for (t in CodeforcesTag.manager.all()) t];
+        var taskTags = IterableUtils.createStringMapOfArrays(taskTag,function(t){return if (t.task != null) Std.string(t.task.id) else null;});
+        var allTasks = [for (t in CodeforcesTask.manager.all()) t];
+        var solvedTaskTagsMap = IterableUtils.createStringMapOfArrays(solvedTaskTags, function(t){return if (t.tag != null) Std.string(t.tag.id) else null;});
+        var learnerLevels = AdaptiveLearning.calcLearnerLevel(solvedTaskTagsMap, allTags);
+        var taskIds = [for (t in taskTag) if (t.task != null) t.task.id];
+        var tasks = Lambda.array(Lambda.map(CodeforcesTask.manager.search($id in taskIds), function(t){return t;}));
+        var possibleTasks = AdaptiveLearning.executeFilter(tasks, taskTags, learnerLevels);
         var currentRating = getRatingCategory(learnerId);
         var curRating = IterableUtils.createStringMap(currentRating, function(c){return Std.string(c.id);});
-        var taskIds = [for (p in possibleTasks) p.id];
-        var possibleTaskTags = [for (t in CodeforcesTaskTag.manager.search($taskId in taskIds)) t];
+        var possibleTaskIds = [for (p in possibleTasks) p.id];
+        var possibleTaskTags = [for (t in CodeforcesTaskTag.manager.search($taskId in possibleTaskIds)) t];
         var tasksTagsMap = IterableUtils.createStringMapOfArrays(possibleTaskTags, function(t){return if (t.task != null) Std.string(t.task.id) else null;});
         var finishedTasks = AdaptiveLearning.selectTasks(possibleTasks, tasksTagsMap, curRating, tasksCount);
         return finishedTasks;

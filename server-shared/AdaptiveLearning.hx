@@ -1,7 +1,8 @@
 package ;
 
-import haxe.ds.StringMap;
 import Array;
+import codeforces.Codeforces;
+import haxe.ds.StringMap;
 import utils.IterableUtils;
 import messages.RatingMessage.RatingCategory;
 import haxe.ds.ArraySort;
@@ -25,100 +26,121 @@ class AdaptiveLearning {
     public function new() {
     }
 
-    public static function executeFilter(tasks: Array<CodeforcesTaskTag>, categoryLevels: Array<CategoryLevel>): Array<CodeforcesTask> {
-        var possibleTaskTag: Array<CodeforcesTaskTag> = [];
-        var lastTasks = new StringMap<CodeforcesTask>();
+    public static function executeFilter(tasks: Array<CodeforcesTask>, taskTags: StringMap<Array<CodeforcesTaskTag>>, categoryLevels: StringMap<CategoryLevel>): Array<CodeforcesTask> {
         var result: Array<CodeforcesTask> = [];
-        var tasksTags = IterableUtils.createStringMapOfArrays(tasks, function(t){return if (t.tag != null) Std.string(t.tag.id) else null;});
+        var tagLevel: CategoryLevel = null;
         var taskTag: Array<CodeforcesTaskTag> = null;
         var i = 0;
-        for (c in categoryLevels) {
-            taskTag = tasksTags.get(Std.string(c.category.id));
+        for (t in tasks) {
+            taskTag = taskTags.get(Std.string(t.id));
             if (taskTag != null) {
-                for (t in taskTag) {
-                    if (t.task != null) {
-                        i = t.task.level - c.level;
-                        if (i == 1) {
-                            if (c.level == 1 && c.countSolved >= 3) {
-                                possibleTaskTag.push(t);
-                            } else if (c.level == 2 && c.countSolved >= 10) {
-                                possibleTaskTag.push(t);
-                            } else if (c.level == 3 && c.countSolved >= 20) {
-                                possibleTaskTag.push(t);
-                            } else if (c.level == 4 && c.countSolved >= 50) {
-                                possibleTaskTag.push(t);
-                            }
-                        } else if (i == 0) {
-                            possibleTaskTag.push(t);
+                for (tag in taskTag) {
+                    if (tag.tag != null) {
+                        tagLevel = categoryLevels.get(Std.string(tag.tag.id));
+                        if (canUserSolveTagAndLevel(t.level, tagLevel)) {
+                            result.push(t);
                         }
                     }
                 }
             }
         }
-        ArraySort.sort(possibleTaskTag, function(x: CodeforcesTaskTag, y: CodeforcesTaskTag) (return if(x.tag.importance < y.tag.importance) 1 else -1));
-        for (p in possibleTaskTag) {
-            lastTasks.set(Std.string(p.task.id), p.task);
-        }
-        result = [for (t in lastTasks) t];
         return result;
     }
 
-    public static function calcLearnerLevel(?solvedTaskTag: Array<CodeforcesTaskTag>, tags: Array<CodeforcesTag>): Array<CategoryLevel> {
-        var result: Array<CategoryLevel> = [];
-        var countSolved = 1;
+    private static function canUserSolveTagAndLevel(level: Int, categoryLevel: CategoryLevel): Bool {
+        var i = level - categoryLevel.level;
+        var state: Bool = false;
+        if (i == 1) {
+            if ((categoryLevel.level==1 && categoryLevel.countSolved>=3) ||
+            (categoryLevel.level==2 && categoryLevel.countSolved>=10) ||
+            (categoryLevel.level==3 && categoryLevel.countSolved>=20) ||
+            (categoryLevel.level==4 && categoryLevel.countSolved>=50)){
+                state = true;
+            } else {
+                state = false;
+            }
+        } else if (i == 0) {
+            state = true;
+        }
+        return state;
+    }
+
+    public static function calcLearnerLevel(?solvedTaskTag: StringMap<Array<CodeforcesTaskTag>>, tags: Array<CodeforcesTag>): StringMap<CategoryLevel> {
+        var resultArray: Array<CategoryLevel> = [];
         var res = new StringMap<CategoryLevel>();
+        var solvedTagTasks: Array<CodeforcesTaskTag> = null;
         for (t in tags) {
             if (solvedTaskTag != null) {
-                for (s in solvedTaskTag) {
-                    if (t.id == s.tag.id && s.tag != null) {
-                        if (s.task != null && s.task.level == 1) {
-                            res.set(Std.string(t.id), {category: t, level: 1, countSolved: countSolved});
-                        } else if (s.task != null && s.task.level == 2) {
-                            res.set(Std.string(t.id), {category: t, level: 2, countSolved: countSolved});
-                        } else if (s.task != null && s.task.level == 3) {
-                            res.set(Std.string(t.id), {category: t, level: 3, countSolved: countSolved});
-                        } else if (s.task != null && s.task.level == 4) {
-                            res.set(Std.string(t.id), {category: t, level: 4, countSolved: countSolved});
-                        } else if (s.task != null && s.task.level == 5) {
-                            res.set(Std.string(t.id), {category: t, level: 5, countSolved: countSolved});
+                solvedTagTasks = solvedTaskTag.get(Std.string(t.id));
+                if (solvedTagTasks != null) {
+                    for (s in solvedTagTasks) {
+                        if (s.task != null) {
+                            if (res.exists(Std.string(t.id))) {
+                                res.set(Std.string(t.id),{category: t, level: s.task.level, countSolved: res.get(Std.string(t.id)).countSolved + 1});
+                            } else {
+                                res.set(Std.string(t.id),{category: t, level: s.task.level, countSolved: 1});
+                            }
                         }
-                        countSolved++;
                     }
                 }
             }
-            countSolved = 1;
         }
+
         for (t in tags) {
             if (res.exists(Std.string(t.id))) {
                 var calcLevel: CategoryLevel = res.get(Std.string(t.id));
                 switch(calcLevel.level) {
                     case 2: if (calcLevel.countSolved >=50) {
-                                result.push({category: t, level: 3, countSolved: 0});
+                        resultArray.push({category: t, level: 3, countSolved: 0});
                             } else {
-                                result.push({category: t, level: 2, countSolved: calcLevel.countSolved});
+                        resultArray.push({category: t, level: 2, countSolved: calcLevel.countSolved});
                             }
                     case 3: if (calcLevel.countSolved >=100) {
-                        result.push({category: t, level: 4, countSolved: 0});
+                        resultArray.push({category: t, level: 4, countSolved: 0});
                     } else {
-                        result.push({category: t, level: 3, countSolved: calcLevel.countSolved});
+                        resultArray.push({category: t, level: 3, countSolved: calcLevel.countSolved});
                     }
                     case 4: if (calcLevel.countSolved >=250) {
-                        result.push({category: t, level: 5, countSolved: 0});
+                        resultArray.push({category: t, level: 5, countSolved: 0});
                     } else {
-                        result.push({category: t, level: 4, countSolved: calcLevel.countSolved});
+                        resultArray.push({category: t, level: 4, countSolved: calcLevel.countSolved});
                     }
-                    case 5: result.push({category: t, level: 5, countSolved: calcLevel.countSolved});
+                    case 5: resultArray.push({category: t, level: 5, countSolved: calcLevel.countSolved});
                     default : if (calcLevel.countSolved >=15 && calcLevel.level == 1) {
-                        result.push({category: t, level: 2, countSolved: 0});
+                        resultArray.push({category: t, level: 2, countSolved: 0});
                     } else {
-                        result.push({category: t, level: 1, countSolved: calcLevel.countSolved});
+                        resultArray.push({category: t, level: 1, countSolved: calcLevel.countSolved});
                     }
                 }
             } else {
-                result.push({category:t, level: 1, countSolved: 0});
+                resultArray.push({category:t, level: 1, countSolved: 0});
             }
         }
+        var result = IterableUtils.createStringMap(resultArray, function(r){return Std.string(r.category.id);});
         return result;
+    }
+
+    public static function canUserLevelUpTag(tags: Array<CodeforcesTag>, learnerLevel: StringMap<CategoryLevel>){
+        var calcLevel: CategoryLevel = null;
+        for (t in tags) {
+            calcLevel = learnerLevel.get(Std.string(t.id));
+            switch(calcLevel.level) {
+                case 2: if (calcLevel.countSolved >=50) {
+                    learnerLevel.set(Std.string(t.id),{category: t, level: 3, countSolved: 0});
+                }
+                case 3: if (calcLevel.countSolved >=100) {
+                    learnerLevel.set(Std.string(t.id),{category: t, level: 4, countSolved: 0});
+                }
+                case 4: if (calcLevel.countSolved >=250) {
+                    learnerLevel.set(Std.string(t.id),{category: t, level: 5, countSolved: 0});
+                }
+                case 5: learnerLevel.set(Std.string(t.id),{category: t, level: 5, countSolved: calcLevel.countSolved});
+                default : if (calcLevel.countSolved >=15 && calcLevel.level == 1) {
+                    learnerLevel.set(Std.string(t.id),{category: t, level: 2, countSolved: 0});
+                }
+            }
+        }
+        return learnerLevel;
     }
 
     public static function selectTasks(tasks: Array<CodeforcesTask>, possibleTaskTag: StringMap<Array<CodeforcesTaskTag>>, currentRating: StringMap<RatingCategory>, tasksCount: Float): Array<CodeforcesTask> {
@@ -145,14 +167,14 @@ class AdaptiveLearning {
             for (tag in taskTag) {
                 if (tag.tag != null){
                     realRating = currentRating.get(Std.string(tag.tag.id));
-                    rating += Math.pow(2,t.level-1)*(tag.tag.importance/43) + realRating.rating;
+                    rating += Math.log(Math.pow(2,t.level-1)*(tag.tag.importance/43) + realRating.rating + 1);
                 }
             }
-            ratingTasks.push({task:t, rating: Math.round(Math.log(rating+1)*100)/100});
+            ratingTasks.push({task:t, rating: Math.round(rating*100)/100});
             rating = 0;
         }
         ArraySort.sort(ratingTasks, function(x: TaskRating, y: TaskRating){return if (x.rating < y.rating) 1 else -1;});
-        var result: TaskRating = ratingTasks.shift();
+        var result: TaskRating = ratingTasks[0];
         return result.task;
     }
 
@@ -168,28 +190,33 @@ class AdaptiveLearning {
         return currentRating;
     }
 
-    public static function selectTasksForChart(tasks: Array<CodeforcesTask>, possibleTaskTags: Array<CodeforcesTaskTag>, currentRating: StringMap<RatingCategory>, tasksCount: Int, tags: Array<CodeforcesTag>, taskTagsMap: StringMap<Array<CodeforcesTaskTag>>) {
+    public static function selectTasksForChart(tasks: Array<CodeforcesTask>, currentRating: StringMap<RatingCategory>, tasksCount: Int, tags: Array<CodeforcesTag>, taskTagsMap: StringMap<Array<CodeforcesTaskTag>>) {
         var learnerLevel = calcLearnerLevel(tags);
-        var filteredTasks = executeFilter(possibleTaskTags, learnerLevel);
+        var filteredTasks = executeFilter(tasks, taskTagsMap, learnerLevel);
         var finishedTasks = [];
         var task: CodeforcesTask = null;
         var i = 0;
-        var solvedTaskTag: Array<CodeforcesTaskTag> = [];
+        var solvedTaskTag = new StringMap<Array<CodeforcesTaskTag>>();
+        var taskTagMap: Array<CodeforcesTaskTag> = [];
         while (i < tasksCount) {
             task = nextTask(filteredTasks, currentRating, taskTagsMap);
             currentRating = emulateSolution(currentRating, task, taskTagsMap);
             finishedTasks.push(task);
-            filteredTasks.remove(task);
-            for (p in possibleTaskTags) {
-                if (p.task != null && p.tag != null && p.task.id == task.id) {
-                    possibleTaskTags.remove(p);
-                    solvedTaskTag.push(p);
-                }
-            }
-            learnerLevel = calcLearnerLevel(solvedTaskTag, tags);
-            filteredTasks = executeFilter(possibleTaskTags, learnerLevel);
+            var solvedTags: Array<CodeforcesTaskTag> = taskTagsMap.get(Std.string(task.id));
+            tasks.remove(task);
+            learnerLevel = calcLearnerLevelChart(learnerLevel, solvedTags, tags);
+            filteredTasks = executeFilter(tasks, taskTagsMap, learnerLevel);
+            trace(i);
             i++;
         }
         return finishedTasks;
+    }
+
+    public static function calcLearnerLevelChart(currentLevel: StringMap<CategoryLevel>, solvedTaskTag: Array<CodeforcesTaskTag>, tags: Array<CodeforcesTag>): StringMap<CategoryLevel> {
+        for (s in solvedTaskTag) {
+            currentLevel.set(Std.string(s.tag.id),{category: s.tag, level: currentLevel.get(Std.string(s.tag.id)).level, countSolved: currentLevel.get(Std.string(s.tag.id)).countSolved + 1});
+        }
+        currentLevel = canUserLevelUpTag(tags, currentLevel);
+        return currentLevel;
     }
 }
