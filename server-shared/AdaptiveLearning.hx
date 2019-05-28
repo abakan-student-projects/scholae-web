@@ -1,7 +1,6 @@
 package ;
 
 import Array;
-import codeforces.Codeforces;
 import haxe.ds.StringMap;
 import utils.IterableUtils;
 import messages.RatingMessage.RatingCategory;
@@ -10,6 +9,7 @@ import haxe.ds.StringMap;
 import model.CodeforcesTag;
 import model.CodeforcesTaskTag;
 import model.CodeforcesTask;
+
 
 typedef CategoryLevel = {
     category: CodeforcesTag,
@@ -47,7 +47,7 @@ class AdaptiveLearning {
         return result;
     }
 
-    private static function canUserSolveTagAndLevel(level: Int, categoryLevel: CategoryLevel): Bool {
+    public static function canUserSolveTagAndLevel(level: Int, categoryLevel: CategoryLevel): Bool {
         var i = level - categoryLevel.level;
         var state: Bool = false;
         if (i == 1) {
@@ -143,16 +143,18 @@ class AdaptiveLearning {
         return learnerLevel;
     }
 
-    public static function selectTasks(tasks: Array<CodeforcesTask>, possibleTaskTag: StringMap<Array<CodeforcesTaskTag>>, currentRating: StringMap<RatingCategory>, tasksCount: Float): Array<CodeforcesTask> {
+    public static function selectTasks(tasks: Array<CodeforcesTask>, possibleTaskTag: StringMap<Array<CodeforcesTaskTag>>, currentRating: StringMap<RatingCategory>, tasksCount: Float): StringMap<CodeforcesTask> {
         var i = 0;
         var task: CodeforcesTask = null;
-        var finishedTasks = [];
+        var finishedTasks = new StringMap<CodeforcesTask>();
         while (i < tasksCount) {
             task = nextTask(tasks, currentRating, possibleTaskTag);
             currentRating = emulateSolution(currentRating, task, possibleTaskTag);
-            finishedTasks.push(task);
+            if (!finishedTasks.exists(Std.string(task.id))) {
+                i++;
+            }
+            finishedTasks.set(Std.string(task.id), task);
             tasks.remove(task);
-            i++;
         }
         return finishedTasks;
     }

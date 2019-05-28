@@ -1,5 +1,6 @@
 package service;
 
+import haxe.ds.StringMap;
 import Lambda;
 import model.CategoryRating;
 import Array;
@@ -150,7 +151,7 @@ class TeacherService {
             return ServiceHelper.authorizeGroup(Group.manager.get(group.id), Authorization.instance.currentUser, function() {
                 var tagIds = [];
                 var taskIds = [];
-                var tasks = [];
+                var tasks = new StringMap<CodeforcesTask>();
                 for (l in learnerIds) {
                     tasks = getTasksIds(l,tasksCount,null);
                     for (t in tasks) {
@@ -190,6 +191,7 @@ class TeacherService {
 
                             var exercisesTaskIds: List<Float> = Lambda.map(ModelUtils.getExercisesTasksByUser(user), function(t) {return t.id; });
                             var tasks = getTasksIds(l, tasksCount, exercisesTaskIds);
+                            trace(tasks);
                             if (tasks != null)  {
                                 for (task in tasks) {
                                     var exercise = new Exercise();
