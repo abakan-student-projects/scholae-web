@@ -42,7 +42,7 @@ class AuthService {
                 if (firstAuth) {
                     return ServiceHelper.successResponse(user.toSessionMessage(
                       session.id,
-                      "Добро пожаловать! Проверьте, пожалуйста, электронную почту, чтобы активировать вашу регистрацию!"
+                      "Добро пожаловать! Проверьте, пожалуйста, электронную почту, чтобы активировать Ваш аккаунт!"
                     ));
                 }
                 return ServiceHelper.successResponse(user.toSessionMessage(session.id));
