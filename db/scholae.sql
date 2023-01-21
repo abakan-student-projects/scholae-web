@@ -137,6 +137,8 @@ create table MetaTrainings
   minLevel int default '1' null,
   maxLevel int default '5' null,
   tagIds text null,
+
+  taskIds text null,
   length int null
 )
 ;
@@ -191,4 +193,17 @@ create table users
 create index email
   on users (email)
 ;
+
+create table LinksForTags (
+  id bigint(20) auto_increment
+   primary key,
+  tagId bigint(20) not null,
+  URL varchar(128) not null,
+  type tinyint(4) not null,
+  optional varchar(512) null
+);
+
+
+create index tagId
+    on LinksForTags (tagId);
 

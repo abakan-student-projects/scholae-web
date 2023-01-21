@@ -1,5 +1,7 @@
 package service;
 
+import Lambda;
+import messages.MessagesHelper;
 import model.User;
 import model.Group;
 import model.Role;
@@ -24,10 +26,10 @@ class ServiceHelper {
     }
 
     public static function successResponse(result: Dynamic): ResponseMessage {
-        return { status: ResponseStatus.OK, result: result };
+        return MessagesHelper.successResponse(result);
     }
 
     public static function failResponse(errorMessage: String): ResponseMessage {
-        return { status: ResponseStatus.Error, result: null, message: errorMessage };
+        return MessagesHelper.failResponse(errorMessage);
     }
 }

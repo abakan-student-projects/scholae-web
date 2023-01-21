@@ -35,6 +35,7 @@ class Session {
 	
 	public static function logout() {
 		sessionId = null;
+		NotificationServiceClient.instance.stop();
 	}
 	
 }

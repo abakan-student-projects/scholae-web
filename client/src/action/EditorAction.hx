@@ -7,6 +7,7 @@ import messages.AttemptMessage;
 import messages.GroupMessage;
 import messages.LearnerMessage;
 import messages.TagMessage;
+import messages.LinksForTagsMessage;
 import messages.TrainingMessage;
 
 enum EditorAction {
@@ -21,6 +22,17 @@ enum EditorAction {
 
     UpdateTag(tag: TagMessage);
     UpdateTagFinished(tag: TagMessage);
+
+    LoadLink;
+    LoadLinkFinished(links: Array<LinksForTagsMessage>);
+
+    InsertLink(link: LinksForTagsMessage);
+    InsertLinkFinished(link: LinksForTagsMessage);
+
+    UpdateLink(link: LinksForTagsMessage);
+    UpdateLinkFinished(link: LinksForTagsMessage);
+    DeleteLink(link: LinksForTagsMessage);
+    DeleteLinkFinished(linkId: String);
 
     LoadTasks(filter: String, offset: Int, limit: Int);
     LoadTasksFinished(tags: ArrayChunk<TaskMessage>);

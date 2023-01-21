@@ -1,0 +1,11 @@
+<a class="uk-link-reset" href="http://scholae.lambda-calculus.ru/achievements?id=::id::">
+    <div class="uk-flex uk-flex-middle uk-flex-wrap">
+        <div class="uk-width-1-4 uk-text-center">
+            <img class="uk-margin-small-right" src="../../images/::icon::" width="50" height="50"></img>
+        </div>
+        <div class="uk-width-3-4 uk-flex uk-flex-column uk-text-left uk-flex-wrap">
+            <div class="uk-width-1-1 uk-text-justify uk-text-lead uk-text-small">Achievement unlocked!</div>
+            <div class="uk-width-1-1 uk-text-justify uk-text-small">::title::</div>
+        </div>
+    </div>
+</a>

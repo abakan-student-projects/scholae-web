@@ -7,5 +7,5 @@ typedef AssignmentMessage = {
     name: String,
     metaTraining: MetaTrainingMessage,
     groupId: Float,
-    learnerIds: Array<Float>,
+    learnerIds: Array<Float>
 }

@@ -1,5 +1,8 @@
 package action;
 
+import achievement.AchievementMessage;
+import messages.PasswordMessage;
+import messages.ProfileMessage;
 import messages.SessionMessage;
 import messages.LearnerMessage;
 import messages.GroupMessage;
@@ -23,6 +26,17 @@ enum ScholaeAction {
 
     RenewPassword(email: String);
 
+    GetProfile;
+    UpdateProfile(profileMessage: ProfileMessage);
+    UpdateProfileFinished(profileMessage: ProfileMessage);
+    UpdateEmail(profileMessage: ProfileMessage);
+    UpdateEmailFinished(profileMessage: ProfileMessage);
+    UpdatePassword(passwordMessage: PasswordMessage);
+
     EmailActivationCode(code: String);
     EmailActivationCodeFinished(check: Bool);
+    SendActivationEmail;
+
+    GetAchievements;
+    GetAchievementsFinished(achievements: Array<AchievementMessage>);
 }

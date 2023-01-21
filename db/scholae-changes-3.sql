@@ -1,0 +1,1 @@
+ALTER TABLE `users` ADD `lastResultsUpdateDate` DATETIME NULL DEFAULT NULL AFTER `emailActivated`;

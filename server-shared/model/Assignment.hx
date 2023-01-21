@@ -13,6 +13,7 @@ class Assignment extends sys.db.Object {
     @:relation(metaTrainingId) public var metaTraining: MetaTraining;
     public var learnerIds: SData<Array<Float>>;
     public var name: SString<512>;
+    public var deleted: SBool;
 
     public function new() {
         super();

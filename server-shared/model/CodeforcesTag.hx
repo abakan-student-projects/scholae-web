@@ -9,6 +9,7 @@ class CodeforcesTag extends sys.db.Object {
     public var id: SBigId;
     public var name: SString<512>;
     public var russianName: SString<512>;
+    public var importance: SFloat;
 
     public function new() {
         super();
@@ -32,7 +33,8 @@ class CodeforcesTag extends sys.db.Object {
         return {
             id: id,
             name: name,
-            russianName: russianName
+            russianName: russianName,
+            importance: importance
         };
     }
 }

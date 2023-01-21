@@ -1,5 +1,6 @@
 package model;
 
+import messages.RatingMessage;
 import messages.ArrayChunk;
 import messages.TaskMessage;
 import messages.AttemptMessage;
@@ -18,8 +19,10 @@ typedef TeacherState = {
         learners: RemoteData<Array<LearnerMessage>>,
         assignments: RemoteData<Array<AssignmentMessage>>,
         trainings: RemoteData<Array<TrainingMessage>>,
-        trainingsByUsersAndAssignments: StringMap<StringMap<Array<TrainingMessage>>>
+        trainingsByUsersAndAssignments: StringMap<StringMap<Array<TrainingMessage>>>,
+        rating: RemoteData<Array<RatingMessage>>
     },
+    ratingByPeriod: RemoteData<Array<RatingMessage>>,
     showNewGroupView: Bool,
     tags: RemoteData<Array<TagMessage>>,
     lastLearnerAttempts: RemoteData<Array<AttemptMessage>>,

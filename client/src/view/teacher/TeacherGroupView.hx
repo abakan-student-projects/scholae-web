@@ -1,5 +1,6 @@
 package view.teacher;
 
+import messages.RatingMessage;
 import utils.StringUtils;
 import messages.TagMessage;
 import messages.TrainingMessage;
@@ -97,6 +98,16 @@ class TeacherGroupView extends ReactComponentOfPropsAndState<TeacherGroupProps, 
                                     </li>
                                     <li>
                                         $refreshResultsButton
+                                    </li>
+                                    <li>
+                                        <Link className="uk-button uk-button-default uk-margin uk-width-1-1 uk-link-reset" to=${"/teacher/group/" + props.group.id + "/learners"}>
+                                            Список учеников
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link className="uk-button uk-button-default uk-margin uk-width-1-1 uk-link-reset" to=${"/teacher/group/" + props.group.id + "/graphics"}>
+                                            Построение графика
+                                        </Link>
                                     </li>
                                 </ul>
                             </div>

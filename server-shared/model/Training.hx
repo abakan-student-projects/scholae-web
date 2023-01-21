@@ -11,6 +11,7 @@ class Training extends sys.db.Object {
     public var name: SString<512>;
     @:relation(userId) public var user : User;
     @:relation(assignmentId) public var assignment : Assignment;
+    public var deleted: SBool;
 
     public function new() {
         super();
@@ -30,11 +31,11 @@ class Training extends sys.db.Object {
     }
 
     public static function getTrainingsByGroup(groupId: Float): Array<Training> {
-        var assignments: List<Assignment> = Assignment.manager.search($groupId == groupId);
+        var assignments: List<Assignment> = Assignment.manager.search($groupId == groupId && $deleted != true);
         var trainings: Array<Training> = [];
 
         for (a in assignments) {
-            trainings = trainings.concat(Lambda.array(Training.manager.search($assignmentId == a.id)));
+            trainings = trainings.concat(Lambda.array(Training.manager.search($assignmentId == a.id && $deleted != true)));
         }
 
         return trainings;

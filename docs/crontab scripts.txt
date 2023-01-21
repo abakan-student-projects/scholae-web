@@ -1,0 +1,3 @@
+* * * * * neko /localbuild/scholae.n -a updateUsersResults
+0 0 * * * neko /localbuild/scholae.n -a updateCodeforcesData
+* * * * * neko /localbuild/scholae.n -a checkOutdatedNotifications

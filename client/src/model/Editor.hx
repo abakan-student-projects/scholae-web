@@ -1,5 +1,9 @@
 package model;
 
+import services.TeacherServiceClient;
+import messages.LinksForTagsMessage;
+import view.teacher.TeacherViewsHelper;
+import messages.UserMessage;
 import messages.TaskMessage;
 import services.EditorServiceClient;
 import react.ReactUtil;
@@ -23,10 +27,12 @@ class Editor
     public var initState: EditorState = {
         tags: RemoteDataHelper.createEmpty(),
         tasks: RemoteDataHelper.createEmpty(),
+        links: RemoteDataHelper.createEmpty(),
         tasksActiveChunkIndex: 0,
         tasksChunkSize: 100,
         tasksFilter: "",
-        showNewTagView: false
+        showNewTagView: false,
+        linkId: ""
     };
 
     public var store: StoreMethods<ApplicationState>;
@@ -53,6 +59,25 @@ class Editor
                     }
                 }
                 state;
+
+            case LoadLink: copy(state, { links: RemoteDataHelper.createLoading() });
+            case LoadLinkFinished(links): copy(state, { links: RemoteDataHelper.createLoaded(links) });
+
+            case InsertLink(link): state;
+            case InsertLinkFinished(link): copy(state, {links: RemoteDataHelper.createLoaded(state.links.data.concat([link]))});
+
+            case UpdateLink(link): state;
+            case UpdateLinkFinished(link):
+                if (state.links.loaded) {
+                    var filtered = state.links.data.filter(function(l) { return l.id == link.id; });
+                    if (filtered.length > 0) {
+                        ReactUtil.assign(filtered[0], [link]);
+                    }
+                }
+                state;
+
+            case DeleteLink(link): state;
+            case DeleteLinkFinished(linkId): copy(state, {linkId: linkId});
 
             case LoadTasks(filter, offset, limit): copy(state, { tasks: RemoteDataHelper.createLoading() });
             case LoadTasksFinished(tasks): copy(state, { tasks: RemoteDataHelper.createLoaded(tasks) });
@@ -108,6 +133,43 @@ class Editor
 
             case InsertTagFinished(tag):
                 UIkit.notification({ message: "Категория " + tag.name + " добавлена.", timeout: 3000 });
+                next();
+
+            case LoadLink:
+                TeacherServiceClient.instance.getAllLinks()
+                    .then(function(links) {
+                        store.dispatch(LoadLinkFinished(links));
+                    });
+                next();
+
+            case InsertLink(link):
+                EditorServiceClient.instance.insertLink(link)
+                    .then(function(link) { store.dispatch(InsertLinkFinished(link)); });
+                next();
+
+            case InsertLinkFinished(link):
+                UIkit.notification({ message: "Ссылка " + link.url + " добавлена.", timeout: 3000 });
+                next();
+
+            case UpdateLink(link):
+                EditorServiceClient.instance.updateLink(link)
+                    .then(function(link) {
+                    store.dispatch(UpdateLinkFinished(link));
+                });
+                next();
+
+            case UpdateLinkFinished(link):
+                UIkit.notification({ message: "Ссылка изменена", timeout: 3000 });
+                next();
+
+            case DeleteLink(link):
+                EditorServiceClient.instance.deleteLink(link)
+                   .then(function(linkId) {
+                    store.dispatch(DeleteLinkFinished(Std.string(linkId)));
+                });
+                next();
+            case DeleteLinkFinished(linkId):
+                UIkit.notification({ message: "Ссылка удалена", timeout: 3000 });
                 next();
 
             case LoadTasks(filter, offset, limit):

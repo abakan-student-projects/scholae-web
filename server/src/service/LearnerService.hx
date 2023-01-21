@@ -1,5 +1,7 @@
 package service;
 
+import jobs.ScholaeJob;
+import jobs.JobQueue;
 import model.ModelUtils;
 import model.Assignment;
 import model.ModelUtils;
@@ -43,16 +45,27 @@ class LearnerService {
             return ServiceHelper.successResponse(
                 Lambda.array(
                     Lambda.map(
-                        Training.manager.search($userId == Authorization.instance.currentUser.id),
-                        function(t) { return t.toMessage(true); })));
-            });
+                        Training.manager.search($userId == Authorization.instance.currentUser.id && $deleted != true),
+                        function(t) {return t.toMessage(true);})));
+        });
     }
 
     public function refreshResults(): ResponseMessage {
         return ServiceHelper.authorize(Role.Learner, function() {
-            Attempt.updateAttemptsForUser(Authorization.instance.currentUser);
-            return getMyTrainings();
+            return ServiceHelper.successResponse(
+                JobQueue.publishScholaeJob(ScholaeJob.RefreshResultsForUser(Authorization.instance.currentUser.id), Authorization.instance.session.id));
         });
     }
 
+    public function getRating(learnerId: Float) : ResponseMessage {
+        return ServiceHelper.authorize(Role.Learner, function() {
+            var user: User;
+            if (learnerId == null){
+                user = User.manager.select($id == Authorization.instance.currentUser.id);
+            } else {
+                user = User.manager.select($id == learnerId);
+            }
+            return ServiceHelper.successResponse(user.toRatingMessage(user.id));
+        });
+    }
 }

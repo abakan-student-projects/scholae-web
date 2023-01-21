@@ -1,5 +1,8 @@
 package model;
 
+import utils.RemoteDataHelper;
+import messages.RatingMessage;
+import Lambda;
 import utils.IterableUtils;
 import messages.TagMessage;
 import haxe.ds.ArraySort;
@@ -34,8 +37,8 @@ class Teacher
         resultsRefreshing: false,
         newAssignment: {
             possibleTasks: RemoteDataHelper.createEmpty()
-        }
-
+        },
+        ratingByPeriod: RemoteDataHelper.createEmpty()
     };
 
     public var store: StoreMethods<ApplicationState>;
@@ -46,14 +49,10 @@ class Teacher
         trace(action);
         return switch(action) {
             case Clear: initState;
-            case LoadGroups: copy(state, { groups: copy(state.groups, { data: null, loaded: false, loading: true }) });
+            case LoadGroups: copy(state, { groups: copy(state.groups, RemoteDataHelper.createLoading()) });
             case LoadGroupsFinished(groups):
                 copy(state, {
-                    groups: {
-                        data: groups,
-                        loading: false,
-                        loaded: true
-                    },
+                    groups: RemoteDataHelper.createLoaded(groups),
                     showNewGroupView: false
                 });
             case ShowNewGroupView:
@@ -76,45 +75,44 @@ class Teacher
             case SetCurrentGroup(group):
                 copy(state, { currentGroup: {
                     info: group,
-                    learners: { data: null, loaded: false, loading: true },
-                    assignments: { data: null, loaded: false, loading: true }
+                    learners: RemoteDataHelper.createLoading(),
+                    assignments: RemoteDataHelper.createLoading()
                 }});
             case LoadLearnersByGroupFinished(learners):
                 copy(state, {
                     currentGroup: copy(state.currentGroup, {
-                        learners: { data: learners, loaded: true, loading: false }
+                        learners: RemoteDataHelper.createLoaded(learners)
                     })
                 });
+
+            case LoadRatingLearnersByGroupFinished(rating):
+                copy(state, {
+                    currentGroup: copy(state.currentGroup, {
+                        rating: RemoteDataHelper.createLoaded(rating)
+                    })
+                });
+
             case LoadAllTags: copy(state, { tags: RemoteDataHelper.createLoading() });
             case LoadAllTagsFinished(tags):
                 copy(state, {
-                    tags: {
-                        data: tags,
-                        loading: false,
-                        loaded: true
-                    }
+                    tags: RemoteDataHelper.createLoaded(tags)
                 });
 
             case LoadLastLearnerAttempts: copy(state, { lastLearnerAttempts : RemoteDataHelper.createLoading() });
             case LoadLastLearnerAttemptsFinished(attempts):
                 copy(state, {
-                    lastLearnerAttempts: {
-                        data: attempts,
-                        loading: false,
-                        loaded: true
-                    }
+                    lastLearnerAttempts: RemoteDataHelper.createLoaded(attempts)
                 });
-
+            case CreateAdaptiveAssignment(group, name, startDate, finishDate, tasksCount, learnerIds):
+                copy(state, { assignmentCreating: true });
             case CreateAssignment(group, assignment): copy(state, { assignmentCreating: true });
             case CreateAssignmentFinished(assignment):
                 if (state.currentGroup != null && state.currentGroup.info.id == assignment.groupId) {
                     copy(state, {
                         currentGroup: copy(state.currentGroup, {
-                            assignments: {
-                                data: state.currentGroup.assignments.data.concat([assignment]),
-                                loading: false,
-                                loaded: true
-                            }
+                            assignments: RemoteDataHelper.createLoaded(
+                                state.currentGroup.assignments.data.concat([assignment])
+                            )
                         }),
                         assignmentCreating: false
                     });
@@ -124,7 +122,7 @@ class Teacher
             case LoadAssignmentsByGroupFinished(assignments):
                 copy(state, {
                     currentGroup: copy(state.currentGroup, {
-                        assignments: { data: assignments, loaded: true, loading: false }
+                        assignments:  RemoteDataHelper.createLoaded(assignments)
                     })
                 });
 
@@ -143,7 +141,7 @@ class Teacher
                 {
                     currentGroup: copy(state.currentGroup,
                         {
-                            trainings: { data: null, loaded: false, loading: true },
+                            trainings: RemoteDataHelper.createLoading(),
                             trainingsByAssignments: null
                         }
                     )
@@ -154,7 +152,7 @@ class Teacher
                     {
                         currentGroup: copy(state.currentGroup,
                             {
-                                trainings: { data: trainings, loaded: true, loading: false },
+                                trainings: RemoteDataHelper.createLoaded(trainings),
                                 trainingsByUsersAndAssignments:
                                     IterableUtils.createStringMapOfArrays2(trainings,
                                                         function(t) { return Std.string(t.userId); },
@@ -175,7 +173,7 @@ class Teacher
                         resultsRefreshing: false,
                         currentGroup: copy(state.currentGroup,
                             {
-                                trainings: { data: trainings, loaded: true, loading: false },
+                                trainings: RemoteDataHelper.createLoaded(trainings),
                                 trainingsByUsersAndAssignments:
                                     IterableUtils.createStringMapOfArrays2(trainings,
                                         function(t) { return Std.string(t.userId); },
@@ -183,11 +181,58 @@ class Teacher
                             })
                     });
 
-            case LoadPossibleTasks(metaTraining):
+            case LoadPossibleTasks(metaTraining, filter):
                 copy(state, { newAssignment: { possibleTasks: RemoteDataHelper.createLoading() }});
 
             case LoadPossibleTasksFinished(tasks):
                 copy(state, { newAssignment: { possibleTasks: RemoteDataHelper.createLoaded(tasks) }});
+
+            case DeleteLearnerFromCourse(learnerId, groupId): state;
+            case DeleteLearnerFromCourseFinished(learnerId):
+                copy(state, {
+                    currentGroup: copy(state.currentGroup,
+                        {
+                            learners: { data: [for (l in state.currentGroup.learners.data) if (Std.parseFloat(Std.string(l.id)) != learnerId) l], loaded: true, loading: false}
+                        })
+                });
+
+            case DeleteCourse(groupId): state;
+            case DeleteCourseFinished(groupId):
+                copy(state, {
+                    groups: {
+                        data: [for (g in state.groups.data) if (g.id != groupId) g],
+                        loading: false,
+                        loaded: true
+                    }
+                });
+            case LoadRatingsForCourse(userIds, startDate, finishDate):
+                copy(state, {
+                    ratingByPeriod:  RemoteDataHelper.createLoading()
+                    });
+            case LoadRatingsForCourseFinished(ratingByPeriod):
+                copy(state, {
+                        ratingByPeriod: RemoteDataHelper.createLoaded(ratingByPeriod)
+                    });
+
+            case SortDeltaRatingByPeriod:
+                ArraySort.sort(state.ratingByPeriod.data, function(x: RatingMessage, y:RatingMessage){ return if(x.ratingByPeriod < y.ratingByPeriod) 1 else -1; });
+                copy(state, {
+                    ratingByPeriod:{data: [for (r in state.ratingByPeriod.data) r], loaded: true, loading: false }
+                    });
+
+            case SortSolvedTasksByPeriod:
+                ArraySort.sort(state.ratingByPeriod.data, function(x:RatingMessage, y:RatingMessage) { return if (x.solvedTasks < y.solvedTasks) 1 else -1; });
+                copy(state, {
+                       ratingByPeriod: { data: [for (r in state.ratingByPeriod.data) r], loaded: true, loading: false }
+                   });
+
+            case SortLearnersByPeriod:
+                ArraySort.sort(state.ratingByPeriod.data, function(x:RatingMessage, y: RatingMessage)
+                    { return if (x.learner.firstName > y.learner.firstName ||
+                    (x.learner.lastName > y.learner.lastName && x.learner.firstName == y.learner.firstName)) 1 else -1; });
+                copy(state, {
+                        ratingByPeriod: { data: [for (r in state.ratingByPeriod.data) r], loaded: true, loading: false }
+                    });
         }
     }
 
@@ -215,6 +260,13 @@ class Teacher
                     .then(function(assignments) { store.dispatch(LoadAssignmentsByGroupFinished(assignments)); });
                 TeacherServiceClient.instance.getTrainingsByGroup(group.id)
                     .then(function(trainings) { store.dispatch(LoadTrainingsFinished(trainings)); });
+                TeacherServiceClient.instance.getAllRating(group.id)
+                    .then(function(rating) {
+                        ArraySort.sort(rating, function(x: RatingMessage, y:RatingMessage)
+                        { return
+                            if (x.learner.firstName > y.learner.firstName ||
+                            (x.learner.lastName > y.learner.lastName && x.learner.firstName == y.learner.firstName)) 1 else -1; });
+                        store.dispatch(LoadRatingLearnersByGroupFinished(rating)); });
                 next();
 
             case LoadAllTags:
@@ -230,6 +282,11 @@ class Teacher
                     .then(function(attempts) {
                         store.dispatch(LoadLastLearnerAttemptsFinished(attempts));
                     });
+                next();
+
+            case CreateAdaptiveAssignment(group, name, startDate, finishDate, tasksCount, learnerIds):
+                TeacherServiceClient.instance.createAdaptiveAssignment(group,name,startDate,finishDate,tasksCount,learnerIds)
+                    .then(function(a) { store.dispatch(CreateAssignmentFinished(a)); });
                 next();
 
             case CreateAssignment(group, assignment):
@@ -265,9 +322,32 @@ class Teacher
                 UIkit.notification({ message: "Результаты обновлены.", timeout: 3000 });
                 next();
 
-            case LoadPossibleTasks(metaTraining):
-                TeacherServiceClient.instance.getAllTasksByMetaTraining(metaTraining)
+            case LoadPossibleTasks(metaTraining,filter):
+                TeacherServiceClient.instance.getAllTasksByMetaTraining(metaTraining,filter)
                     .then(function(tasks) { store.dispatch(LoadPossibleTasksFinished(tasks)); });
+                next();
+
+            case DeleteLearnerFromCourse(learnerId, groupId):
+                TeacherServiceClient.instance.deleteLearner(learnerId, groupId)
+                    .then(function (learnerId) {store.dispatch(DeleteLearnerFromCourseFinished(learnerId)); });
+                next();
+
+            case DeleteLearnerFromCourseFinished(learner):
+                UIkit.notification({ message: "Ученик удалён", timeout: 3000 });
+                next();
+
+            case DeleteCourse(groupId):
+                TeacherServiceClient.instance.deleteCourse(groupId)
+                    .then(function(groupId) { store.dispatch(DeleteCourseFinished(groupId)); });
+                next();
+
+            case DeleteCourseFinished(groupId):
+                UIkit.notification({ message: "Курс удален", timeout: 3000 });
+                next();
+
+            case LoadRatingsForCourse(userIds, startDate, finishDate):
+                TeacherServiceClient.instance.getRatingsForUsers(userIds, startDate, finishDate)
+                    .then(function(ratingByPeriod) { store.dispatch(LoadRatingsForCourseFinished(ratingByPeriod)); });
                 next();
 
             default: next();

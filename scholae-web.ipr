@@ -5,27 +5,8 @@
       <customJdkName value="1.8" />
     </buildFile>
   </component>
-  <component name="CompilerConfiguration">
-    <resourceExtensions />
-    <wildcardResourcePatterns>
-      <entry name="!?*.java" />
-      <entry name="!?*.form" />
-      <entry name="!?*.class" />
-      <entry name="!?*.groovy" />
-      <entry name="!?*.scala" />
-      <entry name="!?*.flex" />
-      <entry name="!?*.kt" />
-      <entry name="!?*.clj" />
-      <entry name="!?*.aj" />
-    </wildcardResourcePatterns>
-    <annotationProcessing>
-      <profile default="true" name="Default" enabled="false">
-        <processorPath useClasspath="true" />
-      </profile>
-    </annotationProcessing>
-  </component>
   <component name="CopyrightManager" default="" />
-  <component name="DataSourceManagerImpl" format="xml" hash="2521352695">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
     <data-source source="LOCAL" name="scholae@localhost" uuid="1a00c394-2489-4558-b1a7-29e81c093e31">
       <driver-ref>mysql</driver-ref>
       <synchronize>true</synchronize>
@@ -41,10 +22,14 @@
       </driver-properties>
     </data-source>
   </component>
-  <component name="EntryPointsManager">
-    <entry_points version="2.0" />
-  </component>
+  <component name="Encoding" addBOMForNewFiles="with NO BOM" />
   <component name="HaxeProjectSettings" defines="" />
+  <component name="InspectionProjectProfileManager">
+    <profile version="1.0" is_locked="false">
+      <option name="myName" value="Project Default" />
+    </profile>
+    <version value="1.0" />
+  </component>
   <component name="Palette2">
     <group name="Swing">
       <item class="com.intellij.uiDesigner.HSpacer" tooltip-text="Horizontal Spacer" icon="/com/intellij/uiDesigner/icons/hspacer.png" removable="false" auto-create-binding="false" can-attach-label="false">
@@ -175,9 +160,10 @@
       <module fileurl="file://$PROJECT_DIR$/server-shared/server-shared.iml" filepath="$PROJECT_DIR$/server-shared/server-shared.iml" />
       <module fileurl="file://$PROJECT_DIR$/shared/shared.iml" filepath="$PROJECT_DIR$/shared/shared.iml" />
       <module fileurl="file://$PROJECT_DIR$/static/static.iml" filepath="$PROJECT_DIR$/static/static.iml" />
+      <module fileurl="file://$PROJECT_DIR$/worker/worker.iml" filepath="$PROJECT_DIR$/worker/worker.iml" />
     </modules>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_3" default="true" assert-keyword="false" jdk-15="false" project-jdk-name="Haxe 3.4" project-jdk-type="Haxe toolkit">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_3" default="true" project-jdk-name="Haxe 3.4" project-jdk-type="Haxe toolkit">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
   <component name="PropertiesComponent">
@@ -193,8 +179,14 @@
   </component>
   <component name="dataSourceStorageLocal">
     <data-source name="scholae@localhost" uuid="1a00c394-2489-4558-b1a7-29e81c093e31">
+      <database-info product="MySQL" version="5.5.5-10.1.12-MariaDB" jdbc-version="4.0" driver-name="MySQL Connector Java" driver-version="mysql-connector-java-5.1.46 ( Revision: 9cc87a48e75c2d2e87c1a293b2862ce651cb256e )">
+        <extra-name-characters>#@</extra-name-characters>
+        <identifier-quote-string>`</identifier-quote-string>
+      </database-info>
+      <case-sensitivity plain-identifiers="mixed" quoted-identifiers="upper" />
       <secret-storage>master_key</secret-storage>
       <user-name>scholae</user-name>
+      <introspection-schemas>*:scholae</introspection-schemas>
     </data-source>
   </component>
   <component name="libraryTable">
@@ -208,6 +200,13 @@
     <library name="extern-js-moment" type="Haxe">
       <CLASSES>
         <root url="file://$PROJECT_DIR$/lib/extern-js-moment/src" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
+    <library name="haxe-mtwin" type="Haxe">
+      <CLASSES>
+        <root url="file://$PROJECT_DIR$/lib/haxe-mtwin" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />
@@ -232,6 +231,15 @@
       </CLASSES>
       <JAVADOC />
       <SOURCES />
+    </library>
+    <library name="hxamqp" type="Haxe">
+      <CLASSES>
+        <root url="file://$PROJECT_DIR$/lib/hxamqp" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="file://$PROJECT_DIR$/lib/hxamqp" />
+      </SOURCES>
     </library>
     <library name="hxargs" type="Haxe">
       <CLASSES>

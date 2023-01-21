@@ -1,5 +1,15 @@
 package service;
 
+import messages.UserMessage;
+import haxe.EnumTools;
+import model.User;
+import haxe.EnumTools;
+import messages.LinkTypes;
+import haxe.EnumTools.EnumValueTools;
+import Lambda;
+import Lambda;
+import model.LinksForTags;
+import messages.LinksForTagsMessage;
 import model.CodeforcesTaskTag;
 import model.CodeforcesTag;
 import messages.TagMessage;
@@ -57,6 +67,41 @@ class EditorService {
         });
     }
 
+    public function insertLink(linkMessage: LinksForTagsMessage): ResponseMessage {
+        return authorize(function() {
+            var tag: CodeforcesTag = CodeforcesTag.manager.select($id==linkMessage.tag);
+            var link = new LinksForTags();
+            link.URL = linkMessage.url;
+            link.optional = linkMessage.optional;
+            link.type = EnumTools.createByIndex(LinkTypes, linkMessage.type);
+            link.tag = tag;
+            link.insert();
+            return ServiceHelper.successResponse(link.toMessage());
+        });
+    }
+
+    public function updateLink(linkMessage: LinksForTagsMessage): ResponseMessage {
+        return authorize(function() {
+            var link: LinksForTags = LinksForTags.manager.select($id==linkMessage.id);
+            if (link != null) {
+                link.type = EnumTools.createByIndex(LinkTypes, linkMessage.type);
+                link.optional = linkMessage.optional;
+                link.URL = linkMessage.url;
+                link.update();
+                return ServiceHelper.successResponse(link.toMessage());
+            } else {
+                return ServiceHelper.failResponse("Ссылка id = " + linkMessage.id + "не существует." );
+            }
+        });
+    }
+
+    public function deleteLink(linkMessage: LinksForTagsMessage): ResponseMessage {
+        return authorize(function() {
+            LinksForTags.manager.delete($id==linkMessage.id);
+            return ServiceHelper.successResponse(linkMessage.id);
+        });
+    }
+
     public function getTasks(filter: String, offset: Int, limit: Int): ResponseMessage {
         return authorize(function() {
             var tasksCount = CodeforcesTask.manager.count($name.like("%"+filter+"%"));
@@ -70,6 +115,27 @@ class EditorService {
                 offset: offset,
                 totalLength: tasksCount
             });
+        });
+    }
+
+    public function getAllUsers(): ResponseMessage {
+        return ServiceHelper.successResponse(
+            Lambda.array(
+                Lambda.map(
+                    User.manager.all(),
+                    function(u) { return u.toUserMessage(); })));
+    }
+
+    public function updateRole(userMessage: UserMessage): ResponseMessage {
+        return authorize(function() {
+            var user: User = User.manager.select($id==userMessage.id);
+            if (user != null){
+                user.roles = userMessage.roles;
+                user.update();
+                return ServiceHelper.successResponse(user.toUserMessage());
+            } else {
+                return ServiceHelper.failResponse("Такого пользователя не существует");
+            }
         });
     }
 

@@ -1,5 +1,6 @@
 package services;
 
+import messages.RatingMessage;
 import messages.TrainingMessage;
 import js.Promise;
 import messages.GroupMessage;
@@ -37,6 +38,14 @@ class LearnerServiceClient extends BaseServiceClient {
     public function refreshResults(): Promise<Array<TrainingMessage>> {
         return request(function(success, fail) {
             context.LearnerService.refreshResults.call([], function(e) {
+                processAsyncJobResponse(e, success, fail);
+            });
+        });
+    }
+
+    public function getRating(learnerId : Float): Promise<Array<RatingMessage>> {
+        return request(function(success, fail) {
+            context.LearnerService.getRating.call([learnerId], function(e) {
                 processResponse(e, success, fail);
             });
         });

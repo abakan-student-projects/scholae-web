@@ -52,8 +52,7 @@ class TeacherNewAssignmentScreen
                     }
                 );
             },
-
-            create: function(learnerIds, name, minLevel, maxLevel, tasksCount, tagIds, startDate, finishDate) {
+            create: function(learnerIds,name, minLevel, maxLevel, tasksCount, tagIds, taskIds, startDate, finishDate) {
                 dispatch(TeacherAction.CreateAssignment(state.teacher.currentGroup.info,
                     {
                         id: null,
@@ -67,11 +66,16 @@ class TeacherNewAssignmentScreen
                                 minLevel: minLevel,
                                 maxLevel: maxLevel,
                                 tagIds: tagIds,
+                                taskIds: taskIds,
                                 length: tasksCount
                             },
                         groupId: null
                     }
                 ));
+            },
+            createAdaptive: function(name, startDate, finishDate, tasksCount, learnerIds) {
+                dispatch(TeacherAction.CreateAdaptiveAssignment(state.teacher.currentGroup.info,
+                    name, startDate, finishDate, tasksCount, learnerIds));
             }
         };
     }

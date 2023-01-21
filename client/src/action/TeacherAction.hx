@@ -1,5 +1,7 @@
 package action;
 
+import Array;
+import messages.RatingMessage;
 import model.TeacherState;
 import messages.ArrayChunk;
 import messages.TaskMessage;
@@ -25,6 +27,7 @@ enum TeacherAction {
     SetCurrentGroup(group: GroupMessage);
     LoadLearnersByGroupFinished(learners: Array<LearnerMessage>);
     LoadAssignmentsByGroupFinished(assignments: Array<AssignmentMessage>);
+    LoadRatingLearnersByGroupFinished(rating: Array<RatingMessage>);
 
     LoadAllTags;
     LoadAllTagsFinished(tags: Array<TagMessage>);
@@ -33,6 +36,7 @@ enum TeacherAction {
     LoadLastLearnerAttemptsFinished(attempts: Array<AttemptMessage>);
 
     CreateAssignment(group: GroupMessage, assignment: AssignmentMessage);
+    CreateAdaptiveAssignment(group: GroupMessage, name: String, startDate: Date, finishDate: Date, tasksCount: Int, learnerIds: Array<Float>);
     CreateAssignmentFinished(assignment: AssignmentMessage);
 
     CreateTrainingsByMetaTrainings(groupId: Float);
@@ -44,6 +48,19 @@ enum TeacherAction {
     RefreshResults(groupId: Float);
     RefreshResultsFinished(trainings: Array<TrainingMessage>);
 
-    LoadPossibleTasks(metaTraining: MetaTrainingMessage);
+    LoadPossibleTasks(metaTraining: MetaTrainingMessage, ?filter: String);
     LoadPossibleTasksFinished(tasks: ArrayChunk<TaskMessage>);
+
+    DeleteLearnerFromCourse(learnerId: Float, groupId: Float);
+    DeleteLearnerFromCourseFinished(learnerId: Float);
+
+    DeleteCourse(groupId: Float);
+    DeleteCourseFinished(groupId: Float);
+
+    LoadRatingsForCourse(userIds: Array<Float>, startDate: Date, finishDate: Date);
+    LoadRatingsForCourseFinished(rating: Array<RatingMessage>);
+
+    SortDeltaRatingByPeriod;
+    SortSolvedTasksByPeriod;
+    SortLearnersByPeriod;
 }

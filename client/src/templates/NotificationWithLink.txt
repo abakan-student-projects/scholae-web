@@ -1,0 +1,4 @@
+<p>::message::</p>
+<button class="uk-button uk-width-1-1 uk-margin-small-top" onClick="window.open('::link::','_blank')">
+Перейти
+</button>

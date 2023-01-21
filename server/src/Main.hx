@@ -1,5 +1,9 @@
 package ;
 
+import configuration.DatabaseConfig;
+import configuration.Configuration;
+import service.NotificationService;
+import service.JobService;
 import service.EditorService;
 import service.LearnerService;
 import service.TeacherService;
@@ -17,13 +21,17 @@ class Main {
         context.addObject("TeacherService", new TeacherService());
         context.addObject("LearnerService", new LearnerService());
         context.addObject("EditorService", new EditorService());
+        context.addObject("JobService", new JobService());
+        context.addObject("NotificationService", new NotificationService());
+
+        var config: DatabaseConfig = Configuration.instance.getDatabaseConfig();
 
         var cnx = sys.db.Mysql.connect({
-            host : "127.0.0.1",
+            host : config.host,
             port : null,
-            user : "scholae",
-            pass : "scholae",
-            database : "scholae",
+            user : config.user,
+            pass : config.password,
+            database : config.name,
             socket : null,
         });
         cnx.request("SET NAMES 'utf8';");
@@ -36,7 +44,6 @@ class Main {
         } else {
             php.Lib.print("This is a remoting server !");
         }
-
 
         sys.db.Manager.cleanup();
         cnx.close();

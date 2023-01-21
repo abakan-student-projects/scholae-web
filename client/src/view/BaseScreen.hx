@@ -1,5 +1,6 @@
 package view;
 
+import action.AdminAction;
 import model.Role;
 import action.LearnerAction;
 import action.TeacherAction;
@@ -26,6 +27,11 @@ class BaseScreen
             if (state.scholae.auth.loggedIn && state.scholae.auth.roles.has(Role.Learner))
                 jsx('<li className=${if(props.location.pathname.indexOf("/learner") == 0) "uk-active" else ""}>
                         <Link to="/learner/">Ученик</Link>
+                        <div className="uk-navbar-dropdown">
+                        <ul className="uk-nav uk-navbar-dropdown-nav">
+                            <li><Link to="/learner/rating">Рейтинг</Link></li>
+                        </ul>
+                        </div>
                      </li>')
             else
                 null;
@@ -51,6 +57,13 @@ class BaseScreen
                     </li>')
             else
                 null;
+        var adminMenuItem =
+        if (state.scholae.auth.loggedIn && state.scholae.auth.roles.has(Role.Administrator))
+            jsx('<li className=${if(props.location.pathname.indexOf("/administrator") == 0) "uk-active" else ""}>
+                        <Link to="/administrator/">Администратор</Link>
+                    </li>')
+        else
+            null;
 
         return jsx('
 			<div id="scholae">
@@ -61,6 +74,7 @@ class BaseScreen
                             $learnerMenuItem
                             $teacherMenuItem
                             $editorMenuItem
+                            $adminMenuItem
                         </ul>
                      </div>
 				    <div className="uk-navbar-right">
@@ -75,8 +89,9 @@ class BaseScreen
 				    </div>
 				</div>
 				<div className="scholae-footer uk-margin uk-margin-top uk-flex uk-flex-right uk-flex-middle uk-margin-left uk-margin-right">
-				    <a data-uk-icon="github" className="uk-icon-button uk-margin-right-small" href="https://github.com/abakan-student-projects/scholae-web/"></a>
+				    <a data-uk-icon="github" className="uk-icon-button uk-margin-right" href="https://github.com/abakan-student-projects/scholae-web/"></a>
 				    <a className="uk-link-text" href="https://github.com/abakan-student-projects/scholae-web/issues/new">Сообщить об ошибке</a>
+                    <a className="uk-link-text uk-margin-left" href="http://lambda-calculus.ru/blog/education/158.html">Студенческий проект</a>
 				</div>
 			</div>
 		');
@@ -86,6 +101,7 @@ class BaseScreen
         dispatch(ScholaeAction.Clear);
         dispatch(TeacherAction.Clear);
         dispatch(LearnerAction.Clear);
+        dispatch(AdminAction.Clear);
     }
 
     function renderUserInfo() {
@@ -93,7 +109,30 @@ class BaseScreen
         return
             if (state.scholae.auth.loggedIn)
                 jsx('<div>
-                        <span data-uk-icon="user"></span> ${state.scholae.auth.firstName} ${state.scholae.auth.lastName}
+                        <button className="uk-button uk-button-text uk-text-capitalize uk-margin-left" type="button" >
+                            <span className="uk-margin-small-right" data-uk-icon="user"></span>
+                            ${state.scholae.auth.firstName} ${state.scholae.auth.lastName}
+                        </button>
+                        <div data-uk-dropdown="pos: bottom-left">
+                            <ul className="uk-nav uk-dropdown-nav">
+                                <li className="uk-nav-divider"></li>
+                                <li>
+                                    <Link className="uk-link-text uk-margin-right" to="/achievements">
+                                        <span className="uk-margin-right" data-uk-icon="image"></span>
+                                        Достижения
+                                    </Link>
+                                </li>
+                                <li className="uk-nav-divider"></li>
+                                <li>
+                                    <Link className="uk-link-text uk-margin-right" to="/profile">
+                                        <span className="uk-margin-right" data-uk-icon="cog"></span>
+                                        Настройки
+                                    </Link>
+                                </li>
+                                <li className="uk-nav-divider"></li>
+                            </ul>
+                        </div>
+
                         <Link className="uk-button uk-button-default uk-margin-left" to="/" onClick=$onLogoutClick>Выйти</Link>
                      </div>')
             else
