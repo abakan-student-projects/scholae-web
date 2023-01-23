@@ -72,7 +72,7 @@ class User extends sys.db.Object {
         }
     }
 
-    public function toSessionMessage(sessionId: String): SessionMessage {
+    public function toSessionMessage(sessionId: String, firstAuthMessage: String = null): SessionMessage {
         return
             {
                 userId: id,
@@ -80,7 +80,8 @@ class User extends sys.db.Object {
                 firstName: firstName,
                 lastName: lastName,
                 roles: roles,
-                sessionId: sessionId
+                sessionId: sessionId,
+                firstAuthMessage: firstAuthMessage
             };
     }
 

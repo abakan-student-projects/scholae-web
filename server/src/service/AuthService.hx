@@ -27,7 +27,7 @@ class AuthService {
     /**
     * return Session ID, String
     **/
-    public function authenticate(email: String, password: String): ResponseMessage {
+    public function authenticate(email: String, password: String, firstAuth: Bool = false): ResponseMessage {
         var user = User.getUserByEmailAndPassword(email, password);
         if (null != user) {
             if (canAuth(user.activationDate, user.emailActivated)) {
@@ -39,6 +39,12 @@ class AuthService {
                     session.lastRequestTime = Date.now();
                     session.insert();
                 }
+                if (firstAuth) {
+                    return ServiceHelper.successResponse(user.toSessionMessage(
+                      session.id,
+                      "Добро пожаловать! Проверьте, пожалуйста, электронную почту, чтобы активировать Ваш аккаунт!"
+                    ));
+                }
                 return ServiceHelper.successResponse(user.toSessionMessage(session.id));
             } else return ServiceHelper.failResponse("You can't sign in. The email activation period has expired.");
         }
@@ -46,11 +52,11 @@ class AuthService {
     }
 
     public function canAuth(date: Date, emailActivated: Bool): Bool {
-        return
-            if (emailActivated) true;
-            else
-                if (Date.now().getTime() <= DateTools.delta(date, (86400 * 1000) * 7).getTime()) true;
-            else false;
+        if (emailActivated) {
+            return true;
+        }
+
+        return Date.now().getTime() <= DateTools.delta(date, (86400 * 1000) * 7).getTime();
     }
 
     private function updateClientInfo(session: Session): Void {
@@ -126,7 +132,7 @@ class AuthService {
             u.insert();
             greetUser(u);
 
-            return authenticate(user.email, user.password);
+            return authenticate(user.email, user.password, true);
         }
     }
 
